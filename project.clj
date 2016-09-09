@@ -1,8 +1,6 @@
-(defproject weather-magic "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+(defproject weather-front "0.0.1-SNAPSHOT"
+  :description "The showcase of doom."
+  :url "https://github.com/WeatherMagic/weather-front"
 
   :min-lein-version "2.6.1"
 
@@ -65,7 +63,6 @@
              ;; Start an nREPL server into the running figwheel process
              :nrepl-port 7888
              :nrepl-middleware ["cider.nrepl/cider-middleware"
-                                "refactor-nrepl.middleware/wrap-refactor"
                                 "cemerick.piggieback/wrap-cljs-repl"]
              ;; Server Ring Handler (optional)
              ;; if you want to embed a ring handler into the figwheel http-kit
@@ -82,7 +79,7 @@
              ;; #! /bin/sh
              ;; emacsclient -n +$2 $1
              ;;
-             ;; :open-file-command "myfile-opener"
+             :open-file-command "ec"
 
              ;; if you are using emacsclient you can just use
              ;; :open-file-command "emacsclient"
@@ -100,8 +97,7 @@
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
 
 
-  :profiles {:dev {:dependencies [[refactor-nrepl "2.2.0"]
-                                  [cider/cider-nrepl "0.12.0"]
+  :profiles {:dev {:dependencies [[cider/cider-nrepl "0.12.0"]
                                   [binaryage/devtools "0.7.2"]
                                   [figwheel-sidecar "0.5.4-7"]
                                   [com.cemerick/piggieback "0.2.1"]]
@@ -112,7 +108,6 @@
                    :repl-options {; for nREPL dev you really need to limit output
                                   :init (set! *print-length* 50)
                                   :nrepl-middleware [[cider.nrepl/cider-middleware]
-                                                     [refactor-nrepl.middleware/wrap-refactor]
                                                      [cemerick.piggieback/wrap-cljs-repl]]}}}
 
 )
