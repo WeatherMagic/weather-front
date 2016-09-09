@@ -63,8 +63,10 @@
              :css-dirs ["resources/public/css"] ;; watch and update CSS
 
              ;; Start an nREPL server into the running figwheel process
-             ;; :nrepl-port 7888
-
+             :nrepl-port 7888
+             :nrepl-middleware ["cider.nrepl/cider-middleware"
+                                "refactor-nrepl.middleware/wrap-refactor"
+                                "cemerick.piggieback/wrap-cljs-repl"]
              ;; Server Ring Handler (optional)
              ;; if you want to embed a ring handler into the figwheel http-kit
              ;; server, this is for simple ring servers, if this
@@ -98,7 +100,9 @@
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
 
 
-  :profiles {:dev {:dependencies [[binaryage/devtools "0.7.2"]
+  :profiles {:dev {:dependencies [[refactor-nrepl "2.2.0"]
+                                  [cider/cider-nrepl "0.12.0"]
+                                  [binaryage/devtools "0.7.2"]
                                   [figwheel-sidecar "0.5.4-7"]
                                   [com.cemerick/piggieback "0.2.1"]]
                    ;; need to add dev source path here to get user.clj loaded
@@ -107,6 +111,8 @@
                    ;; :plugins [[cider/cider-nrepl "0.12.0"]]
                    :repl-options {; for nREPL dev you really need to limit output
                                   :init (set! *print-length* 50)
-                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
+                                  :nrepl-middleware [[cider.nrepl/cider-middleware]
+                                                     [refactor-nrepl.middleware/wrap-refactor]
+                                                     [cemerick.piggieback/wrap-cljs-repl]]}}}
 
 )
