@@ -21,6 +21,7 @@
 
 (enable-console-print!)
 
+(defonce gl-ctx (gl/gl-context "main"))
 
 (def shader-spec
   {:vs "void main() {
@@ -31,7 +32,7 @@
    :fs (->> "void main() {
                float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
                vec3 diffuse = texture2D(tex, vUV).rgb;
-               vec3 col = ambientCol + diffuse * lightCol * lam;
+               vec3 col = ambientCol + diffuse * lightCol * lam * vec3(1.2, 1.2, 1.2);
                gl_FragColor = vec4(col, 1.0);
              }"
             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
@@ -54,9 +55,8 @@
 
 (defn ^:export demo
   []
-  (let [gl-ctx     (gl/gl-context "main")
-        view-rect  (gl/get-viewport-rect gl-ctx)
-        sphere-res 40
+  (let [view-rect  (gl/get-viewport-rect gl-ctx)
+        sphere-res 32
         model      (-> (s/sphere 1)
                        (g/center)
                        (g/as-mesh {:mesh    (glm/gl-mesh 4096 #{:uv :vnorm})
@@ -89,5 +89,6 @@
                       (-> M44 (g/rotate-x (m/radians 24.5)) (g/rotate-y (/ t 10)))))))
        true))))
 
-(defn on-js-reload []
-  (demo))
+(demo)
+
+(defn on-js-reload [])
