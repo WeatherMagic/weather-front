@@ -21,8 +21,20 @@
 
 (enable-console-print!)
 
+;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce gl-ctx (gl/gl-context "main"))
+(defonce view-rect  (gl/get-viewport-rect gl-ctx))
+(defonce tex-ready (volatile! false))
+(defonce tex (buf/load-texture
+              gl-ctx {:callback (fn [tex img]
+                              (.generateMipmap gl-ctx (:target tex))
+                              (vreset! tex-ready true))
+                  :src      "img/earth.jpg"
+                  :filter   [glc/linear-mipmap-linear glc/linear]
+                  :flip     false}))
 
+;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
+;;; iff they're modified when the source code is saved.
 (def shader-spec
   {:vs "void main() {
           vUV = uv;
@@ -32,7 +44,7 @@
    :fs (->> "void main() {
                float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
                vec3 diffuse = texture2D(tex, vUV).rgb;
-               vec3 col = ambientCol + diffuse * lightCol * lam * vec3(1.2, 1.2, 1.2);
+               vec3 col = ambientCol + diffuse * lightCol * lam * vec3(1.2, 1.2, 1.0);
                gl_FragColor = vec4(col, 1.0);
              }"
             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
@@ -52,43 +64,43 @@
               :vNormal  :vec3}
    :state    {:depth-test true}})
 
+(def model
+  (-> (s/sphere 1)
+      (g/center)
+      (g/as-mesh {:mesh    (glm/gl-mesh 4096 #{:uv :vnorm})
+                  :res     32
+                  :attribs {:uv    (attr/supplied-attrib
+                                    :uv (fn [[u v]] (vec2 (- 1 u) v)))
+                            :vnorm (fn [_ _ v _] (m/normalize v))}})
+      (gl/as-gl-buffer-spec {})
+      (cam/apply
+       (cam/perspective-camera
+        {:eye    (vec3 0 0 1.5)
+         :fov    90
+         :aspect view-rect}))
+      (assoc :shader (sh/make-shader-from-spec gl-ctx shader-spec))
+      (gl/make-buffers-in-spec gl-ctx glc/static-draw)))
 
-(defn ^:export demo
+(defn spin
+  [t]
+  (-> M44
+      (g/rotate-x (m/radians 24.5))
+      (g/rotate-y (/ t 10))))
+
+(defn ^:export start-demo!
   []
-  (let [view-rect  (gl/get-viewport-rect gl-ctx)
-        sphere-res 32
-        model      (-> (s/sphere 1)
-                       (g/center)
-                       (g/as-mesh {:mesh    (glm/gl-mesh 4096 #{:uv :vnorm})
-                                   :res     sphere-res
-                                   :attribs {:uv    (attr/supplied-attrib :uv (fn [[u v]] (vec2 (- 1 u) v)))
-                                             :vnorm (fn [_ _ v _] (m/normalize v))}})
-                       (gl/as-gl-buffer-spec {})
-                       (cam/apply
-                        (cam/perspective-camera
-                         {:eye    (vec3 0 0 1.5)
-                          :fov    90
-                          :aspect view-rect}))
-                       (assoc :shader (sh/make-shader-from-spec gl-ctx shader-spec))
-                       (gl/make-buffers-in-spec gl-ctx glc/static-draw))
-        tex-ready (volatile! false)
-        tex       (buf/load-texture
-                   gl-ctx {:callback (fn [tex img]
-                                       (.generateMipmap gl-ctx (:target tex))
-                                       (vreset! tex-ready true))
-                       :src      "img/earth.jpg"
-                       :filter   [glc/linear-mipmap-linear glc/linear]
-                       :flip     false})]
-    (anim/animate
+  (anim/animate
      (fn [t frame]
-       (when @tex-ready
+       (if @tex-ready
          (doto gl-ctx
            (gl/clear-color-and-depth-buffer 0 0 0.05 1 1)
            (gl/draw-with-shader
             (assoc-in model [:uniforms :model]
-                      (-> M44 (g/rotate-x (m/radians 24.5)) (g/rotate-y (/ t 10)))))))
-       true))))
+                      (spin t)))))
+       true)))
 
-(demo)
+;; Start the demo only once.
+(defonce running (start-demo!))
 
+;; This is a hook for figwheel, add stuff you want run after you save your source.
 (defn on-js-reload [])

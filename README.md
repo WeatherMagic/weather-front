@@ -3,13 +3,9 @@
 A WebGL ClojureScript front visualizing climate change models.
 
 
-## Overview
+# Setup
 
-Will
-
-## Setup
-
-### Leiningen
+## Leiningen
 
 First install [leiningen](http://leiningen.org/), the popular clojure
 build system. On Ubuntu/Debian, run:
@@ -23,7 +19,7 @@ On macOS with [homebrew](http://brew.sh/):
 On Windows there's apparently an [installer](http://leiningen-win-installer.djpowell.net/).
 
 
-### Our code
+## Our code
 
 With that installed, in order to get an interactive development
 environment run:
@@ -50,6 +46,6 @@ To create a production build run:
 And open your browser in `resources/public/index.html`. You will not
 get live reloading, nor a REPL.
 
-## License
+# License
 
-Copyright © 2016 WeatherMagic
+Copyright © 2016 WeatherMagic, Licensed under AGPLv3.

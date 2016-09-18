@@ -92,22 +92,17 @@
              }
 
 
-  ;; setting up nREPL for Figwheel and ClojureScript dev
-  ;; Please see:
+  ;; Setting up nREPL for Figwheel and ClojureScript development, please see:
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
-
-
-  :profiles {:dev {:dependencies [[cider/cider-nrepl "0.12.0"]
+  :profiles {:dev {:dependencies [[cider/cider-nrepl "0.13.0"]
                                   [binaryage/devtools "0.7.2"]
                                   [figwheel-sidecar "0.5.4-7"]
                                   [com.cemerick/piggieback "0.2.1"]]
                    ;; need to add dev source path here to get user.clj loaded
                    :source-paths ["src" "dev"]
                    ;; for CIDER
-                   ;; :plugins [[cider/cider-nrepl "0.12.0"]]
-                   :repl-options {; for nREPL dev you really need to limit output
-                                  :init (set! *print-length* 50)
-                                  :nrepl-middleware [[cider.nrepl/cider-middleware]
-                                                     [cemerick.piggieback/wrap-cljs-repl]]}}}
+                   :plugins [[cider/cider-nrepl "0.13.0"]]
+                   }}
+  :repl-options{:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
 )
