@@ -91,52 +91,38 @@
 
 ;; SLIDER - MAJAS
 
-(def bmi-data (reagent/atom {:height 180 :weight 80}))
+(def year-data (reagent/atom {:height 2016}))
 
 (defn calc-bmi []
-  (let [{:keys [height weight bmi] :as data} @bmi-data
+  (let [{:keys [height bmi] :as data} @year-data
         h (/ height 100)]
     (if (nil? bmi)
-      (assoc data :bmi (/ weight (* h h)))
-      (assoc data :weight (* bmi h h)))))
+      (assoc data :bmi (/ 2 (* h h)))
+      (assoc data :2 (* bmi h h)))))
 
 (defn slider [param value min max]
   [:input {:type "range" :value value :min min :max max
            :style {:width "100%"}
            :on-change (fn [e]
-                        (swap! bmi-data assoc param (.-target.value e))
+                        (swap! year-data assoc param (.-target.value e))
                         (when (not= param :bmi)
-                          (swap! bmi-data assoc :bmi nil)))}])
+                          (swap! year-data assoc :bmi nil)))}])
 
 (defn bmi-component []
-  (let [{:keys [weight height bmi]} (calc-bmi)
+  (let [{:keys [height bmi]} (calc-bmi)
         [color diagnose] (cond
                           (< bmi 18.5) ["orange" "underweight"]
                           (< bmi 25) ["inherit" "normal"]
                           (< bmi 30) ["orange" "overweight"]
                           :else ["red" "obese"])]
     [:div
-     [:h3 "BMI calculator"]
      [:div
-      "Height: " (int height) "cm"
-      [slider :height height 100 220]]
-     [:div
-      "Weight: " (int weight) "kg"
-      [slider :weight weight 30 150]]
-     [:div
-      "BMI: " (int bmi) " "
-      [:span {:style {:color color}} diagnose]
-      [slider :bmi bmi 10 50]]]))
-
-(defn simple-component []
-  [:div
-   [:span {:style {:color "white"}}"Year: "]
-   [:p.someclass
-    ]])
+      [:span {:style {:color "white"}}"Year: " (int height)]
+      [slider :height height 1950 2100]]
+      ]))
 
   (defn mount-root []
-    (reagent/render [slider] (.getElementById js/document "ui"))
-    (reagent/render [simple-component] (.getElementById js/document "yeartext")))
+    (reagent/render [bmi-component] (.getElementById js/document "ui")))
 ;; SLIDER - MAJAS
 
 
