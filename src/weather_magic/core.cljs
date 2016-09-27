@@ -44,7 +44,7 @@
    :fs (->> "void main() {
                float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
                vec3 diffuse = texture2D(tex, vUV).rgb;
-               vec3 col = ambientCol + diffuse * lightCol * lam * vec3(1.2, 1.2, 1.0);
+               vec3 col = ambientCol + diffuse * lightCol * lam * vec3(1.2, 1.2, 1.5);
                gl_FragColor = vec4(col, 1.0);
              }"
             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
@@ -87,6 +87,53 @@
       (g/rotate-x (m/radians 24.5))
       (g/rotate-y (/ t 10))))
 
+
+
+;; SLIDER - MAJAS
+
+(def bmi-data (reagent/atom {:height 180 :weight 80}))
+
+(defn calc-bmi []
+  (let [{:keys [height weight bmi] :as data} @bmi-data
+        h (/ height 100)]
+    (if (nil? bmi)
+      (assoc data :bmi (/ weight (* h h)))
+      (assoc data :weight (* bmi h h)))))
+
+(defn slider [param value min max]
+  [:input {:type "range" :value value :min min :max max
+           :style {:width "100%"}
+           :on-change (fn [e]
+                        (swap! bmi-data assoc param (.-target.value e))
+                        (when (not= param :bmi)
+                          (swap! bmi-data assoc :bmi nil)))}])
+
+(defn bmi-component []
+  (let [{:keys [weight height bmi]} (calc-bmi)
+        [color diagnose] (cond
+                          (< bmi 18.5) ["orange" "underweight"]
+                          (< bmi 25) ["inherit" "normal"]
+                          (< bmi 30) ["orange" "overweight"]
+                          :else ["red" "obese"])]
+    [:div
+     [:h3 "BMI calculator"]
+     [:div
+      "Height: " (int height) "cm"
+      [slider :height height 100 220]]
+     [:div
+      "Weight: " (int weight) "kg"
+      [slider :weight weight 30 150]]
+     [:div
+      "BMI: " (int bmi) " "
+      [:span {:style {:color color}} diagnose]
+      [slider :bmi bmi 10 50]]]))
+
+
+  (defn mount-root []
+    (reagent/render [slider] (.getElementById js/document "ui")))
+;; SLIDER - MAJAS
+
+
 (defn ^:export start-demo!
   []
   (anim/animate
@@ -97,7 +144,8 @@
            (gl/draw-with-shader
             (assoc-in model [:uniforms :model]
                       (spin t)))))
-       true)))
+       true))
+       (mount-root))
 
 ;; Start the demo only once.
 (defonce running (start-demo!))
