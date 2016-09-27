@@ -5,6 +5,11 @@ top: 100px;
 right: 100px;
 }
 
+#yeartext {
+position: absolute;
+top: 80px;
+right: 200px;
+}
 
 
 #main{
