@@ -1,2 +1,20 @@
 /* some style */
+#ui {
+position: absolute;
+top: 100px;
+right: 100px;
+}
 
+
+
+#main{
+  height: 100vh;
+  width: 100vw;
+
+}
+
+*{
+  margin:0;
+  padding:0;
+  boarder:0;
+}
