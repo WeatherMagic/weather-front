@@ -8,7 +8,7 @@
                  [org.clojure/clojurescript "1.9.89"]
                  [org.clojure/core.async "0.2.385"
                   :exclusions [org.clojure/tools.reader]]
-                 [reagent "0.5.1"]
+                 [reagent "0.6.0"]
                  [thi.ng/geom "0.0.1178-SNAPSHOT"]
                  [thi.ng/math "0.2.1"]
                  [thi.ng/color "1.2.0"]

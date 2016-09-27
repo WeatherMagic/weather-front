@@ -128,9 +128,15 @@
       [:span {:style {:color color}} diagnose]
       [slider :bmi bmi 10 50]]]))
 
+(defn simple-component []
+  [:div
+   [:span {:style {:color "white"}}"Year: "]
+   [:p.someclass
+    ]])
 
   (defn mount-root []
-    (reagent/render [slider] (.getElementById js/document "ui")))
+    (reagent/render [slider] (.getElementById js/document "ui"))
+    (reagent/render [simple-component] (.getElementById js/document "yeartext")))
 ;; SLIDER - MAJAS
 
 
