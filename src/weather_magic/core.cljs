@@ -93,28 +93,14 @@
 
 (def year-data (reagent/atom {:height 2016}))
 
-(defn calc-bmi []
-  (let [{:keys [height bmi] :as data} @year-data
-        h (/ height 100)]
-    (if (nil? bmi)
-      (assoc data :bmi (/ 2 (* h h)))
-      (assoc data :2 (* bmi h h)))))
-
 (defn slider [param value min max]
   [:input {:type "range" :value value :min min :max max
            :style {:width "100%"}
            :on-change (fn [e]
-                        (swap! year-data assoc param (.-target.value e))
-                        (when (not= param :bmi)
-                          (swap! year-data assoc :bmi nil)))}])
+                        (swap! year-data assoc param (.-target.value e)))}])
 
-(defn bmi-component []
-  (let [{:keys [height bmi]} (calc-bmi)
-        [color diagnose] (cond
-                          (< bmi 18.5) ["orange" "underweight"]
-                          (< bmi 25) ["inherit" "normal"]
-                          (< bmi 30) ["orange" "overweight"]
-                          :else ["red" "obese"])]
+(defn slider-component []
+  (let [{:keys [height]} @year-data]
     [:div
      [:div
       [:span {:style {:color "white"}}"Year: " (int height)]
@@ -122,7 +108,7 @@
       ]))
 
   (defn mount-root []
-    (reagent/render [bmi-component] (.getElementById js/document "ui")))
+    (reagent/render [slider-component] (.getElementById js/document "ui")))
 ;; SLIDER - MAJAS
 
 
