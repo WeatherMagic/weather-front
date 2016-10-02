@@ -1,6 +1,6 @@
 (ns weather-magic.core
   (:require
-   [reagent.core :as reagent :refer [atom]]
+   [weather-magic.ui :as ui]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
@@ -101,6 +101,8 @@
 
 ;; Start the demo only once.
 (defonce running (start-demo!))
+;; Reagent UI cannot be mounted from a defonce if figwheel is to do its magic.
+(def ui-mounted? (ui/mount-ui!))
 
 ;; This is a hook for figwheel, add stuff you want run after you save your source.
 (defn on-js-reload [])
