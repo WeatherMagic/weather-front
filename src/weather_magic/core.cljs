@@ -87,20 +87,17 @@
       (g/rotate-x (m/radians 24.5))
       (g/rotate-y (/ t 10))))
 
-(defn ^:export start-demo!
-  []
-  (anim/animate
-     (fn [t frame]
-       (if @tex-ready
-         (doto gl-ctx
-           (gl/clear-color-and-depth-buffer 0 0 0.05 1 1)
-           (gl/draw-with-shader
-            (assoc-in model [:uniforms :model]
-                      (spin t)))))
-       true)))
+(defn draw-frame! [t]
+  (if @tex-ready
+    (doto gl-ctx
+      (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+      (gl/draw-with-shader
+       (assoc-in model [:uniforms :model]
+                 (spin t))))))
 
 ;; Start the demo only once.
-(defonce running (start-demo!))
+(defonce running
+  (anim/animate (fn [t] (draw-frame! t) true)))
 ;; Reagent UI cannot be mounted from a defonce if figwheel is to do its magic.
 (def ui-mounted? (ui/mount-ui!))
 
