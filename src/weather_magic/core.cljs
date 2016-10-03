@@ -44,7 +44,7 @@
    :fs (->> "void main() {
                float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
                vec3 diffuse = texture2D(tex, vUV).rgb;
-               vec3 col = ambientCol + diffuse * lightCol * lam * vec3(1.2, 1.2, 1.0);
+               vec3 col = ambientCol + diffuse * lightCol * lam * vec3(1.2, 1.2, 1.5);
                gl_FragColor = vec4(col, 1.0);
              }"
             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
@@ -86,6 +86,7 @@
   (-> M44
       (g/rotate-x (m/radians 24.5))
       (g/rotate-y (/ t 10))))
+
 
 (defn ^:export start-demo!
   []

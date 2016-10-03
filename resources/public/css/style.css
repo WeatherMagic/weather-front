@@ -1,2 +1,24 @@
 /* some style */
+.time-slider {
+position: absolute;
+right: 100px;
+width: 25%;
+}
+#year {
+  top: 100px;
+}
+#month{
+  top: 200px;
+}
 
+#main{
+  height: 100vh;
+  width: 100vw;
+
+}
+
+*{
+  margin:0;
+  padding:0;
+  boarder:0;
+}
