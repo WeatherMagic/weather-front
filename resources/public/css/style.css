@@ -15,6 +15,10 @@ input[type=range] {
   color: white;
 }
 
+#Europe {
+  color: orange;
+}
+
 .hidden {
   visibility: hidden;
 }
@@ -37,6 +41,10 @@ input[type=range] {
   margin:0;
   padding:0;
   boarder:0;
+}
+
+#Spinning {
+  color: blue;
 }
 
 .data-layer-button {
