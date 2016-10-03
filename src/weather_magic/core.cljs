@@ -20,6 +20,9 @@
    [thi.ng.glsl.lighting :as light]))
 
 (enable-console-print!)
+(def x (atom 0))
+(def y (atom 0))
+(def earth-view (atom 0))
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce gl-ctx (gl/gl-context "main"))
@@ -33,6 +36,9 @@
                   :filter   [glc/linear-mipmap-linear glc/linear]
                   :flip     false}))
 
+(defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                         :fov    90
+                                         :aspect view-rect})))
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
 (def shader-spec
@@ -71,29 +77,43 @@
                   :res     32
                   :attribs {:uv    (attr/supplied-attrib
                                     :uv (fn [[u v]] (vec2 (- 1 u) v)))
-                            :vnorm (fn [_ _ v _] (m/normalize v))}})
-      (gl/as-gl-buffer-spec {})
-      (cam/apply
-       (cam/perspective-camera
-        {:eye    (vec3 0 0 1.5)
-         :fov    90
-         :aspect view-rect}))
-      (assoc :shader (sh/make-shader-from-spec gl-ctx shader-spec))
-      (gl/make-buffers-in-spec gl-ctx glc/static-draw)))
+                            :vnorm (fn [_ _ v _] (m/normalize v))}})))
 
 (defn spin
-  [t]
+  [t earth-view]
+  (if (= earth-view "Europe")
+    (do (reset! x 45) (reset! y 80))
+    (do (reset! x 24.5) (reset! y t)))
   (-> M44
-      (g/rotate-x (m/radians 24.5))
-      (g/rotate-y (/ t 10))))
+      (g/rotate-x (m/radians @x))
+      (g/rotate-y (m/radians @y))))
+
+(defn combine-model-shader-and-camera
+  [model shader-spec camera]
+  (println @camera)
+  (-> model
+      (gl/as-gl-buffer-spec {})
+      (assoc :shader (sh/make-shader-from-spec gl-ctx shader-spec))
+      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
+      (cam/apply @camera)))
+
+(defn set-view []
+  [:div
+    [:input {:type "button" :value "Europe" :id "europe"
+                 :on-click #(set! earth-view "Europe")}]
+    [:input {:type "button" :value "Spinning" :id "spinning"
+                   :on-click #(set! earth-view "Spinning")}]])
+
+(defn mount-root []
+  (reagent/render [set-view] (.getElementById js/document "buttons")))
+
 
 (defn draw-frame! [t]
   (if @tex-ready
     (doto gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader
-       (assoc-in model [:uniforms :model]
-                 (spin t))))))
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec camera)
+                                     [:uniforms :model] (spin t earth-view))))))
 
 ;; Start the demo only once.
 (defonce running
