@@ -1,14 +1,14 @@
 /* some style */
-#slider1 {
+.time-slider {
 position: absolute;
-top: 100px;
 right: 100px;
+width: 25%;
 }
-
-#slider2{
-  position: absolute;
+#year {
+  top: 100px;
+}
+#month{
   top: 200px;
-  right: 100px;
 }
 
 #main{

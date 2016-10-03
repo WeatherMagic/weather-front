@@ -90,33 +90,27 @@
 
 
 ;; SLIDER - MAJAS
-(def date-atom (reagent/atom {:year 2016 :month 1}))
+(def date-atom (reagent/atom {:year {:value 2016 :min 1950 :max 2100} :month {:value 1 :min 1 :max 12}}))
 
-(defn slider [param value min max]
+(defn slider [key value min max]
   [:input {:type "range" :value value :min min :max max
            :style {:width "100%"}
            :on-change (fn [e]
-                        (swap! date-atom assoc param (.-target.value e)))}])
+                        (swap! date-atom assoc-in [key :value] (.-target.value e)))}])
 
 (defn slider-component [key]
   (let [data (key @date-atom)]
-    [:div
-     [:div
-      [:span {:style {:color "white"}}"Year: " (int data)]
-      [slider key data 1950 2100]]
-      ]))
+   [:div {:class "time-slider" :id (name key)}
+    [:span {:style {:color "white"}} (name key) ": " (:value data)]
+    [slider key (:value data) (:min data) (:max data)]]))
 
-(defn slider-component2 [key]
-  (let [data (key @date-atom)]
-    [:div
-     [:div
-      [:span {:style {:color "white"}}"Month: " (int data)]
-      [slider key data 1 12]]
-      ]))
+(defn time-slider []
+  [:div
+    [slider-component :year]
+    [slider-component :month]])
 
   (defn mount-root []
-    (reagent/render [slider-component :year] (.getElementById js/document "slider1"))
-    (reagent/render [slider-component2 :month] (.getElementById js/document "slider2")))
+    (reagent/render [time-slider] (.getElementById js/document "ui")))
 ;; SLIDER - MAJAS
 
 
