@@ -1,6 +1,15 @@
 (ns weather-magic.ui
   (:require
+   [weather-magic.state :as state]
+   [thi.ng.geom.gl.camera :as cam]
+   [weather-magic.world :as world]
    [reagent.core :as reagent :refer [atom]]))
+
+(defn button
+  "Creates a button with a given HTML id which when clicked does func on atom with value."
+  [id func atom value]
+  [:input {:type "button" :value id :id id
+           :on-click #(func atom value)}])
 
 (enable-console-print!) ; For being able to how see how data-layer set is changed
                         ; when pressing daya-layer buttons
@@ -38,6 +47,7 @@
                               data-layer)
                        (println (str "data-layers to be visualized: "
                                      @data-layer-atom)))}])
+
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
@@ -68,6 +78,10 @@
   []
   [:span
    [data-layer-buttons]
+   [button "Europe"   reset! state/earth-animation-fn world/show-europe]
+   [button "Spinning" reset! state/earth-animation-fn world/spin]
+   [button "Scroll"   swap!  state/camera #(cam/perspective-camera (assoc % :fov (- (:fov %) 10)))]
+   [time-slider]
    [time-slider]
    [map-ui-blur]
    [close-blur-button]])

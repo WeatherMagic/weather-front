@@ -1,6 +1,7 @@
 (ns weather-magic.core
   (:require
    [weather-magic.ui :as ui]
+   [weather-magic.state :as state]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
@@ -20,25 +21,17 @@
    [thi.ng.glsl.lighting :as light]))
 
 (enable-console-print!)
-(def x (atom 0))
-(def y (atom 0))
-(def earth-view (atom 0))
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
-(defonce gl-ctx (gl/gl-context "main"))
-(defonce view-rect  (gl/get-viewport-rect gl-ctx))
 (defonce tex-ready (volatile! false))
 (defonce tex (buf/load-texture
-              gl-ctx {:callback (fn [tex img]
-                                  (.generateMipmap gl-ctx (:target tex))
-                                  (vreset! tex-ready true))
-                      :src      "img/earth.jpg"
-                      :filter   [glc/linear-mipmap-linear glc/linear]
-                      :flip     false}))
+              state/gl-ctx {:callback (fn [tex img]
+                              (.generateMipmap state/gl-ctx (:target tex))
+                              (vreset! tex-ready true))
+                  :src      "img/earth.jpg"
+                  :filter   [glc/linear-mipmap-linear glc/linear]
+                  :flip     false}))
 
-(defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                         :fov    90
-                                         :aspect view-rect})))
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
 (def shader-spec
@@ -80,44 +73,32 @@
                             :vnorm (fn [_ _ v _] (m/normalize v))}})))
 
 (defn spin
-  [t earth-view]
-  (if (= earth-view "Europe")
-    (do (reset! x 45) (reset! y 80))
-    (do (reset! x 24.5) (reset! y t)))
-  (-> M44
-      (g/rotate-x (m/radians @x))
-      (g/rotate-y (m/radians @y))))
+  [t]
+  (@state/earth-animation-fn state/earth-rotation t)
+  (let [earth-rotation @state/earth-rotation]
+    (-> M44
+        (g/rotate-x (m/radians (:xAngle earth-rotation)))
+        (g/rotate-y (m/radians (:yAngle earth-rotation))))))
 
 (defn combine-model-shader-and-camera
-  [model shader-spec camera]
-  (println @camera)
+  [model shader-spec camera-atom]
   (-> model
       (gl/as-gl-buffer-spec {})
-      (assoc :shader (sh/make-shader-from-spec gl-ctx shader-spec))
-      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
-      (cam/apply @camera)))
-
-(defn set-view []
-  [:div
-    [:input {:type "button" :value "Europe" :id "europe"
-                 :on-click #(set! earth-view "Europe")}]
-    [:input {:type "button" :value "Spinning" :id "spinning"
-                   :on-click #(set! earth-view "Spinning")}]])
-
-(defn mount-root []
-  (reagent/render [set-view] (.getElementById js/document "buttons")))
-
+      (assoc :shader (sh/make-shader-from-spec state/gl-ctx shader-spec))
+      (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
+      (cam/apply @camera-atom)))
 
 (defn draw-frame! [t]
   (if @tex-ready
-    (doto gl-ctx
+    (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec camera)
-                                     [:uniforms :model] (spin t earth-view))))))
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec state/camera)
+                                     [:uniforms :model] (spin t))))))
 
 ;; Start the demo only once.
 (defonce running
-  (anim/animate (fn [t] (draw-frame! t) true)))
+ (anim/animate (fn [t] (draw-frame! t) true)))
+
 ;; Reagent UI cannot be mounted from a defonce if figwheel is to do its magic.
 (def ui-mounted? (ui/mount-ui!))
 
