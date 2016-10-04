@@ -5,7 +5,11 @@
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
-  [:p "Hello everybody, allihopa!"]
+  [:div
+    [:input {:type "button" :value "Europe" :id "europe"
+                 :on-click #(set! earth-view "Europe")}]
+    [:input {:type "button" :value "Spinning" :id "spinning"
+                   :on-click #(set! earth-view "Spinning")}]]
   )
 
 
@@ -17,4 +21,3 @@
   ;; UI to be mounted.
   (reagent/render [map-ui] (.getElementById js/document "ui"))
   true) ; Return true.
-  

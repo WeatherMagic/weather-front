@@ -1,6 +1,7 @@
 (ns weather-magic.core
   (:require
    [weather-magic.ui :as ui]
+
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
