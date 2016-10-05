@@ -23,11 +23,24 @@
    [slider-component :year]
    [slider-component :month]])
 
+(defn data-layers-buttons
+  "Buttons for choosing which data layer to display"
+  []
+  [:div
+  [:input {:type "button" :value "Visualize temperature"
+           :class "data-layers-button"}]
+  [:input {:type "button" :value "Visualize sea water level"
+           :class "data-layers-button"}]
+  [:input {:type "button" :value "Visualize pests"
+           :class "data-layers-button"}]
+  [:input {:type "button" :value "Visualize "
+           :class "data-layers-button"}]]))
+
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:span
-   [:p "Hello everybody, allihopa!"]
+   [data-layers-buttons]
    [time-slider]])
 
 (defn mount-ui!
