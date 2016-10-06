@@ -1,6 +1,7 @@
 (ns weather-magic.core
   (:require
    [weather-magic.ui :as ui]
+   [weather-magic.state :as state]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
@@ -33,6 +34,9 @@
                   :filter   [glc/linear-mipmap-linear glc/linear]
                   :flip     false}))
 
+(defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                         :fov    90
+                                         :aspect view-rect})))
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
 (def shader-spec
@@ -71,33 +75,35 @@
                   :res     32
                   :attribs {:uv    (attr/supplied-attrib
                                     :uv (fn [[u v]] (vec2 (- 1 u) v)))
-                            :vnorm (fn [_ _ v _] (m/normalize v))}})
-      (gl/as-gl-buffer-spec {})
-      (cam/apply
-       (cam/perspective-camera
-        {:eye    (vec3 0 0 1.5)
-         :fov    90
-         :aspect view-rect}))
-      (assoc :shader (sh/make-shader-from-spec gl-ctx shader-spec))
-      (gl/make-buffers-in-spec gl-ctx glc/static-draw)))
+                            :vnorm (fn [_ _ v _] (m/normalize v))}})))
 
 (defn spin
   [t]
-  (-> M44
-      (g/rotate-x (m/radians 24.5))
-      (g/rotate-y (/ t 10))))
+  (@state/earth-animation-fn state/earth-rotation t)
+  (let [earth-rotation @state/earth-rotation]
+    (-> M44
+        (g/rotate-x (m/radians (:xAngle earth-rotation)))
+        (g/rotate-y (m/radians (:yAngle earth-rotation))))))
+
+(defn combine-model-shader-and-camera
+  [model shader-spec camera]
+  (-> model
+      (gl/as-gl-buffer-spec {})
+      (assoc :shader (sh/make-shader-from-spec gl-ctx shader-spec))
+      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
+      (cam/apply @camera)))
 
 (defn draw-frame! [t]
   (if @tex-ready
     (doto gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader
-       (assoc-in model [:uniforms :model]
-                 (spin t))))))
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec camera)
+                                     [:uniforms :model] (spin t))))))
 
 ;; Start the demo only once.
 (defonce running
-  (anim/animate (fn [t] (draw-frame! t) true)))
+ (anim/animate (fn [t] (draw-frame! t) true)))
+
 ;; Reagent UI cannot be mounted from a defonce if figwheel is to do its magic.
 (def ui-mounted? (ui/mount-ui!))
 
