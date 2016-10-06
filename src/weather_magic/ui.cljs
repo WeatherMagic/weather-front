@@ -1,5 +1,6 @@
 (ns weather-magic.ui
   (:require
+   [weather-magic.state :as state]
    [reagent.core :as reagent :refer [atom]]))
 
 (defn map-ui
@@ -7,11 +8,10 @@
   []
   [:div
     [:input {:type "button" :value "Europe" :id "europe"
-                 :on-click #(set! earth-view "Europe")}]
+                 :on-click #(set! state/earth-view "Europe")}]
     [:input {:type "button" :value "Spinning" :id "spinning"
-                   :on-click #(set! earth-view "Spinning")}]]
+                   :on-click #(set! state/earth-view "Spinning")}]]
   )
-
 
 (defn mount-ui!
   "Place the user interface into the DOM."

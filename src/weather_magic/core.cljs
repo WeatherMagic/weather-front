@@ -1,7 +1,7 @@
 (ns weather-magic.core
   (:require
    [weather-magic.ui :as ui]
-
+   [weather-magic.state :as state]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
@@ -23,7 +23,6 @@
 (enable-console-print!)
 (def x (atom 0))
 (def y (atom 0))
-(def earth-view (atom 0))
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce gl-ctx (gl/gl-context "main"))
@@ -81,8 +80,8 @@
                             :vnorm (fn [_ _ v _] (m/normalize v))}})))
 
 (defn spin
-  [t earth-view]
-  (if (= earth-view "Europe")
+  [t view]
+  (if (= view "Europe")
     (do (reset! x 45) (reset! y 80))
     (do (reset! x 24.5) (reset! y t)))
   (-> M44
@@ -98,27 +97,17 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply @camera)))
 
-(defn set-view []
-  [:div
-    [:input {:type "button" :value "Europe" :id "europe"
-                 :on-click #(set! earth-view "Europe")}]
-    [:input {:type "button" :value "Spinning" :id "spinning"
-                   :on-click #(set! earth-view "Spinning")}]])
-
-(defn mount-root []
-  (reagent/render [set-view] (.getElementById js/document "buttons")))
-
-
 (defn draw-frame! [t]
   (if @tex-ready
     (doto gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec camera)
-                                     [:uniforms :model] (spin t earth-view))))))
+                                     [:uniforms :model] (spin t state/earth-view))))))
 
 ;; Start the demo only once.
 (defonce running
-  (anim/animate (fn [t] (draw-frame! t) true)))
+ (anim/animate (fn [t] (draw-frame! t) true)))
+
 ;; Reagent UI cannot be mounted from a defonce if figwheel is to do its magic.
 (def ui-mounted? (ui/mount-ui!))
 
