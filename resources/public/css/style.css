@@ -1,19 +1,9 @@
 /* some style */
 
-#buttons
-{
- top: 0;
- right: 0;
- position: absolute;
- width: 20%;
-}
-
-#europe
-{
+#Europe {
   color: orange;
 }
 
-#spinning
-{
+#Spinning {
   color: blue;
 }

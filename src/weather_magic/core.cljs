@@ -21,8 +21,6 @@
    [thi.ng.glsl.lighting :as light]))
 
 (enable-console-print!)
-(def x (atom 0))
-(def y (atom 0))
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce gl-ctx (gl/gl-context "main"))
@@ -80,17 +78,15 @@
                             :vnorm (fn [_ _ v _] (m/normalize v))}})))
 
 (defn spin
-  [t view]
-  (if (= view "Europe")
-    (do (reset! x 45) (reset! y 80))
-    (do (reset! x 24.5) (reset! y t)))
-  (-> M44
-      (g/rotate-x (m/radians @x))
-      (g/rotate-y (m/radians @y))))
+  [t]
+  (@state/earth-animation-fn state/earth-rotation t)
+  (let [earth-rotation @state/earth-rotation]
+    (-> M44
+        (g/rotate-x (m/radians (:xAngle earth-rotation)))
+        (g/rotate-y (m/radians (:yAngle earth-rotation))))))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera]
-  (println @camera)
   (-> model
       (gl/as-gl-buffer-spec {})
       (assoc :shader (sh/make-shader-from-spec gl-ctx shader-spec))
@@ -102,7 +98,7 @@
     (doto gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec camera)
-                                     [:uniforms :model] (spin t state/earth-view))))))
+                                     [:uniforms :model] (spin t))))))
 
 ;; Start the demo only once.
 (defonce running
