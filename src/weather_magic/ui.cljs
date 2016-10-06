@@ -3,19 +3,21 @@
    [reagent.core :as reagent :refer [atom]]))
 
 
-  ;; TIME-SLIDER
-(def date-atom (reagent/atom {:year {:value 2016 :min 1950 :max 2100} :month {:value 1 :min 1 :max 12}}))
+;; Time-slider
+(def date-atom (atom
+  {:year {:value 2016 :min 1950 :max 2100} :month {:value 1 :min 1 :max 12}}))
 
 (defn slider [key value min max]
+
   [:input {:type "range" :value value :min min :max max
-           :style {:width "100%"}
+           :id "slider"
            :on-change (fn [e]
                         (swap! date-atom assoc-in [key :value] (.-target.value e)))}])
 
 (defn slider-component [key]
   (let [data (key @date-atom)]
-    [:div {:class "time-slider" :id (name key)}
-      [:span {:style {:color "white"}} (name key) ": " (:value data)]
+    [:div {:class "time-slider"}
+      [:span (clojure.string/capitalize (name key)) ": " (:value data)]
       [slider key (:value data) (:min data) (:max data)]]))
 
 (defn time-slider []
