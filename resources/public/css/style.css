@@ -5,6 +5,13 @@
   width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
 }
+#blur {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  background-color: white;
+  opacity: 0.5;
 
 input[type=range] {
   width: 100%;
