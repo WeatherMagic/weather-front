@@ -10,7 +10,6 @@
 (defn slider [key value min max]
 
   [:input {:type "range" :value value :min min :max max
-           :id "slider"
            :on-change (fn [e]
                         (swap! date-atom assoc-in [key :value] (.-target.value e)))}])
 
