@@ -23,6 +23,18 @@
    [slider-component :year]
    [slider-component :month]])
 
+
+;; TEST
+(def blur (atom 0))
+
+(defn counting-component []
+  [:div {:id "blur"}
+   "The atom " [:code "blur"] " has value: "
+   @blur ". "
+   [:input {:type "button" :value "Read more"
+            :on-click #(swap! blur dec)}]])
+;;
+
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []

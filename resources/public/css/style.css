@@ -11,8 +11,8 @@
   height: 100vh;
   width: 100vw;
   top: 0;
-  background-color: white;
-  opacity: 0.5;
+/*  background-color: grey;
+  opacity: 0.3;
 
 input[type=range] {
   width: 100%;

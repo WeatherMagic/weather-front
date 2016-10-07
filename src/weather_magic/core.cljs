@@ -85,7 +85,7 @@
   [t]
   (-> M44
       (g/rotate-x (m/radians 24.5))
-      (g/rotate-y (/ t 10))))
+      (g/rotate-y (/ t t))))
 
 (defn draw-frame! [t]
   (if @tex-ready
