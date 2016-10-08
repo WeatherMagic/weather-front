@@ -27,14 +27,22 @@
   "Buttons for choosing which data layer to display"
   []
   [:div
-  [:input {:type "button" :value "Visualize temperature"
+  [:input {:type "button" :value "Visualize temperature changes"
            :class "data-layers-button"}]
   [:input {:type "button" :value "Visualize sea water level"
            :class "data-layers-button"}]
   [:input {:type "button" :value "Visualize pests"
            :class "data-layers-button"}]
+<<<<<<< 85fda19750eba98bb4c0a859f51bddf40aaa9e18
   [:input {:type "button" :value "Visualize "
            :class "data-layers-button"}]]))
+=======
+  [:input {:type "button" :value "Visualize drought"
+           :class "data-layers-button"}]
+  ]
+  )
+)
+>>>>>>> continued with buttons
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
