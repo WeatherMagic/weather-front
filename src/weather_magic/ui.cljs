@@ -33,16 +33,8 @@
            :class "data-layers-button"}]
   [:input {:type "button" :value "Visualize pests"
            :class "data-layers-button"}]
-<<<<<<< 85fda19750eba98bb4c0a859f51bddf40aaa9e18
-  [:input {:type "button" :value "Visualize "
-           :class "data-layers-button"}]]))
-=======
   [:input {:type "button" :value "Visualize drought"
-           :class "data-layers-button"}]
-  ]
-  )
-)
->>>>>>> continued with buttons
+           :class "data-layers-button"}]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
