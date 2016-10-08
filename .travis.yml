@@ -8,3 +8,4 @@ before_script:
   - lein with-profile +dev eastwood
   - lein with-profile +dev kibit
 jdk: oraclejdk8
+lein: 2.6.1
