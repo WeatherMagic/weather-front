@@ -27,11 +27,11 @@
 (defonce tex-ready (volatile! false))
 (defonce tex (buf/load-texture
               gl-ctx {:callback (fn [tex img]
-                              (.generateMipmap gl-ctx (:target tex))
-                              (vreset! tex-ready true))
-                  :src      "img/earth.jpg"
-                  :filter   [glc/linear-mipmap-linear glc/linear]
-                  :flip     false}))
+                                  (.generateMipmap gl-ctx (:target tex))
+                                  (vreset! tex-ready true))
+                      :src      "img/earth.jpg"
+                      :filter   [glc/linear-mipmap-linear glc/linear]
+                      :flip     false}))
 
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
