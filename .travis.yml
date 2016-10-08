@@ -1,6 +1,9 @@
 language: clojure
 notifications:
-    email:
-          on_success: never
-          on_failure: change
-          
+  email:
+    on_success: never
+    on_failure: change
+before_script:
+  - lein cljfmt check
+  - lein eastwood
+  - lein kibit
