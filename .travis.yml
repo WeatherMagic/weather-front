@@ -5,7 +5,6 @@ notifications:
     on_failure: change
 before_script:
   - lein with-profile +dev cljfmt check
-  - lein with-profile +dev eastwood
   - lein with-profile +dev kibit
 jdk: oraclejdk8
 lein: 2.6.1
