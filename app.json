@@ -1,18 +1,12 @@
 {
   "name": "Weather Front",
   "description": "Interactive visualization of climate change models",
-  "scripts": {
-  },
-  "env": {
-  },
-  "formation": {
-  },
-  "addons": [
-
-  ],
+  "scripts": {},
+  "env": {},
+  "formation": {},
+  "addons": [],
   "buildpacks": [
-    {
-      "url": "heroku/clojure"
-    }
+      {"url": "heroku/clojure"},
+      {"url": "git@github.com:WeatherMagic/nginx-buildpack.git"}
   ]
 }
