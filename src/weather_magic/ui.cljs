@@ -2,6 +2,8 @@
   (:require
    [reagent.core :as reagent :refer [atom]]))
 
+(def data-layer-atom (atom #{})
+
 ;; Time-slider
 (def date-atom (atom {:year {:value 2016 :min 1950 :max 2100}
                       :month {:value 1 :min 1 :max 12}}))
@@ -28,13 +30,17 @@
   []
   [:div
   [:input {:type "button" :value "Visualize temperature changes"
-           :class "data-layers-button"}]
+           :class "data-layers-button"
+           :on.click #(swap! data-layer-atom conj :temp)}]
   [:input {:type "button" :value "Visualize sea water level"
-           :class "data-layers-button"}]
+           :class "data-layers-button"
+           :on.click #(swap! data-layer-atom conj :temp)}]
   [:input {:type "button" :value "Visualize pests"
-           :class "data-layers-button"}]
+           :class "data-layers-button"
+           :on.click #(swap! data-layer-atom conj :temp)}]
   [:input {:type "button" :value "Visualize drought"
-           :class "data-layers-button"}]])
+           :class "data-layers-button"
+           :on.click #(swap! data-layer-atom conj :temp)}]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
