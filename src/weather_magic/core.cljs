@@ -77,7 +77,7 @@
                                     :uv (fn [[u v]] (vec2 (- 1 u) v)))
                             :vnorm (fn [_ _ v _] (m/normalize v))}})))
 
-(defn spin
+(defn update-spin
   [t]
   (@state/earth-animation-fn state/earth-rotation t)
   (let [earth-rotation @state/earth-rotation]
@@ -98,11 +98,11 @@
     (doto gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec camera)
-                                     [:uniforms :model] (spin t))))))
+                                     [:uniforms :model] (update-spin t))))))
 
 ;; Start the demo only once.
 (defonce running
- (anim/animate (fn [t] (draw-frame! t) true)))
+  (anim/animate (fn [t] (draw-frame! t) true)))
 
 ;; Reagent UI cannot be mounted from a defonce if figwheel is to do its magic.
 (def ui-mounted? (ui/mount-ui!))
