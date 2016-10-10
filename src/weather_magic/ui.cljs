@@ -28,11 +28,11 @@
 (def blur (atom 0))
 
 (defn counting-component []
-  [:div {:id "blur"}
+  [:div
    "The atom " [:code "blur"] " has value: "
    @blur ". "
-   [:input {:type "button" :value "Read more"
-            :on-click #(swap! blur dec)}]])
+   [:input {:type "button" :value "Read more!"
+            :on-click #(swap! blur inc)}]])
 ;;
 
 (defn map-ui
