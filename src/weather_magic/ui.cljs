@@ -27,20 +27,26 @@
 ;; TEST
 (def blur (atom 0))
 
+(defn blur-obj []
+  [:div {:id "blur"}])
+
+
 (defn counting-component []
   [:div
-   "The atom " [:code "blur"] " has value: "
+  [:code " blur"] " has value: "
    @blur ". "
    [:input {:type "button" :value "Read more!"
-            :on-click #(swap! blur inc)}]])
+           :on-click #(swap! blur inc)}]])
 ;;
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:span
-   [:p "Hello everybody, allihopa!"]
-   [time-slider]])
+  [:p "Hello everybody, allihopa!"]
+  [time-slider]
+  [counting-component]]
+  )
 
 (defn mount-ui!
   "Place the user interface into the DOM."
