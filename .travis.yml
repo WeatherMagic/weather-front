@@ -1,0 +1,11 @@
+language: clojure
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+before_script:
+  - lein with-profile +dev cljfmt check
+  - lein with-profile +dev kibit
+  - lein cljsbuild once
+jdk: oraclejdk8
+lein: 2.6.1

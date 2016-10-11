@@ -100,8 +100,9 @@
                                   [com.cemerick/piggieback "0.2.1"]]
                    ;; need to add dev source path here to get user.clj loaded
                    :source-paths ["src" "dev"]
-                   ;; for CIDER
-                   :plugins [[cider/cider-nrepl "0.13.0"]]
+                   :plugins [[cider/cider-nrepl "0.13.0"] ; For CIDER
+                             [lein-cljfmt "0.5.6"]        ; Checks formatting.
+                             [lein-kibit "0.1.2"]]        ; Checks if code is ideomatic.
                    }}
   :repl-options{:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
