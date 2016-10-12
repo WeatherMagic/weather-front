@@ -2,10 +2,9 @@
   (:require
    [reagent.core :as reagent :refer [atom]]))
 
-
 ;; Time-slider
-(def date-atom (atom
-  {:year {:value 2016 :min 1950 :max 2100} :month {:value 1 :min 1 :max 12}}))
+(def date-atom (atom {:year {:value 2016 :min 1950 :max 2100}
+                      :month {:value 1 :min 1 :max 12}}))
 
 (defn slider [key value min max]
 
@@ -16,21 +15,20 @@
 (defn slider-component [key]
   (let [data (key @date-atom)]
     [:div {:class "time-slider"}
-      [:span (clojure.string/capitalize (name key)) ": " (:value data)]
-      [slider key (:value data) (:min data) (:max data)]]))
+     [:span (clojure.string/capitalize (name key)) ": " (:value data)]
+     [slider key (:value data) (:min data) (:max data)]]))
 
 (defn time-slider []
   [:div {:id "time-slider-container"}
-    [slider-component :year]
-    [slider-component :month]])
+   [slider-component :year]
+   [slider-component :month]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:span
-  [:p "Hello everybody, allihopa!"]
-  [time-slider]]
-  )
+   [:p "Hello everybody, allihopa!"]
+   [time-slider]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
