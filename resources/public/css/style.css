@@ -1,4 +1,3 @@
-/* some style */
 #time-slider-container {
   position: absolute;
   right: 0;
@@ -25,4 +24,10 @@ input[type=range] {
   margin:0;
   padding:0;
   boarder:0;
+}
+
+.data-layer-button {
+	color: black;
+	margin: 5px;
+	position: relative;
 }

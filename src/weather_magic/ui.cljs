@@ -2,6 +2,11 @@
   (:require
    [reagent.core :as reagent :refer [atom]]))
 
+(enable-console-print!) ; For being able to how see how data-layer set is changed
+                        ; when pressing daya-layer buttons
+
+(def data-layer-atom (atom #{})) ; Should be in state.cljs later on
+
 ;; Time-slider
 (def date-atom (atom {:year {:value 2016 :min 1950 :max 2100}
                       :month {:value 1 :min 1 :max 12}}))
@@ -23,11 +28,31 @@
    [slider-component :year]
    [slider-component :month]])
 
+(defn data-layer-button
+  "Creates a button which adds a data-layer to be displayed"
+  [data-layer data-layer-button-text]
+  [:input {:type "button" :value (str "Visualize " data-layer-button-text)
+           :class "data-layer-button"
+           :on-click #((swap! data-layer-atom
+                              (if (contains? @data-layer-atom data-layer) disj conj)
+                              data-layer)
+                       (println (str "data-layers to be visualized: "
+                                     @data-layer-atom)))}])
+
+(defn data-layer-buttons
+  "Buttons for choosing which data layer to display"
+  []
+  [:div
+   [data-layer-button "temp" "temperature changes"]
+   [data-layer-button "water" "sea water level"]
+   [data-layer-button "pests" "pests"]
+   [data-layer-button "drought" "drought"]])
+
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:span
-   [:p "Hello everybody, allihopa!"]
+   [data-layer-buttons]
    [time-slider]])
 
 (defn mount-ui!
