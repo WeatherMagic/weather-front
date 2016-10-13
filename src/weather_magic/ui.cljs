@@ -33,21 +33,20 @@
   [data-layer data-layer-button-text]
   [:input {:type "button" :value (str "Visualize " data-layer-button-text)
            :class "data-layer-button"
-           :on-click #((swap! data-layer-atom 
+           :on-click #((swap! data-layer-atom
                               (if (contains? @data-layer-atom data-layer) disj conj)
                               data-layer)
                        (println (str "data-layers to be visualized: "
                                      @data-layer-atom)))}])
-  
 
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
   [:div
-    [data-layer-button "temp" "temperature changes"]
-    [data-layer-button "water" "sea water level"]
-    [data-layer-button "pests" "pests"]
-    [data-layer-button "drought" "drought"]])
+   [data-layer-button "temp" "temperature changes"]
+   [data-layer-button "water" "sea water level"]
+   [data-layer-button "pests" "pests"]
+   [data-layer-button "drought" "drought"]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
