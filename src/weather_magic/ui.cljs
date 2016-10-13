@@ -23,30 +23,30 @@
    [slider-component :year]
    [slider-component :month]])
 
+;; Blur canvas
+(defn hide-unhide
+  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
+  [hidden-or-not]
+  (hidden-or-not {:hidden :visible :visible :hidden}))
 
-;; TEST
-(def blur (atom 0))
+(def blur-visible (atom :visible))
 
 (defn blur-obj []
-  [:div {:id "blur"}])
+  [:div {:class @blur-visible :id "blur"}])
 
-
-(defn counting-component []
+(defn close-blur-button []
   [:div
-  [:code " blur"] " has value: "
-   @blur ". "
    [:input {:type "button" :value "Read more!"
-           :on-click #(swap! blur inc)}]])
-;;
+           :on-click #(swap! blur-visible (fn [value] (hide-unhide value)))}]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:span
-  [:p "Hello everybody, allihopa!"]
-  [time-slider]
-  [counting-component]]
-  )
+    [:p "Hello everybody, allihopa!"]
+    [time-slider]
+    [blur-obj]
+    [close-blur-button]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
