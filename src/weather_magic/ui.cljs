@@ -2,7 +2,7 @@
   (:require
    [reagent.core :as reagent :refer [atom]]))
 
-(def data-layer-atom (atom #{})
+(def data-layer-atom (atom #{})) ; should be in state.cljs
 
 ;; Time-slider
 (def date-atom (atom {:year {:value 2016 :min 1950 :max 2100}
@@ -25,22 +25,24 @@
    [slider-component :year]
    [slider-component :month]])
 
-(defn data-layers-buttons
+(defn data-layer-button
+  "Creates a button which adds a data-layer to be displayed"
+  [data-layer data-layer-string]
+  [:input {:type "button" :value (str "Visualize " data-layer-string) ; insert data-layer-string here
+           :class "data-layers-button"
+           :on.click #(swap! data-layer-atom conj data-layer)}])
+
+(println (str "datalager: " @data-layer-atom))
+
+(defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
   [:div
-  [:input {:type "button" :value "Visualize temperature changes"
-           :class "data-layers-button"
-           :on.click #(swap! data-layer-atom conj :temp)}]
-  [:input {:type "button" :value "Visualize sea water level"
-           :class "data-layers-button"
-           :on.click #(swap! data-layer-atom conj :temp)}]
-  [:input {:type "button" :value "Visualize pests"
-           :class "data-layers-button"
-           :on.click #(swap! data-layer-atom conj :temp)}]
-  [:input {:type "button" :value "Visualize drought"
-           :class "data-layers-button"
-           :on.click #(swap! data-layer-atom conj :temp)}]])
+  [data-layer-button "temp" "temperature changes"]
+  [data-layer-button "water" "sea water level"]
+  [data-layer-button "pests" "pests"]
+  [data-layer-button "drought" "drought"]
+  ])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."

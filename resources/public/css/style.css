@@ -27,6 +27,6 @@ input[type=range] {
 
 .data-layers-button {
 	color: orange;
-	margin: 10px;
-	position: absolute;
+	margin: 5px;
+	position: relative;
 }
