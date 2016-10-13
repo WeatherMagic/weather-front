@@ -58,7 +58,7 @@
 (def blur (atom 0))
 (def blur-visible (atom :visible))
 
-(defn blur-obj []
+(defn map-ui-blur []
   [:div {:class @blur-visible :id "blur"}])
 
 (defn close-blur-button []
@@ -72,7 +72,7 @@
   [:span
    [:p "Hello everybody, allihopa!"]
    [time-slider]
-   [blur-obj]
+   [map-ui-blur]
    [close-blur-button]])
 
 (defn mount-ui!
