@@ -38,24 +38,21 @@
                               data-layer)
                        (println (str "data-layers to be visualized: "
                                      @data-layer-atom)))}])
+(defn data-layer-buttons
+ "Buttons for choosing which data layer to display"
+ []
+ [:div
+  [data-layer-button "temp" "temperature changes"]
+  [data-layer-button "water" "sea water level"]
+  [data-layer-button "pests" "pests"]
+  [data-layer-button "drought" "drought"]])
+
 ;; Blur canvas
 (defn hide-unhide
   "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
-(defn data-layer-buttons
-  "Buttons for choosing which data layer to display"
-  []
-  [:div
-   [data-layer-button "temp" "temperature changes"]
-   [data-layer-button "water" "sea water level"]
-   [data-layer-button "pests" "pests"]
-   [data-layer-button "drought" "drought"]])
-
-
-;; TEST
-(def blur (atom 0))
 (def blur-visible (atom :visible))
 
 (defn map-ui-blur []
@@ -70,7 +67,7 @@
   "The UI displayed while the user interacts with the map."
   []
   [:span
-   [:p "Hello everybody, allihopa!"]
+   [data-layer-buttons]
    [time-slider]
    [map-ui-blur]
    [close-blur-button]])
