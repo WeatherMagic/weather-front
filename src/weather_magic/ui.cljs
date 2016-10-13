@@ -37,16 +37,16 @@
 (defn close-blur-button []
   [:div
    [:input {:type "button" :value "Read more!"
-           :on-click #(swap! blur-visible (fn [value] (hide-unhide value)))}]])
+            :on-click #(swap! blur-visible (fn [value] (hide-unhide value)))}]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:span
-    [:p "Hello everybody, allihopa!"]
-    [time-slider]
-    [blur-obj]
-    [close-blur-button]])
+   [:p "Hello everybody, allihopa!"]
+   [time-slider]
+   [blur-obj]
+   [close-blur-button]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
