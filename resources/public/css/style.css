@@ -24,9 +24,10 @@ input[type=range] {
   margin:0;
   padding:0;
   boarder:0;
+}
 
-.data-layers-button {
-	color: orange;
+.data-layer-button {
+	color: black;
 	margin: 5px;
 	position: relative;
 }
