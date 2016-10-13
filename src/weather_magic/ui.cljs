@@ -73,6 +73,14 @@
    [:input {:type "button" :value "Read more!"
             :on-click #(swap! blur-visible (fn [value] (hide-unhide value)))}]])
 
+(defn zoom-camera
+  [camera-map scroll-distance]
+  (let [current-value (:fov camera-map)]
+    (cam/perspective-camera (assoc camera-map :fov (min 140 (+ current-value (* current-value scroll-distance 5.0E-4)))))))
+
+(defonce scroll-event
+  (.addEventListener (.getElementById js/document "main") "wheel" (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false))
+
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
@@ -81,7 +89,7 @@
    [button "Europe"   reset! state/earth-animation-fn world/show-europe]
    [button "Spinning" reset! state/earth-animation-fn world/spin]
    [button "Scroll"   swap!  state/camera #(cam/perspective-camera (update-in % [:fov] - 10))]
-   [time-slider]])
+   [time-slider]
    [map-ui-blur]
    [close-blur-button]])
 
