@@ -7,6 +7,6 @@
   "addons": [],
   "buildpacks": [
       {"url": "heroku/clojure"},
-      {"url": "git@github.com:WeatherMagic/nginx-buildpack.git"}
+      {"url": "https://github.com/WeatherMagic/nginx-buildpack.git"}
   ]
 }
