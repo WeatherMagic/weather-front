@@ -15,6 +15,19 @@ input[type=range] {
   color: white;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
+#blur {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  background-color: black;
+  opacity: 0.8;
+}
+
 #main {
   height: 100vh;
   width: 100vw;

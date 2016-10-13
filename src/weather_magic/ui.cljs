@@ -38,7 +38,6 @@
                               data-layer)
                        (println (str "data-layers to be visualized: "
                                      @data-layer-atom)))}])
-
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
@@ -48,12 +47,30 @@
    [data-layer-button "pests" "pests"]
    [data-layer-button "drought" "drought"]])
 
+;; Blur canvas
+(defn hide-unhide
+  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
+  [hidden-or-not]
+  (hidden-or-not {:hidden :visible :visible :hidden}))
+
+(def blur-visible (atom :visible))
+
+(defn map-ui-blur []
+  [:div {:class @blur-visible :id "blur"}])
+
+(defn close-blur-button []
+  [:div
+   [:input {:type "button" :value "Read more!"
+            :on-click #(swap! blur-visible (fn [value] (hide-unhide value)))}]])
+
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:span
    [data-layer-buttons]
-   [time-slider]])
+   [time-slider]
+   [map-ui-blur]
+   [close-blur-button]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
