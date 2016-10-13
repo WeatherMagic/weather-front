@@ -80,8 +80,8 @@
    [data-layer-buttons]
    [button "Europe"   reset! state/earth-animation-fn world/show-europe]
    [button "Spinning" reset! state/earth-animation-fn world/spin]
-   [button "Scroll"   swap!  state/camera #(cam/perspective-camera (assoc % :fov (- (:fov %) 10)))]
-   [time-slider]
+   [button "Scroll"   swap!  state/camera #(cam/perspective-camera (update-in % [:fov] - 10))]
+   [time-slider]])
    [map-ui-blur]
    [close-blur-button]])
 
