@@ -26,11 +26,11 @@
 (defonce tex-ready (volatile! false))
 (defonce tex (buf/load-texture
               state/gl-ctx {:callback (fn [tex img]
-                              (.generateMipmap state/gl-ctx (:target tex))
-                              (vreset! tex-ready true))
-                  :src      "img/earth.jpg"
-                  :filter   [glc/linear-mipmap-linear glc/linear]
-                  :flip     false}))
+                                        (.generateMipmap state/gl-ctx (:target tex))
+                                        (vreset! tex-ready true))
+                            :src      "img/earth.jpg"
+                            :filter   [glc/linear-mipmap-linear glc/linear]
+                            :flip     false}))
 
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
@@ -97,7 +97,7 @@
 
 ;; Start the demo only once.
 (defonce running
- (anim/animate (fn [t] (draw-frame! t) true)))
+  (anim/animate (fn [t] (draw-frame! t) true)))
 
 ;; Reagent UI cannot be mounted from a defonce if figwheel is to do its magic.
 (def ui-mounted? (ui/mount-ui!))

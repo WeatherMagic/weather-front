@@ -82,7 +82,6 @@
    [button "Spinning" reset! state/earth-animation-fn world/spin]
    [button "Scroll"   swap!  state/camera #(cam/perspective-camera (assoc % :fov (- (:fov %) 10)))]
    [time-slider]
-   [time-slider]
    [map-ui-blur]
    [close-blur-button]])
 
