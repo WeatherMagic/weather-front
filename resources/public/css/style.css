@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-/* some style */
 #time-slider-container {
   position: absolute;
   right: 0;
@@ -54,42 +52,4 @@ input[type=range] {
 	margin: 5px;
 	position: relative;
 }
-=======
-/* some style */
 
-#buttons {
- top: 0;
- right: 0;
- position: absolute;
- width: 20%;
-}
-
-input[type=range] {
-  width: 100%;
-}
-
-
-.time-slider {
-  margin: 0 2% 0 2%;
-  color: white;
-}
-
-#Europe {
-  color: orange;
-}
-
-#main {
-  height: 100vh;
-  width: 100vw;
-}
-
-* {
-  margin:0;
-  padding:0;
-  boarder:0;
-}
-
-#Spinning {
-  color: blue;
-}
->>>>>>> Ran cljfmt fix
