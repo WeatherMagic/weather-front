@@ -39,13 +39,13 @@
                        (println (str "data-layers to be visualized: "
                                      @data-layer-atom)))}])
 (defn data-layer-buttons
- "Buttons for choosing which data layer to display"
- []
- [:div
-  [data-layer-button "temp" "temperature changes"]
-  [data-layer-button "water" "sea water level"]
-  [data-layer-button "pests" "pests"]
-  [data-layer-button "drought" "drought"]])
+  "Buttons for choosing which data layer to display"
+  []
+  [:div
+   [data-layer-button "temp" "temperature changes"]
+   [data-layer-button "water" "sea water level"]
+   [data-layer-button "pests" "pests"]
+   [data-layer-button "drought" "drought"]])
 
 ;; Blur canvas
 (defn hide-unhide
