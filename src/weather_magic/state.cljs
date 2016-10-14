@@ -6,13 +6,16 @@
    [thi.ng.geom.vector :as v :refer [vec2 vec3]]
    [reagent.core :as reagent :refer [atom]]))
 
+(def earth-animation-fn (atom world/spin))
+(def earth-rotation (atom {:xAngle 24.5 :yAngle 0}))
+
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
-;; How WebGL figures out its aspect ratio.
-(defonce view-rect  (gl/get-viewport-rect gl-ctx))
-;; The user camera into the world.
+(defonce view-rect (atom (gl/get-viewport-rect gl-ctx)))
+
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                :fov    90
+                                               :aspect @view-rect})))
                                                :aspect view-rect})))
 
 ;; What data is being displayed on the map right now?
