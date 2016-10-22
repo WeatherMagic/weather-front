@@ -1,24 +1,26 @@
 (ns weather-magic.ui
   (:require
+   [weather-magic.state :as state]
+   [thi.ng.geom.gl.camera :as cam]
+   [weather-magic.world :as world]
    [reagent.core :as reagent :refer [atom]]))
+
+(defn button
+  "Creates a button with a given HTML id which when clicked does func on atom with value."
+  [id func atom value]
+  [:input {:type "button" :value id :id id
+           :on-click #(func atom value)}])
 
 (enable-console-print!) ; For being able to how see how data-layer set is changed
                         ; when pressing daya-layer buttons
 
-(def data-layer-atom (atom #{})) ; Should be in state.cljs later on
-
-;; Time-slider
-(def date-atom (atom {:year {:value 2016 :min 1950 :max 2100}
-                      :month {:value 1 :min 1 :max 12}}))
-
 (defn slider [key value min max]
-
   [:input {:type "range" :value value :min min :max max
            :on-change (fn [e]
-                        (swap! date-atom assoc-in [key :value] (.-target.value e)))}])
+                        (swap! state/date-atom assoc-in [key :value] (.-target.value e)))}])
 
 (defn slider-component [key]
-  (let [data (key @date-atom)]
+  (let [data (key @state/date-atom)]
     [:div {:class "time-slider"}
      [:span (clojure.string/capitalize (name key)) ": " (:value data)]
      [slider key (:value data) (:min data) (:max data)]]))
@@ -33,11 +35,12 @@
   [data-layer data-layer-button-text]
   [:input {:type "button" :value (str "Visualize " data-layer-button-text)
            :class "data-layer-button"
-           :on-click #((swap! data-layer-atom
-                              (if (contains? @data-layer-atom data-layer) disj conj)
+           :on-click #((swap! state/data-layer-atom
+                              (if (contains? @state/data-layer-atom data-layer) disj conj)
                               data-layer)
                        (println (str "data-layers to be visualized: "
-                                     @data-layer-atom)))}])
+                                     @state/data-layer-atom)))}])
+
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
@@ -53,24 +56,28 @@
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
-(def blur-visible (atom :visible))
-
 (defn map-ui-blur []
-  [:div {:class @blur-visible :id "blur"}])
+  [:div {:class @state/intro-visible :id "blur"}])
 
-(defn close-blur-button []
-  [:div
-   [:input {:type "button" :value "Read more!"
-            :on-click #(swap! blur-visible (fn [value] (hide-unhide value)))}]])
+(defn zoom-camera
+  [camera-map scroll-distance]
+  (let [current-value (:fov camera-map)]
+    (cam/perspective-camera (assoc camera-map :fov (min 140 (+ current-value (* current-value scroll-distance 5.0E-4)))))))
+
+(defonce scroll-event
+  (.addEventListener (.getElementById js/document "main") "wheel" (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false))
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:span
    [data-layer-buttons]
+   [button "Europe"   reset! state/earth-animation-fn world/show-europe]
+   [button "Spinning" reset! state/earth-animation-fn world/spin]
+   [button "Scroll"   swap!  state/camera #(cam/perspective-camera (update-in % [:fov] - 10))]
    [time-slider]
    [map-ui-blur]
-   [close-blur-button]])
+   [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
