@@ -2,6 +2,7 @@
   (:require
    [weather-magic.ui :as ui]
    [weather-magic.state :as state]
+   [weather-magic.shaders :as shaders]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
@@ -35,17 +36,8 @@
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
 (def shader-spec
-  {:vs "void main() {
-          vUV = uv;
-          vNormal = normal;
-          gl_Position = proj * view * model * vec4(position, 1.0);
-        }"
-   :fs (->> "void main() {
-               float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
-               vec3 diffuse = texture2D(tex, vUV).rgb;
-               vec3 col = ambientCol + diffuse * lightCol * lam * vec3(1.2, 1.2, 1.0);
-               gl_FragColor = vec4(col, 1.0);
-             }"
+  {:vs shaders/vs
+   :fs (->> shaders/fs
             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
             (glsl/assemble))
    :uniforms {:model      [:mat4 M44]
