@@ -1,6 +1,6 @@
 # Weather Front
 
-[![Build Status](https://travis-ci.org/WeatherMagic/weather-front.svg?branch=travis)](https://travis-ci.org/WeatherMagic/weather-front)
+[![Build Status](https://travis-ci.org/WeatherMagic/weather-front.svg?branch=master)](https://travis-ci.org/WeatherMagic/weather-front)
 
 A WebGL ClojureScript front visualizing climate change models.
 
