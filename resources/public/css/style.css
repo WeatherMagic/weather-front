@@ -1,6 +1,17 @@
+/* CSS reset */
+
+* {
+  margin:0;
+  padding:0;
+  boarder:0;
+}
+
+
+/* Our CSS */
+
 #time-slider-container {
   position: absolute;
-  right: 0;
+  left: 0;
   bottom: 0;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
@@ -15,41 +26,18 @@ input[type=range] {
   color: white;
 }
 
-#Europe {
-  color: orange;
-}
-
 .hidden {
   visibility: hidden;
 }
 
-#blur {
-  position: absolute;
+#main, #blur{
   height: 100vh;
   width: 100vw;
   top: 0;
-  background-color: black;
-  opacity: 0.8;
+  left: 0;
 }
 
-#main {
-  height: 100vh;
-  width: 100vw;
+#blur {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
 }
-
-* {
-  margin:0;
-  padding:0;
-  boarder:0;
-}
-
-#Spinning {
-  color: blue;
-}
-
-.data-layer-button {
-	color: black;
-	margin: 5px;
-	position: relative;
-}
-
