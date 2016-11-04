@@ -1,6 +1,7 @@
 (ns weather-magic.ui
   (:require
    [weather-magic.state :as state]
+   [thi.ng.geom.gl.camera :as cam]
    [weather-magic.world :as world]
    [weather-magic.util  :as util]
    [reagent.core :as reagent :refer [atom]]))
@@ -56,7 +57,8 @@
    [button "Spinning" reset! state/earth-animation-fn world/spin]
    [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
    [time-slider]
-   [map-ui-blur]])
+   [map-ui-blur]
+   [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."

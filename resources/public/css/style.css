@@ -38,6 +38,74 @@ input[type=range] {
 }
 
 #blur {
-  position: absolute;
+position: absolute;
   background-color: rgba(0, 0, 0, 0.8);
+}
+
+#main {
+  height: 100vh;
+  width: 100vw;
+}
+* {
+  margin:0;
+  padding:0;
+  boarder:0;
+}
+
+#data-layer-container {
+  z-index: 2;
+  position: absolute;
+  top: 40%;
+  left: 25%
+}
+
+#view-selection-container {
+  z-index: 2;
+  position: absolute;
+  top: 60%;
+  left: 40%
+}
+
+.data-layer-button {
+
+  width: 250px;
+  height: 100px;
+  margin: 25px;
+  border-radius: 25px;
+  border-width: 3px;
+  border-color: #255aaa;
+  text-shadow: 0px 0px #255aaa;
+  color: black;
+  font-size: 100%;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.data-layer-button:hover {
+  box-shadow: 0 0 50px #255aaa;
+}
+
+.data-layer-button:active {
+  background-color: #7f8896;
+}
+
+.data-layer-button-clicked {
+  width: 250px;
+  height: 100px;
+  margin: 25px;
+  background-color: #7f8896;
+  border-radius: 25px;
+  border-width: 3px;
+  border-color: #255aaa;
+  text-shadow: 0px 0px #255aaa;
+  color: black;
+  font-size: 100%;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.data-layer-button-clicked:hover {
+  box-shadow: 0 0 50px #255aaa;
 }
