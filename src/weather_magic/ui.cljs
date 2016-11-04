@@ -39,6 +39,19 @@
    [button "Pests"       swap! state/data-layer-atom util/toggle :pests]
    [button "Drought"     swap! state/data-layer-atom util/toggle :drought]])
 
+(defn view-selection-buttons
+  "Buttons for choosing view"
+  []
+  [:div {:id "view-selection-container"}
+  [button "Europe" reset! state/earth-animation-fn world/show-europe]
+  [button "Spinning" reset! state/earth-animation-fn world/spin]])
+
+(defn buttons
+  "Button group"
+  []
+  [:div {:id "container"}
+   [data-layer-buttons]
+   [view-selection-buttons]])
 ;; Blur canvas
 (defn hide-unhide
   "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
@@ -53,9 +66,7 @@
   []
   [:span
    [data-layer-buttons]
-   [button "Europe"   reset! state/earth-animation-fn world/show-europe]
-   [button "Spinning" reset! state/earth-animation-fn world/spin]
-   [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
+   [buttons]
    [time-slider]
    [map-ui-blur]
    [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]])
