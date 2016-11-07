@@ -16,8 +16,6 @@
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                :fov    90
                                                :aspect (gl/get-viewport-rect gl-ctx)})))
-                                               :aspect @view-rect})))
-                                               :aspect view-rect})))
 
 ;; What data is being displayed on the map right now?
 (defonce data-layer-atom (atom #{}))

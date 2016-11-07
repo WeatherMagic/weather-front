@@ -24,7 +24,6 @@
 
 (enable-console-print!)
 
-
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce tex-ready (volatile! false))
 (defonce tex (buf/load-texture
@@ -83,7 +82,7 @@
       (cam/apply @camera-atom)))
 
 (defn draw-frame! [t]
-  (if @tex-ready 
+  (if @tex-ready
     (doto state/gl-ctx
       (gl/set-viewport (:aspect @state/camera))
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)

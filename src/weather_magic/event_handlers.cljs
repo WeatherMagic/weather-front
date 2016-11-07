@@ -1,7 +1,8 @@
 (ns weather-magic.event-handlers
   (:require
    [weather-magic.state :as state]
-   [thi.ng.geom.gl.camera :as cam]))
+   [thi.ng.geom.gl.camera :as cam]
+   [thi.ng.geom.rect  :as rect]))
 
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."
@@ -10,10 +11,25 @@
     (cam/perspective-camera
      (assoc camera-map :fov (min 140 (+ cur-val (* cur-val scroll-distance 5.0E-4)))))))
 
+(defn resize-handler [event]
+  "Handles the aspect ratio of the webGL rendered world"
+  (let [element (.getElementById js/document "main")
+        actual-width (.-clientWidth element)
+        actual-height (.-clientHeight element)
+        webgl-width (.-width element)
+        webgl-height (.-height element)]
+    (when-not (and (= actual-width webgl-width) (= actual-height webgl-height))
+      (set! (.-width (.-canvas state/gl-ctx)) actual-width)
+      (set! (.-height (.-canvas state/gl-ctx)) actual-height)
+      (swap! state/camera #(cam/perspective-camera
+                            (assoc % :aspect (rect/rect actual-width actual-height)))))))
+
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
   (.addEventListener
    (.getElementById js/document "main") "wheel"
    (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
+  (.addEventListener js/window "load" resize-handler false)
+  (.addEventListener js/window "resize" resize-handler false)
   true)

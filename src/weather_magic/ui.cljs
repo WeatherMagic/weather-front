@@ -54,37 +54,6 @@
 (defn map-ui-blur []
   [:div {:class @state/intro-visible :id "blur"}])
 
-(defn close-blur-button []
-  [:div
-   [:input {:type "button" :value "Read more!"
-            :on-click #(swap! blur-visible (fn [value] (hide-unhide value)))}]])
-
-(defn zoom-camera
-  [camera-map scroll-distance]
-  (let [current-value (:fov camera-map)]
-    (cam/perspective-camera (assoc camera-map :fov (min 140 (+ current-value (* current-value scroll-distance 5.0E-4)))))))
-
-(defonce scroll-event
-  (.addEventListener (.getElementById js/document "main") "wheel" (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false))
-
-(defn resize-handler [event]
-  (let [element (.getElementById js/document "main")
-        actual-width (.-clientWidth element)
-        actual-height (.-clientHeight element)
-        webgl-width (.-width element)
-        webgl-height (.-height element)]
-    (if-not (and (= actual-width webgl-width) (= actual-height webgl-height))
-      (do (set! (.-width (.-canvas state/gl-ctx)) actual-width)
-          (set! (.-height (.-canvas state/gl-ctx)) actual-height)
-          (swap! state/camera #(cam/perspective-camera
-                                (assoc % :aspect (rect/rect actual-width actual-height))))))))
-
-(defonce load-listener
-  (.addEventListener js/window "load" resize-handler false))
-
-(defonce resize-listener
-  (.addEventListener js/window "resize" resize-handler false))
-
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
