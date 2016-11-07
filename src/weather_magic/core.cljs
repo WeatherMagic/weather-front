@@ -1,4 +1,6 @@
 (ns weather-magic.core
+  (:require-macros
+   [cljs.core.async.macros         :refer [go]])
   (:require
    [weather-magic.ui               :as ui]
    [weather-magic.state            :as state]
@@ -20,7 +22,10 @@
    [thi.ng.color.core              :as col]
    [thi.ng.glsl.core               :as glsl :include-macros true]
    [thi.ng.glsl.vertex             :as vertex]
-   [thi.ng.glsl.lighting           :as light]))
+   [thi.ng.glsl.lighting           :as light]
+   [cljs-http.client               :as http]
+   [cljs.core.async                :refer [<!]]))
+
 
 (enable-console-print!)
 
