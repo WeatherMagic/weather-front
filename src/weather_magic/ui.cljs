@@ -1,7 +1,6 @@
 (ns weather-magic.ui
   (:require
    [weather-magic.state :as state]
-   [thi.ng.geom.gl.camera :as cam]
    [weather-magic.world :as world]
    [weather-magic.util  :as util]
    [reagent.core :as reagent :refer [atom]]))
@@ -11,7 +10,7 @@
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [id func atom & args]
-  [:input {:type "button" :value id :id id :class (if (contains? state/data-layer-atom id) "data-layer-button-clicked" "data-layer-button")
+  [:input {:type "button" :value id :id id
            :on-click #(apply func atom args)}])
 
 (defn slider [key value min max]
@@ -33,25 +32,12 @@
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
-  [:div {:id "data-layer-container"}
-   [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
-   [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
-   [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
-   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]])
+  [:div
+   [button "Temperature" swap! state/data-layer-atom util/toggle :temp]
+   [button "Sea level"   swap! state/data-layer-atom util/toggle :water]
+   [button "Pests"       swap! state/data-layer-atom util/toggle :pests]
+   [button "Drought"     swap! state/data-layer-atom util/toggle :drought]])
 
-(defn view-selection-buttons
-  "Buttons for choosing view"
-  []
-  [:div {:id "view-selection-container"}
-  [button "Europe" reset! state/earth-animation-fn world/show-europe]
-  [button "Spinning" reset! state/earth-animation-fn world/spin]])
-
-(defn buttons
-  "Button group"
-  []
-  [:div {:id "container"}
-   [data-layer-buttons]
-   [view-selection-buttons]])
 ;; Blur canvas
 (defn hide-unhide
   "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
@@ -66,10 +52,11 @@
   []
   [:span
    [data-layer-buttons]
-   [buttons]
-   [time-slider]
-   [map-ui-blur]
-   [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]])
+    [button "Europe"   reset! state/earth-animation-fn world/show-europe]
+    [button "Spinning" reset! state/earth-animation-fn world/spin]
+    [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
+    [time-slider]
+    [map-ui-blur]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
