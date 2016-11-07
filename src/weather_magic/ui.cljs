@@ -11,7 +11,7 @@
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [id func atom & args]
-  [:input {:type "button" :value id :id id
+  [:input {:type "button" :value id :id id :class (if (contains? state/data-layer-atom id) "data-layer-button-clicked" "data-layer-button")
            :on-click #(apply func atom args)}])
 
 (defn slider [key value min max]
@@ -33,11 +33,11 @@
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
-  [:div
-   [button "Temperature" swap! state/data-layer-atom util/toggle :temp]
-   [button "Sea level"   swap! state/data-layer-atom util/toggle :water]
-   [button "Pests"       swap! state/data-layer-atom util/toggle :pests]
-   [button "Drought"     swap! state/data-layer-atom util/toggle :drought]])
+  [:div {:id "data-layer-container"}
+   [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
+   [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
+   [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
+   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]])
 
 (defn view-selection-buttons
   "Buttons for choosing view"

@@ -31,3 +31,5 @@
 (defonce intro-visible (atom :visible))
 
 (defonce view (atom "Spinning"))
+
+(defonce button-class (atom "data-layer-button"))
