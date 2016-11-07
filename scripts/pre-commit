@@ -1,0 +1,8 @@
+#!/bin/bash
+echo Running cljfmt check and kibit.
+if lein do cljfmt check, kibit; then
+    echo All checks finished successfully.
+else
+    echo Some checks failed.
+    exit 1
+fi
