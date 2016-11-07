@@ -6,6 +6,8 @@
    [weather-magic.event-handlers   :as event-handlers]
    [thi.ng.math.core               :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core            :as gl]
+   [weather-magic.models :as models]
+   [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.webgl.constants :as glc]
    [thi.ng.geom.gl.webgl.animator  :as anim]
    [thi.ng.geom.gl.buffers         :as buf]
@@ -56,15 +58,6 @@
               :vNormal  :vec3}
    :state    {:depth-test true}})
 
-(def model
-  (-> (s/sphere 1)
-      (g/center)
-      (g/as-mesh {:mesh    (glm/gl-mesh 4096 #{:uv :vnorm})
-                  :res     32
-                  :attribs {:uv    (attr/supplied-attrib
-                                    :uv (fn [[u v]] (vec2 (- 1 u) v)))
-                            :vnorm (fn [_ _ v _] (m/normalize v))}})))
-
 (defn spin
   [t]
   (@state/earth-animation-fn state/earth-rotation t)
@@ -72,6 +65,11 @@
     (-> M44
         (g/rotate-x (m/radians (:xAngle earth-rotation)))
         (g/rotate-y (m/radians (:yAngle earth-rotation))))))
+
+(defn translate
+  []
+  (-> M44
+    (g/translate (vec3 -5 -2 0))))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera-atom]
@@ -85,8 +83,8 @@
   (if @tex-ready
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec state/camera)
-                                     [:uniforms :model] (spin t))))))
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model shader-spec state/camera)
+                                     [:uniforms :model] (if (= @state/model models/plane) translate (spin t)))))))
 
 ;; Start the demo only once.
 (defonce running

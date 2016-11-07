@@ -1,6 +1,7 @@
 (ns weather-magic.state
   (:require
    [weather-magic.world :as world]
+   [weather-magic.models :as models]
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.gl.core :as gl]
    [thi.ng.geom.vector :as v :refer [vec2 vec3]]
@@ -33,4 +34,5 @@
 
 (defonce view (atom "Spinning"))
 
+(defonce model (atom models/plane))
 (defonce button-class (atom "data-layer-button"))
