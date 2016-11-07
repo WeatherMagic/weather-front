@@ -12,7 +12,6 @@
 
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
-;(defonce view-rect (atom (gl/get-viewport-rect gl-ctx)))
 
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                :fov    90

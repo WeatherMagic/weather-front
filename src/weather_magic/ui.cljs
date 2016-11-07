@@ -73,20 +73,11 @@
         actual-height (.-clientHeight element)
         webgl-width (.-width element)
         webgl-height (.-height element)]
-
-;(println actual-width)
-;(println actual-height)
-;(println webgl-width)
-;(println webgl-height)
-
-  ;  (.log js/console event)
-    (if-not (or (= actual-width webgl-width) (= actual-height webgl-height))
-      (do (swap! state/camera assoc :aspect (rect/rect actual-width actual-height))
-
-            (.-width (.-canvas state/gl-ctx)  actual-height))))
-  ;  (println state/camera :aspect)
-  (println "aspect second:")
-  (println (:aspect @state/camera) )))
+    (if-not (and (= actual-width webgl-width) (= actual-height webgl-height))
+      (do (set! (.-width (.-canvas state/gl-ctx)) actual-width)
+          (set! (.-height (.-canvas state/gl-ctx)) actual-height)
+          (swap! state/camera #(cam/perspective-camera
+                                (assoc % :aspect (rect/rect actual-width actual-height))))))))
 
 (defonce load-listener
   (.addEventListener js/window "load" resize-handler false))
