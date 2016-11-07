@@ -29,3 +29,7 @@
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
+
+(defonce view (atom "Spinning"))
+
+(defonce button-class (atom "data-layer-button"))
