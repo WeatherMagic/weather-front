@@ -52,11 +52,11 @@
   []
   [:span
    [data-layer-buttons]
-    [button "Europe"   reset! state/earth-animation-fn world/show-europe]
-    [button "Spinning" reset! state/earth-animation-fn world/spin]
-    [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
-    [time-slider]
-    [map-ui-blur]])
+   [button "Europe"   reset! state/earth-animation-fn world/show-europe]
+   [button "Spinning" reset! state/earth-animation-fn world/spin]
+   [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
+   [time-slider]
+   [map-ui-blur]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
