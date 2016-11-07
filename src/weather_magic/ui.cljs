@@ -67,19 +67,32 @@
 (defonce scroll-event
   (.addEventListener (.getElementById js/document "main") "wheel" (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false))
 
-(defn alfonzo [event]
-  (let [element (.-srcElement event)
+(defn resize-handler [event]
+  (let [element (.getElementById js/document "main")
         actual-width (.-clientWidth element)
         actual-height (.-clientHeight element)
         webgl-width (.-width element)
         webgl-height (.-height element)]
-    (.log js/console event)
-    (if-not (or (= actual-width webgl-width) (= actual-height webgl-height))
-        (reset! state/view-rect (rect/rect actual-width actual-height)))
-    (println "hest")))
 
-(defonce hej
-  (.addEventListener (.getElementById js/document "main") "click" alfonzo false))
+;(println actual-width)
+;(println actual-height)
+;(println webgl-width)
+;(println webgl-height)
+
+  ;  (.log js/console event)
+    (if-not (or (= actual-width webgl-width) (= actual-height webgl-height))
+      (do (swap! state/camera assoc :aspect (rect/rect actual-width actual-height))
+
+            (.-width (.-canvas state/gl-ctx)  actual-height))))
+  ;  (println state/camera :aspect)
+  (println "aspect second:")
+  (println (:aspect @state/camera) )))
+
+(defonce load-listener
+  (.addEventListener js/window "load" resize-handler false))
+
+(defonce resize-listener
+  (.addEventListener js/window "resize" resize-handler false))
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."

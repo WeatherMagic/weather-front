@@ -24,6 +24,7 @@
 
 (enable-console-print!)
 
+
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce tex-ready (volatile! false))
 (defonce tex (buf/load-texture
@@ -83,8 +84,18 @@
 
 (defn draw-frame! [t]
   (if @tex-ready
+    (let [element (.getElementById js/document "main")
+          actual-width (.-clientWidth element)
+          actual-height (.-clientHeight element)
+          webgl-width (.-width element)
+          webgl-height (.-height element)]
+      ;(println " gl width " webgl-width " gl height " webgl-height)
+       )
     (doto state/gl-ctx
-      (gl/set-viewport @state/view-rect)
+      (gl/set-viewport (:aspect @state/camera))
+      ;(println @state/camera)
+     ; (.viewport 0 0 10 10)
+
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec state/camera)
                                      [:uniforms :model] (spin t))))))

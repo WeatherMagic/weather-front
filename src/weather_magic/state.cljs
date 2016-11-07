@@ -6,15 +6,17 @@
    [thi.ng.geom.vector :as v :refer [vec2 vec3]]
    [reagent.core :as reagent :refer [atom]]))
 
+(enable-console-print!)
 (def earth-animation-fn (atom world/spin))
 (def earth-rotation (atom {:xAngle 24.5 :yAngle 0}))
 
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
-(defonce view-rect (atom (gl/get-viewport-rect gl-ctx)))
+;(defonce view-rect (atom (gl/get-viewport-rect gl-ctx)))
 
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                :fov    90
+                                               :aspect (gl/get-viewport-rect gl-ctx)})))
                                                :aspect @view-rect})))
                                                :aspect view-rect})))
 
