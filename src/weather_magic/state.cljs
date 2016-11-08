@@ -6,10 +6,6 @@
    [thi.ng.geom.vector :as v :refer [vec2 vec3]]
    [reagent.core :as reagent :refer [atom]]))
 
-(enable-console-print!)
-(def earth-animation-fn (atom world/spin))
-(def earth-rotation (atom {:xAngle 24.5 :yAngle 0}))
-
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
 
