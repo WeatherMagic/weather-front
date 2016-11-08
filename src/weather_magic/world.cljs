@@ -1,6 +1,6 @@
 (ns weather-magic.world
   (:require
-    [thi.ng.geom.vector :as v :refer [vec2 vec3]]))
+   [thi.ng.geom.vector :as v :refer [vec2 vec3]]))
 
 (defn show-europe
   "Rotates the sphere so that Europe is shown."

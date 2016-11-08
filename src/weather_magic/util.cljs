@@ -20,13 +20,13 @@
 (defonce tex-ready-test (volatile! false))
 
 (defn set-view
-  "Change mesh and animation function depending on view"
+  "Change mesh and animation function depening on view"
   [model-atom new-model animation-func func texture context]
   (reset! model-atom new-model)
   (reset! animation-func func)
   (buf/load-texture context {:callback (fn [tex img]
-                                          (.generateMipmap context (:target tex))
-                                          (vreset! tex-ready-test true))
-                              :src      texture
-                              :filter   [glc/linear-mipmap-linear glc/linear]
-                              :flip     false}))
+                                         (.generateMipmap context (:target tex))
+                                         (vreset! tex-ready-test true))
+                             :src      texture
+                             :filter   [glc/linear-mipmap-linear glc/linear]
+                             :flip     false}))
