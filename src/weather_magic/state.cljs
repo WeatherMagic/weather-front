@@ -27,12 +27,15 @@
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom world/spin))
 ;; The current rotation of earth.
-(defonce earth-rotation (atom {:x-angle 24.5 :y-angle 0}))
+
+(defonce earth-rotation (atom {:xAngle 24.5
+                               :yAngle 0
+                               :zAngle 0
+                               :translation (vec3 0 0 0)}))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce view (atom "Spinning"))
+(defonce model (atom models/sphere))
 
-(defonce model (atom models/plane))
 (defonce button-class (atom "data-layer-button"))

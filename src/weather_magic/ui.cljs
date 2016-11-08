@@ -1,8 +1,8 @@
 (ns weather-magic.ui
   (:require
    [weather-magic.state :as state]
-   [thi.ng.geom.gl.camera :as cam]
    [weather-magic.world :as world]
+   [weather-magic.models :as models]
    [weather-magic.util  :as util]
    [reagent.core :as reagent :refer [atom]]))
 
@@ -43,8 +43,9 @@
   "Buttons for choosing view"
   []
   [:div {:id "view-selection-container"}
-   [button "Europe"   reset! state/earth-animation-fn world/show-europe]
-   [button "Spinning" reset! state/earth-animation-fn world/spin]])
+   [button "Turkey" util/set-view state/model models/plane state/earth-animation-fn world/show-turkey "img/turkey.jpg" state/gl-ctx]
+   [button "World"  util/set-view state/model models/sphere state/earth-animation-fn world/spin "img/earth.jpg" state/gl-ctx]
+   [button "Europe"   util/set-view state/model models/sphere state/earth-animation-fn world/show-europe "img/earth.jpg" state/gl-ctx]])
 
 ;; Blur canvas
 (defn hide-unhide
@@ -63,8 +64,7 @@
    [view-selection-buttons]
    [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
    [time-slider]
-   [map-ui-blur]
-   [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]])
+   [map-ui-blur]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."

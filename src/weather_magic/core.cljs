@@ -28,6 +28,7 @@
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce tex-ready (volatile! false))
+
 (defonce tex (buf/load-texture
               state/gl-ctx {:callback (fn [tex img]
                                         (.generateMipmap state/gl-ctx (:target tex))
@@ -55,21 +56,19 @@
               :normal   :vec3
               :uv       :vec2}
    :varying  {:vUV      :vec2
+              :Position :vec3
               :vNormal  :vec3}
    :state    {:depth-test true}})
 
-(defn spin
+(defn set-model-matrix
   [t]
   (@state/earth-animation-fn state/earth-rotation t)
   (let [earth-rotation @state/earth-rotation]
     (-> M44
+        (g/translate (:translation earth-rotation))
         (g/rotate-x (m/radians (:xAngle earth-rotation)))
-        (g/rotate-y (m/radians (:yAngle earth-rotation))))))
-
-(defn translate
-  []
-  (-> M44
-    (g/translate (vec3 -5 -2 0))))
+        (g/rotate-y (m/radians (:yAngle earth-rotation)))
+        (g/rotate-z (m/radians (:zAngle earth-rotation))))))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera-atom]
@@ -84,7 +83,7 @@
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model shader-spec state/camera)
-                                     [:uniforms :model] (if (= @state/model models/plane) translate (spin t)))))))
+                                     [:uniforms :model] (set-model-matrix t))))))
 
 ;; Start the demo only once.
 (defonce running
