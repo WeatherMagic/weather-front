@@ -13,6 +13,9 @@
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
 
+;; How WebGL figures out its aspect ratio.
+(defonce view-rect  (gl/get-viewport-rect gl-ctx))
+
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                :fov    90
                                                :aspect (gl/get-viewport-rect gl-ctx)})))

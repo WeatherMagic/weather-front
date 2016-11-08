@@ -84,7 +84,6 @@
 (defn draw-frame! [t]
   (if @tex-ready
     (doto state/gl-ctx
-      (gl/set-viewport (:aspect @state/camera))
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec state/camera)
                                      [:uniforms :model] (spin t))))))
