@@ -11,18 +11,18 @@
 
 (defonce sphere
   (g/as-mesh
-    (s/sphere 1)
-    {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
-                  :res     32
-                  :attribs {:uv    (attr/supplied-attrib
-                                    :uv (fn [[u v]] (vec2 (- 1 u) v)))
-                            :vnorm (fn [_ _ v _] (m/normalize v))}}))
+   (s/sphere 1)
+   {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
+    :res     32
+    :attribs {:uv    (attr/supplied-attrib
+                      :uv (fn [[u v]] (vec2 (- 1 u) v)))
+              :vnorm (fn [_ _ v _] (m/normalize v))}}))
 
 (defonce plane
   (g/as-mesh
-    (rect/rect 4 3)
-    {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
-                  :res     32
-                  :attribs {:uv    (attr/supplied-attrib
-                                    :uv (fn [[u v]] (vec2 (- 1 u) v)))
-                            :vnorm (fn [_ _ v _] (m/normalize v))}}))
+   (rect/rect 4 3)
+   {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
+    :res     32
+    :attribs {:uv    (attr/supplied-attrib
+                      :uv (fn [[u v]] (vec2 (- 1 u) v)))
+              :vnorm (fn [_ _ v _] (m/normalize v))}}))
