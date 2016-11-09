@@ -10,3 +10,7 @@
   [earth-atom t]
   (reset! earth-atom {:xAngle 24.5 :yAngle t}))
 
+(defn stop-spin
+  "Makes the earth stop spinning"
+  [earth-atom t]
+  (reset! earth-atom @earth-atom))

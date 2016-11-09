@@ -27,6 +27,10 @@
                             (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
 
+
+(defn pan-handler [_]
+  (reset! state/earth-animation-fn world/stop-spin))
+
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
@@ -35,19 +39,10 @@
    (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
+  (.addEventListener (.getElementById js/document "main") "click" pan-handler false)
   true)
 
-(defn stop-spin
-  "Makes the earth stop spinning"
-  [earth-atom t]
-  (println (:x-angle state/earth-rotation)))
-  ;(reset! earth-atom {:xAngle 0 :yAngle 0})
-  ; (println (:x-angle earth-rotation))
 
 
-(defn pan-handler [_]
-  (reset! state/earth-animation-fn stop-spin)
-  (println "hest"))
 
-(.addEventListener (.getElementById js/document "main") "click" pan-handler false)
 ;när klickad på måste den veta vart musen är
