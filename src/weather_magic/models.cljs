@@ -10,13 +10,13 @@
    [thi.ng.geom.rect :as rect]))
 
 (defonce sphere
-  (-> (s/sphere 1)
-      (g/center)
-      (g/as-mesh {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
+  (g/as-mesh
+    (s/sphere 1)
+    {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
                   :res     32
                   :attribs {:uv    (attr/supplied-attrib
                                     :uv (fn [[u v]] (vec2 (- 1 u) v)))
-                            :vnorm (fn [_ _ v _] (m/normalize v))}})))
+                            :vnorm (fn [_ _ v _] (m/normalize v))}}))
 
 (defonce plane
   (g/as-mesh
@@ -25,4 +25,4 @@
                   :res     32
                   :attribs {:uv    (attr/supplied-attrib
                                     :uv (fn [[u v]] (vec2 (- 1 u) v)))
-                            :vnorm (fn [_ _ v _] (m/normalize v))}})))
+                            :vnorm (fn [_ _ v _] (m/normalize v))}}))
