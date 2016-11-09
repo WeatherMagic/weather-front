@@ -28,6 +28,7 @@
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce tex-ready (volatile! false))
+
 (defonce tex (buf/load-texture
               state/gl-ctx {:callback (fn [tex img]
                                         (.generateMipmap state/gl-ctx (:target tex))
@@ -39,8 +40,8 @@
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
 (def shader-spec
-  {:vs shaders/vs
-   :fs (->> shaders/fs
+  {:vs shaders/temperature-vs
+   :fs (->> shaders/temperature-fs
             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
             (glsl/assemble))
    :uniforms {:model      [:mat4 M44]
@@ -50,7 +51,9 @@
               :tex        :sampler2D
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec3 [0 0 0.1]]}
+              :ambientCol [:vec3 [0 0 0.1]]
+              :frameCounter [:int 0]}
+
    :attribs  {:position :vec3
               :normal   :vec3
               :uv       :vec2}
