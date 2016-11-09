@@ -40,11 +40,8 @@
                                                 :to-longitude 33
                                                 :zoom-level 1
                                                 :from-latitude 37
-                                                :to-latitude 38}
-                                  :headers {"Access-Control-Allow-Credentials" "false"}}))]
-      (prn (:status response))
-      (prn (map :login (:body response)))))
-
+                                                :to-latitude 38}}))]
+      (prn (:body response))))
 
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
