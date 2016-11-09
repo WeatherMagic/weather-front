@@ -27,7 +27,6 @@
                             (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
 
-
 (defn pan-handler [_]
   (reset! state/earth-animation-fn world/stop-spin))
 
@@ -41,8 +40,3 @@
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "main") "click" pan-handler false)
   true)
-
-
-
-
-;när klickad på måste den veta vart musen är
