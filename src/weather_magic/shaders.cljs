@@ -37,7 +37,6 @@
      gl_FragColor = mix(temperature, texture, 0.5);
   }")
 
-
 (def temperature-fs
   "void main() {
 
@@ -75,7 +74,6 @@
    :varying  {:vUV      :vec2
               :vNormal  :vec3}
    :state    {:depth-test true}})
-
 
 (def blend-shader-spec
   {:vs standard-vs
