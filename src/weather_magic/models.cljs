@@ -12,7 +12,7 @@
 (defonce sphere
   (-> (s/sphere 1)
       (g/center)
-      (g/as-mesh {:mesh    (glm/gl-mesh 4096 #{:uv :vnorm})
+      (g/as-mesh {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
                   :res     32
                   :attribs {:uv    (attr/supplied-attrib
                                     :uv (fn [[u v]] (vec2 (- 1 u) v)))
@@ -20,7 +20,7 @@
 
 (defonce plane
   (-> (rect/rect 4 3)
-      (g/as-mesh {:mesh    (glm/gl-mesh 4096 #{:uv :vnorm})
+      (g/as-mesh {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
                   :res     32
                   :attribs {:uv    (attr/supplied-attrib
                                     :uv (fn [[u v]] (vec2 (- 1 u) v)))
