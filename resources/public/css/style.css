@@ -6,6 +6,11 @@
   boarder:0;
 }
 
+body, html {
+ overflow:hidden;
+ height: 100%;
+ width: 100%;
+}
 
 /* Our CSS */
 
@@ -53,23 +58,36 @@ position: absolute;
 }
 
 #data-layer-container {
-  z-index: 2;
+  z-index: 1;
   position: absolute;
-  top: 40%;
-  left: 25%
+  width: 10%;
+  height: 100%;
+  top: 30%;
+  left: 5%;
 }
+
+#shader-selection-container {
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  left: 30%;
+  top: 5%;
+}
+
 
 #view-selection-container {
-  z-index: 2;
   position: absolute;
-  top: 60%;
-  left: 40%
+  width: 10%;
+  height: 100%;
+  right: 5%;
+  top: 35%;
 }
 
-.data-layer-button {
-
-  width: 250px;
-  height: 100px;
+.button {
+  float: left;
+  height: 60px;
+  width: 180px;
   margin: 25px;
   border-radius: 25px;
   border-width: 3px;
@@ -82,15 +100,15 @@ position: absolute;
   font-style: normal;
 }
 
-.data-layer-button:hover {
+.button:hover {
   box-shadow: 0 0 50px #255aaa;
 }
 
-.data-layer-button:active {
+.button:active {
   background-color: #7f8896;
 }
 
-.data-layer-button-clicked {
+.button-clicked {
   width: 250px;
   height: 100px;
   margin: 25px;
@@ -106,6 +124,6 @@ position: absolute;
   font-style: normal;
 }
 
-.data-layer-button-clicked:hover {
+.button-clicked:hover {
   box-shadow: 0 0 50px #255aaa;
 }

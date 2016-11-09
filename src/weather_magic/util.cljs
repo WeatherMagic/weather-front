@@ -31,8 +31,7 @@
                              :src      texture
                              :filter   [glc/linear-mipmap-linear glc/linear]
                              :flip     false}))
-(defn toggle-shaders
+(defn switch-shader
   "Function to switch shader used to visualize"
-  []
-  (swap! state/shader-selector (fn [] (if (= @state/shader-selector shaders/shader-spec) shaders/shader-spec2 shaders/shader-spec)))
-  (println state/shader-selector))
+  [shader-selector shader]
+  (swap! shader-selector (fn [] shader)))

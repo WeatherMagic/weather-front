@@ -15,7 +15,7 @@
 (defonce view-rect  (gl/get-viewport-rect gl-ctx))
 
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                               :fov    90
+                                               :fov    110
                                                :aspect (gl/get-viewport-rect gl-ctx)})))
 
 ;; What data is being displayed on the map right now?
@@ -39,10 +39,7 @@
 
 (defonce model (atom models/sphere))
 
-(defonce button-class (atom "data-layer-button"))
+(defonce b1 (atom "buttons"))
+(defonce b2 (atom "top"))
 
-(defonce shader-selector (atom shaders/shader-spec))
-
-(defonce v-shader (atom shaders/temperature-vs))
-
-(defonce f-shader (atom shaders/temperature-fs))
+(defonce shader-selector (atom shaders/standard-shader-spec))
