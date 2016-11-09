@@ -60,7 +60,7 @@
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (update-in (combine-model-shader-and-camera model @state/shader-selector state/camera)
-                                     [:uniforms] assoc :model (spin t) :frameCounter 1)))))
+                                     [:uniforms] assoc :model (spin (* t 15)) :frameCounter 1)))))
 
 ;; Start the demo only once.
 (defonce running
