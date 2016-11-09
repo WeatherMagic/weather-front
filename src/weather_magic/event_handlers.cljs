@@ -40,10 +40,10 @@
 (defn stop-spin
   "Makes the earth stop spinning"
   [earth-atom t]
-  (println (:x-angle state/earth-rotation))
+  (println (:x-angle state/earth-rotation)))
   ;(reset! earth-atom {:xAngle 0 :yAngle 0})
   ; (println (:x-angle earth-rotation))
-  )
+
 
 (defn pan-handler [_]
   (reset! state/earth-animation-fn stop-spin)
