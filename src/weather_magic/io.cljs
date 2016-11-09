@@ -16,12 +16,12 @@
                                                            :to-longitude 33
                                                            :from-latitude 37
                                                            :to-latitude 38
-                                                           :zoom-level 1}}))]
+                                                           :return-dimension [2, 4, 3]}}))]
         (prn (:body turkey-temp-data)))))
 
 (defn request-climate-data
-  [dimension from-y to-y from-m to-m from-long to-long
-   from-lat to-lat zoom-lev]
+  ([dimension return-dim from-long to-long
+   from-lat to-lat from-y to-y from-m to-m] ; Month limits as arguments
 
   (go (let [climate-data (<! (http/post (str "http://thor.hfelo.se/api/" dimension)
                                         {:json-params {:from-year from-y
@@ -31,6 +31,7 @@
                                                        :from-longitude from-long
                                                        :to-longitude to-long
                                                        :from-latitude from-lat
-                                                       :to-latitude to-lat
-                                                       :zoom-level zoom-lev}}))]
-        climate-data)))
+                                                       :to-latitude to-lat}}))]
+        climate-data))))
+
+

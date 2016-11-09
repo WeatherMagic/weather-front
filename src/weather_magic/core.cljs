@@ -33,17 +33,6 @@
 
 (enable-console-print!)
 
-(go (let [response (<! (http/post "http://thor.hfelo.se/api/temperature"
-                                 {:json-params {:year 2085
-                                                :month 1
-                                                :from-longitude 32
-                                                :to-longitude 33
-                                                :zoom-level 1
-                                                :from-latitude 37
-                                                :to-latitude 38}}))]
-      (prn (:body response))))
-
-
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce tex-ready (volatile! false))
 
