@@ -9,3 +9,4 @@
   "Rotates the sphere indefinitely."
   [earth-atom t]
   (reset! earth-atom {:xAngle 24.5 :yAngle t}))
+

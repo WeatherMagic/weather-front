@@ -37,8 +37,16 @@
   (.addEventListener js/window "resize" resize-handler false)
   true)
 
+(defn stop-spin
+  "Makes the earth stop spinning"
+  [earth-atom t]
+  (println (:x-angle state/earth-rotation))
+  ;(reset! earth-atom {:xAngle 0 :yAngle 0})
+  ; (println (:x-angle earth-rotation))
+  )
+
 (defn pan-handler [_]
-  (reset! state/earth-animation-fn world/show-europe)
+  (reset! state/earth-animation-fn stop-spin)
   (println "hest"))
 
 (.addEventListener (.getElementById js/document "main") "click" pan-handler false)
