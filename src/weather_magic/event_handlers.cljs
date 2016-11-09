@@ -3,6 +3,7 @@
    [weather-magic.state :as state]
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.rect  :as rect]
+   [weather-magic.world :as world]
    [thi.ng.geom.gl.core  :as gl]))
 
 (defn zoom-camera
@@ -35,3 +36,10 @@
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   true)
+
+(defn pan-handler [_]
+  (reset! state/earth-animation-fn world/show-europe)
+  (println "hest"))
+
+(.addEventListener (.getElementById js/document "main") "click" pan-handler false)
+;när klickad på måste den veta vart musen är

@@ -62,7 +62,8 @@
    [view-selection-buttons]
    [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
    [time-slider]
-   [map-ui-blur]])
+   [map-ui-blur]]
+  [:span])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
