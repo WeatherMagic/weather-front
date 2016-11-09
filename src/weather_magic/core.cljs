@@ -28,7 +28,6 @@
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce tex-ready (volatile! false))
-
 (defonce tex (buf/load-texture
               state/gl-ctx {:callback (fn [tex img]
                                         (.generateMipmap state/gl-ctx (:target tex))
@@ -56,7 +55,6 @@
               :normal   :vec3
               :uv       :vec2}
    :varying  {:vUV      :vec2
-              :Position :vec3
               :vNormal  :vec3}
    :state    {:depth-test true}})
 
