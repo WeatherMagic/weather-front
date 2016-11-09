@@ -25,7 +25,22 @@
    }")
 
 (def blend-fs
- "void main() {
+  "void main() {
+     vec4 texture = texture2D(tex, vUV);
+     vec4 temperature;
+
+     if(texture.g > 0.5) {
+       temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
+     } else {
+       temperature = vec4(texture.g, texture.g, 1.0, 1.0);
+     }
+     gl_FragColor = mix(temperature, texture, 0.5);
+  }")
+
+
+(def temperature-fs
+  "void main() {
+
     vec4 texture = texture2D(tex, vUV);
     vec4 temperature;
 
@@ -34,22 +49,7 @@
     } else {
       temperature = vec4(texture.g, texture.g, 1.0, 1.0);
     }
-    gl_FragColor = mix(temperature, texture, 0.5);
-  }")
-
-
-(def temperature-fs
- "void main() {
-
-   vec4 texture = texture2D(tex, vUV);
-   vec4 temperature;
-
-   if(texture.g > 0.5) {
-     temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
-   } else {
-     temperature = vec4(texture.g, texture.g, 1.0, 1.0);
-   }
-    gl_FragColor = temperature;
+     gl_FragColor = temperature;
   }")
 
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
@@ -78,45 +78,45 @@
 
 
 (def blend-shader-spec
- {:vs standard-vs
-  :fs (->> blend-fs
-           (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-           (glsl/assemble))
-  :uniforms {:model      [:mat4 M44]
-             :view       :mat4
-             :proj       :mat4
-             :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-             :tex        :sampler2D
-             :lightDir   [:vec3 [1 0 1]]
-             :lightCol   [:vec4 [1 1 1 1]]
-             :ambientCol [:vec4 [0 0 0.1 1.0]]
-             :frameCounter [:int 0]}
+  {:vs standard-vs
+   :fs (->> blend-fs
+            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+            (glsl/assemble))
+   :uniforms {:model      [:mat4 M44]
+              :view       :mat4
+              :proj       :mat4
+              :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
+              :tex        :sampler2D
+              :lightDir   [:vec3 [1 0 1]]
+              :lightCol   [:vec4 [1 1 1 1]]
+              :ambientCol [:vec4 [0 0 0.1 1.0]]
+              :frameCounter [:int 0]}
 
-  :attribs  {:position :vec3
-             :normal   :vec3
-             :uv       :vec2}
-  :varying  {:vUV      :vec2
-             :vNormal  :vec3}
-  :state    {:depth-test true}})
+   :attribs  {:position :vec3
+              :normal   :vec3
+              :uv       :vec2}
+   :varying  {:vUV      :vec2
+              :vNormal  :vec3}
+   :state    {:depth-test true}})
 
 (def temperature-shader-spec
- {:vs standard-vs
-  :fs (->> temperature-fs
-           (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-           (glsl/assemble))
-  :uniforms {:model      [:mat4 M44]
-             :view       :mat4
-             :proj       :mat4
-             :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-             :tex        :sampler2D
-             :lightDir   [:vec3 [1 0 1]]
-             :lightCol   [:vec3 [1 1 1]]
-             :ambientCol [:vec4 [0 0 0.1 1.0]]
-             :frameCounter [:int 0]}
+  {:vs standard-vs
+   :fs (->> temperature-fs
+            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+            (glsl/assemble))
+   :uniforms {:model      [:mat4 M44]
+              :view       :mat4
+              :proj       :mat4
+              :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
+              :tex        :sampler2D
+              :lightDir   [:vec3 [1 0 1]]
+              :lightCol   [:vec3 [1 1 1]]
+              :ambientCol [:vec4 [0 0 0.1 1.0]]
+              :frameCounter [:int 0]}
 
-  :attribs  {:position :vec3
-             :normal   :vec3
-             :uv       :vec2}
-  :varying  {:vUV      :vec2
-             :vNormal  :vec3}
-  :state    {:depth-test true}})
+   :attribs  {:position :vec3
+              :normal   :vec3
+              :uv       :vec2}
+   :varying  {:vUV      :vec2
+              :vNormal  :vec3}
+   :state    {:depth-test true}})

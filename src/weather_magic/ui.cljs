@@ -33,12 +33,12 @@
 
 ;; Blur canvas
 (defn hide-unhide
- "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
- [hidden-or-not]
- (hidden-or-not {:hidden :visible :visible :hidden}))
+  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
+  [hidden-or-not]
+  (hidden-or-not {:hidden :visible :visible :hidden}))
 
 (defn map-ui-blur []
- [:div {:class @state/intro-visible :id "blur"}])
+  [:div {:class @state/intro-visible :id "blur"}])
 
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
@@ -46,7 +46,7 @@
   [:div {:id "data-layer-container" :class (@state/intro-visible {:hidden :visible :visible :hidden})}
    [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
    [button "Sea-level" swap! state/data-layer-atom util/toggle :Sea-level]
-   [button "Pests"swap! state/data-layer-atom util/toggle :Pests]
+   [button "Pests" swap! state/data-layer-atom util/toggle :Pests]
    [button "Drought" swap! state/data-layer-atom util/toggle :Drought]])
 
 (defn view-selection-buttons
