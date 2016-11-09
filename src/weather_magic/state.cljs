@@ -4,6 +4,7 @@
    [weather-magic.models :as models]
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.gl.core :as gl]
+   [weather-magic.shaders :as shaders]
    [thi.ng.geom.vector :as v :refer [vec2 vec3]]
    [reagent.core :as reagent :refer [atom]]))
 
@@ -39,3 +40,9 @@
 (defonce model (atom models/sphere))
 
 (defonce button-class (atom "data-layer-button"))
+
+(defonce shader-selector (atom shaders/shader-spec))
+
+(defonce v-shader (atom shaders/temperature-vs))
+
+(defonce f-shader (atom shaders/temperature-fs))

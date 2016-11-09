@@ -63,6 +63,7 @@
    [data-layer-buttons]
    [view-selection-buttons]
    [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
+   [button "Temperature-shader" util/toggle-shaders]
    [time-slider]
    [map-ui-blur]])
 

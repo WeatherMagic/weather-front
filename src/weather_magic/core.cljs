@@ -37,30 +37,6 @@
                             :filter   [glc/linear-mipmap-linear glc/linear]
                             :flip     false}))
 
-;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
-;;; iff they're modified when the source code is saved.
-(def shader-spec
-  {:vs shaders/temperature-vs
-   :fs (->> shaders/temperature-fs
-            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-            (glsl/assemble))
-   :uniforms {:model      [:mat4 M44]
-              :view       :mat4
-              :proj       :mat4
-              :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex        :sampler2D
-              :lightDir   [:vec3 [1 0 1]]
-              :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]}
-
-   :attribs  {:position :vec3
-              :normal   :vec3
-              :uv       :vec2}
-   :varying  {:vUV      :vec2
-              :vNormal  :vec3}
-   :state    {:depth-test true}})
-
 (defn set-model-matrix
   [t]
   (@state/earth-animation-fn state/earth-rotation t)
@@ -83,8 +59,8 @@
   (if @tex-ready
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model shader-spec state/camera)
-                                     [:uniforms :model] (set-model-matrix t))))))
+      (gl/draw-with-shader (update-in (combine-model-shader-and-camera model @state/shader-selector state/camera)
+                                     [:uniforms] assoc :model (spin t) :frameCounter 1)))))
 
 ;; Start the demo only once.
 (defonce running
