@@ -25,14 +25,22 @@
 (enable-console-print!)
 
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
-(defonce tex-ready (volatile! false))
-(defonce tex (buf/load-texture
-              state/gl-ctx {:callback (fn [tex img]
-                                        (.generateMipmap state/gl-ctx (:target tex))
-                                        (vreset! tex-ready true))
-                            :src      "img/earth.jpg"
-                            :filter   [glc/linear-mipmap-linear glc/linear]
-                            :flip     false}))
+(defonce tex-ready (volatile! 0))
+(defonce tex1 (buf/load-texture
+               state/gl-ctx {:callback (fn [tex img]
+                                         (.generateMipmap state/gl-ctx (:target tex))
+                                         (vswap! tex-ready inc))
+                             :src      "img/earth.jpg"
+                             :filter   [glc/linear-mipmap-linear glc/linear]
+                             :flip     false}))
+
+(defonce tex2 (buf/load-texture
+               state/gl-ctx {:callback (fn [tex img]
+                                         (.generateMipmap state/gl-ctx (:target tex2))
+                                         (vswap! tex-ready inc))
+                             :src      "img/earth2.jpg"
+                             :filter   [glc/linear-mipmap-linear glc/linear]
+                             :flip     false}))
 
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
@@ -45,10 +53,12 @@
               :view       :mat4
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex        :sampler2D
+              :tex1       [:sampler2D 0] ; Specify which texture unit
+              :tex2       [:sampler2D 1] ; the uniform is bound to.
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec3 [0 0 0.1]]}
+              :ambientCol [:vec3 [0 0 0.1]]
+              :fade       :float}
    :attribs  {:position :vec3
               :normal   :vec3
               :uv       :vec2}
@@ -74,18 +84,21 @@
         (g/rotate-y (m/radians (:yAngle earth-rotation))))))
 
 (defn combine-model-shader-and-camera
-  [model shader-spec camera-atom]
+  [model shader-spec camera-atom t]
   (-> model
       (gl/as-gl-buffer-spec {})
       (assoc :shader (sh/make-shader-from-spec state/gl-ctx shader-spec))
+      (assoc-in [:uniforms :fade] (+ 0.5 (* 0.5 (Math/sin (* t 2)))))
       (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
       (cam/apply @camera-atom)))
 
 (defn draw-frame! [t]
-  (if @tex-ready
+  (when (= @tex-ready 2)
+    (gl/bind tex1 0)
+    (gl/bind tex2 1)
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec state/camera)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec state/camera t)
                                      [:uniforms :model] (spin t))))))
 
 ;; Start the demo only once.
