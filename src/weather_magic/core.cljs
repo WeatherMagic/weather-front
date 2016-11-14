@@ -2,6 +2,7 @@
   (:require-macros
    [cljs.core.async.macros         :refer [go]])
   (:require
+   [weather-magic.io               :as io]
    [weather-magic.ui               :as ui]
    [weather-magic.state            :as state]
    [weather-magic.shaders          :as shaders]
