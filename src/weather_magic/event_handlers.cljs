@@ -30,7 +30,6 @@
                             (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
 
-
 (defonce click-variable (atom false))
 
 (defn move-fcn [_]
@@ -42,16 +41,13 @@
   (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
 
 (defn pan-handler [_]
- ;bool true
- (reset! click-variable true)
- (println @click-variable)
+  (reset! click-variable true)
+  (println @click-variable)
   (println "mousedown")
   (reset! state/earth-animation-fn world/stop-spin)
   (when-not (= @click-variable false)
     (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
     (.addEventListener (.getElementById js/document "main") "mouseup" mouse-not-down false)))
-
-
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
