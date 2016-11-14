@@ -32,7 +32,6 @@
 
 (enable-console-print!)
 
-
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce tex-ready (volatile! false))
 
