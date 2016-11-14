@@ -4,7 +4,10 @@
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.rect  :as rect]
    [weather-magic.world :as world]
-   [thi.ng.geom.gl.core  :as gl]))
+   [thi.ng.geom.gl.core  :as gl]
+   [reagent.core :as reagent :refer [atom]]))
+
+(enable-console-print!)
 
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."
@@ -27,8 +30,28 @@
                             (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
 
+
+(defonce click-variable (atom false))
+
+(defn move-fcn [_]
+  (println "move"))
+
+(defn mouse-not-down [_]
+  (println "mouse up")
+  (reset! click-variable false)
+  (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
+
 (defn pan-handler [_]
-  (reset! state/earth-animation-fn world/stop-spin))
+ ;bool true
+ (reset! click-variable true)
+ (println @click-variable)
+  (println "mousedown")
+  (reset! state/earth-animation-fn world/stop-spin)
+  (when-not (= @click-variable false)
+    (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
+    (.addEventListener (.getElementById js/document "main") "mouseup" mouse-not-down false)))
+
+
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
@@ -38,5 +61,5 @@
    (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
-  (.addEventListener (.getElementById js/document "main") "click" pan-handler false)
+  (.addEventListener (.getElementById js/document "main") "mousedown" pan-handler false)
   true)
