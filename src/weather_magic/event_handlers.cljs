@@ -14,23 +14,26 @@
 
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
-  (let [element (.getElementById js/document "main")
-        actual-width (.-clientWidth element)
-        actual-height (.-clientHeight element)
-        webgl-width (.-width element)
-        webgl-height (.-height element)]
+  (let [left-canvas (.getElementById js/document "left-canvas")
+        actual-width (.-clientWidth left-canvas)
+        actual-height (.-clientHeight left-canvas)
+        webgl-width (.-width left-canvas)
+        webgl-height (.-height left-canvas)]
     (when-not (and (= actual-width webgl-width) (= actual-height webgl-height))
       (set! (.-width (.-canvas state/gl-ctx)) actual-width)
       (set! (.-height (.-canvas state/gl-ctx)) actual-height)
+      (set! (.-width (.-canvas state/gl-ctx2)) actual-width)
+      (set! (.-height (.-canvas state/gl-ctx2)) actual-height)
       (swap! state/camera #(cam/perspective-camera
                             (assoc % :aspect (rect/rect actual-width actual-height))))
-      (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
+      (gl/set-viewport state/gl-ctx (:aspect @state/camera))
+      (gl/set-viewport state/gl-ctx2 (:aspect @state/camera)))))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
   (.addEventListener
-   (.getElementById js/document "main") "wheel"
+   (.getElementById js/document "canvases") "wheel"
    (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)

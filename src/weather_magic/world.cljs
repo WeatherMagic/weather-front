@@ -15,7 +15,7 @@
   [earth-atom t]
   (reset! earth-atom {:xAngle 24.5
                       :yAngle t
-                      :zAngle 0
+                      :zAngle 2
                       :translation (vec3 0 0 0)}))
 
 (defn show-turkey

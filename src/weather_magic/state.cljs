@@ -9,14 +9,24 @@
    [reagent.core :as reagent :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
-(defonce gl-ctx (gl/gl-context "main"))
+(defonce gl-ctx (gl/gl-context "left-canvas"))
+
+;; Another WebGL context
+(defonce gl-ctx2 (gl/gl-context "right-canvas"))
 
 ;; How WebGL figures out its aspect ratio.
 (defonce view-rect  (gl/get-viewport-rect gl-ctx))
 
+;; How WebGL figures out its aspect ratio.
+(defonce view-rect2  (gl/get-viewport-rect gl-ctx2))
+
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                :fov    110
                                                :aspect (gl/get-viewport-rect gl-ctx)})))
+
+(defonce camera2 (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                              :fov    110
+                                              :aspect (gl/get-viewport-rect gl-ctx2)})))
 
 ;; What data is being displayed on the map right now?
 (defonce data-layer-atom (atom #{}))
@@ -27,8 +37,10 @@
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom world/spin))
-;; The current rotation of earth.
 
+;(defonce earth-transla-fn (atom world/centered))
+
+;; The current rotation of earth.
 (defonce earth-rotation (atom {:xAngle 24.5
                                :yAngle 0
                                :zAngle 0
@@ -42,4 +54,8 @@
 (defonce b1 (atom "buttons"))
 (defonce b2 (atom "top"))
 
-(defonce shader-selector (atom shaders/standard-shader-spec))
+(defonce shader-selector-left (atom shaders/standard-shader-spec-left))
+
+(defonce shader-selector-right (atom shaders/standard-shader-spec-right))
+
+(defonce globe-mode (atom "single"))

@@ -29,10 +29,20 @@
 ;;; The below defonce's cannot and will not be reloaded by figwheel.
 (defonce tex-ready (volatile! false))
 
+(defonce tex-ready2 (volatile! false))
+
 (defonce tex (buf/load-texture
               state/gl-ctx {:callback (fn [tex img]
                                         (.generateMipmap state/gl-ctx (:target tex))
                                         (vreset! tex-ready true))
+                            :src      "img/earth.jpg"
+                            :filter   [glc/linear-mipmap-linear glc/linear]
+                            :flip     false}))
+
+(defonce tex2 (buf/load-texture
+              state/gl-ctx2 {:callback (fn [tex img]
+                                        (.generateMipmap state/gl-ctx2 (:target tex2))
+                                        (vreset! tex-ready2 true))
                             :src      "img/earth.jpg"
                             :filter   [glc/linear-mipmap-linear glc/linear]
                             :flip     false}))
@@ -48,18 +58,22 @@
         (g/rotate-z (m/radians (:zAngle earth-rotation))))))
 
 (defn combine-model-shader-and-camera
-  [model shader-spec camera-atom]
+  [model shader-spec camera-atom context]
   (-> model
       (gl/as-gl-buffer-spec {})
-      (assoc :shader (sh/make-shader-from-spec state/gl-ctx shader-spec))
-      (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
+      (assoc :shader (sh/make-shader-from-spec context shader-spec))
+      (gl/make-buffers-in-spec context glc/static-draw)
       (cam/apply @camera-atom)))
 
 (defn draw-frame! [t]
-  (if @tex-ready
+  (when (and @tex-ready @tex-ready2)
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector state/camera)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector-left state/camera state/gl-ctx)
+                                     [:uniforms :model] (set-model-matrix (* t 10)))))
+    (doto state/gl-ctx2
+      (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector-right state/camera state/gl-ctx2)
                                      [:uniforms :model] (set-model-matrix (* t 10)))))))
 
 ;; Start the demo only once.

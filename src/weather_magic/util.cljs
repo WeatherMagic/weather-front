@@ -19,19 +19,27 @@
    ((if (contains? set item) disj conj) set item)))
 
 (defonce tex-ready-test (volatile! false))
+(defonce tex-ready-test2 (volatile! false))
 
 (defn set-view
   "Change mesh and animation function depening on view"
-  [model-atom new-model animation-func func texture context]
+  [model-atom new-model animation-func func texture]
   (reset! model-atom new-model)
   (reset! animation-func func)
-  (buf/load-texture context {:callback (fn [tex img]
-                                         (.generateMipmap context (:target tex))
+  (buf/load-texture state/gl-ctx {:callback (fn [tex img]
+                                         (.generateMipmap state/gl-ctx (:target tex))
                                          (vreset! tex-ready-test true))
+                             :src      texture
+                             :filter   [glc/linear-mipmap-linear glc/linear]
+                             :flip     false})
+  (buf/load-texture state/gl-ctx2 {:callback (fn [tex2 img]
+                                        (.generateMipmap state/gl-ctx2 (:target tex2))
+                                        (vreset! tex-ready-test2 true))
                              :src      texture
                              :filter   [glc/linear-mipmap-linear glc/linear]
                              :flip     false}))
 (defn switch-shader
   "Function to switch shader used to visualize"
-  [shader-selector shader]
-  (swap! shader-selector (fn [] shader)))
+  [shader-left shader-right]
+  (swap! state/shader-selector-left (fn [] shader-left))
+  (swap! state/shader-selector-right (fn [] shader-right)))
