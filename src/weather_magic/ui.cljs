@@ -3,6 +3,7 @@
    [weather-magic.models :as models]
    [weather-magic.state :as state]
    [weather-magic.world :as world]
+   [weather-magic.models :as models]
    [weather-magic.util  :as util]
    [reagent.core :as reagent :refer [atom]]))
 
