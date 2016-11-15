@@ -4,7 +4,8 @@
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.gl.core :as gl]
    [thi.ng.geom.vector :as v :refer [vec2 vec3]]
-   [reagent.core :as reagent :refer [atom]]))
+   [reagent.core :as reagent :refer [atom]]
+   [thi.ng.geom.matrix :as mat :refer [M44]]))
 
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
@@ -35,3 +36,5 @@
 
 (defonce button-class (atom "data-layer-button"))
 
+;; The atom holding the state when panning the world
+(defonce pan-atom (atom M44))

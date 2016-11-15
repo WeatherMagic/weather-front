@@ -31,30 +31,37 @@
       (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
 
 (defonce click-variable (atom false))
+(defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
+(defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
 
-(defn move-fcn [_]
-  (println "move"))
+(defn move-fcn [event]
+  (let [last-pos @last-xy-pos current-x (.-clientX event) current-y (.-clientY event)]
+    (reset! relative-mousemovement {:x-val (- current-x (:x-val last-pos)) :y-val (- current-y (:y-val last-pos))})
+    (println "rel mousemov" relative-mousemovement))
+  (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)}))
 
 (defn mouse-not-down [_]
   (println "mouse up")
   (reset! click-variable false)
-  (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
+  (.removeEventListener (.getElementById js/document "main") "mousemove"
+                        move-fcn false))
 
-(defn pan-handler [_]
+(defn pan-handler [event]
+  (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
+  (println @last-xy-pos)
   (reset! click-variable true)
-  (println @click-variable)
   (println "mousedown")
   (reset! state/earth-animation-fn world/stop-spin)
   (when-not (= @click-variable false)
-    (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
+    (.addEventListener (.getElementById js/document "main") "mousemove"
+                       move-fcn false)
     (.addEventListener (.getElementById js/document "main") "mouseup" mouse-not-down false)))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
-  (.addEventListener
-   (.getElementById js/document "main") "wheel"
-   (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
+  (.addEventListener (.getElementById js/document "main") "wheel"
+                     (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "main") "mousedown" pan-handler false)
