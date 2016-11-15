@@ -25,14 +25,14 @@
    }")
 
 (def standard-vs-right
- "void main() {
+  "void main() {
     vUV = uv;
     vNormal = normal;
     gl_Position = proj * view * model * vec4(position, 1.0);
   }")
 
 (def standard-fs-right
- "void main() {
+  "void main() {
     float lam = lambert(surfaceNormal(vNormal, normalMat),
                         normalize(lightDir));
     vec4 texture = texture2D(tex2, vUV);
@@ -54,7 +54,6 @@
      }
      gl_FragColor = mix(temperature, texture, 0.5);
   }")
-
 
 (def blend-fs-right
   "void main() {
@@ -122,9 +121,9 @@
    :state    {:depth-test true}})
 
 (def standard-shader-spec-right (update-in (assoc standard-shader-spec-left  :vs standard-vs-right
-  :fs (->> standard-fs-right
-           (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-           (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
+                                                  :fs (->> standard-fs-right
+                                                           (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                                                           (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
 
 (def blend-shader-spec-left
   {:vs standard-vs-left
@@ -149,9 +148,9 @@
    :state    {:depth-test true}})
 
 (def blend-shader-spec-right (update-in (assoc blend-shader-spec-left  :vs standard-vs-right
-   :fs (->> blend-fs-right
-            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-            (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
+                                               :fs (->> blend-fs-right
+                                                        (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                                                        (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
 
 (def temperature-shader-spec-left
   {:vs standard-vs-left
@@ -176,6 +175,6 @@
    :state    {:depth-test true}})
 
 (def temperature-shader-spec-right (update-in (assoc temperature-shader-spec-left  :vs standard-vs-right
-   :fs (->> temperature-fs-right
-           (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-           (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
+                                                     :fs (->> temperature-fs-right
+                                                              (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                                                              (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))

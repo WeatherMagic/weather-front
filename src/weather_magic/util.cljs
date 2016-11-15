@@ -26,18 +26,19 @@
   [model-atom new-model animation-func func texture]
   (reset! model-atom new-model)
   (reset! animation-func func)
-  (buf/load-texture state/gl-ctx {:callback (fn [tex img]
-                                         (.generateMipmap state/gl-ctx (:target tex))
-                                         (vreset! tex-ready-test true))
-                             :src      texture
-                             :filter   [glc/linear-mipmap-linear glc/linear]
-                             :flip     false})
-  (buf/load-texture state/gl-ctx2 {:callback (fn [tex2 img]
-                                        (.generateMipmap state/gl-ctx2 (:target tex2))
-                                        (vreset! tex-ready-test2 true))
-                             :src      texture
-                             :filter   [glc/linear-mipmap-linear glc/linear]
-                             :flip     false}))
+  (buf/load-texture state/gl-ctx-left {:callback (fn [tex img]
+                                                   (.generateMipmap state/gl-ctx-left (:target tex))
+                                                   (vreset! tex-ready-test true))
+                                       :src      texture
+                                       :filter   [glc/linear-mipmap-linear glc/linear]
+                                       :flip     false})
+  (buf/load-texture state/gl-ctx-right {:callback (fn [tex2 img]
+                                                    (.generateMipmap state/gl-ctx-right (:target tex2))
+                                                    (vreset! tex-ready-test2 true))
+                                        :src      texture
+                                        :filter   [glc/linear-mipmap-linear glc/linear]
+                                        :flip     false}))
+
 (defn switch-shader
   "Function to switch shader used to visualize"
   [shader-left shader-right]

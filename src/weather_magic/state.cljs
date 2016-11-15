@@ -9,24 +9,24 @@
    [reagent.core :as reagent :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
-(defonce gl-ctx (gl/gl-context "left-canvas"))
+(defonce gl-ctx-left (gl/gl-context "left-canvas"))
 
 ;; Another WebGL context
-(defonce gl-ctx2 (gl/gl-context "right-canvas"))
+(defonce gl-ctx-right (gl/gl-context "right-canvas"))
 
 ;; How WebGL figures out its aspect ratio.
-(defonce view-rect  (gl/get-viewport-rect gl-ctx))
+(defonce view-rect-left  (gl/get-viewport-rect gl-ctx-left))
 
 ;; How WebGL figures out its aspect ratio.
-(defonce view-rect2  (gl/get-viewport-rect gl-ctx2))
+(defonce view-rect-right  (gl/get-viewport-rect gl-ctx-right))
 
-(defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                               :fov    110
-                                               :aspect (gl/get-viewport-rect gl-ctx)})))
+(defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                                    :fov    110
+                                                    :aspect (gl/get-viewport-rect gl-ctx-left)})))
 
-(defonce camera2 (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                              :fov    110
-                                              :aspect (gl/get-viewport-rect gl-ctx2)})))
+(defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                                     :fov    110
+                                                     :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
 (defonce data-layer-atom (atom #{}))
@@ -37,8 +37,6 @@
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom world/spin))
-
-;(defonce earth-transla-fn (atom world/centered))
 
 ;; The current rotation of earth.
 (defonce earth-rotation (atom {:xAngle 24.5
@@ -57,5 +55,3 @@
 (defonce shader-selector-left (atom shaders/standard-shader-spec-left))
 
 (defonce shader-selector-right (atom shaders/standard-shader-spec-right))
-
-(defonce globe-mode (atom "single"))

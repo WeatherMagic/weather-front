@@ -32,20 +32,20 @@
 (defonce tex-ready2 (volatile! false))
 
 (defonce tex (buf/load-texture
-              state/gl-ctx {:callback (fn [tex img]
-                                        (.generateMipmap state/gl-ctx (:target tex))
-                                        (vreset! tex-ready true))
-                            :src      "img/earth.jpg"
-                            :filter   [glc/linear-mipmap-linear glc/linear]
-                            :flip     false}))
+              state/gl-ctx-left {:callback (fn [tex img]
+                                             (.generateMipmap state/gl-ctx-left (:target tex))
+                                             (vreset! tex-ready true))
+                                 :src      "img/earth.jpg"
+                                 :filter   [glc/linear-mipmap-linear glc/linear]
+                                 :flip     false}))
 
 (defonce tex2 (buf/load-texture
-              state/gl-ctx2 {:callback (fn [tex img]
-                                        (.generateMipmap state/gl-ctx2 (:target tex2))
-                                        (vreset! tex-ready2 true))
-                            :src      "img/earth.jpg"
-                            :filter   [glc/linear-mipmap-linear glc/linear]
-                            :flip     false}))
+               state/gl-ctx-right {:callback (fn [tex img]
+                                               (.generateMipmap state/gl-ctx-right (:target tex2))
+                                               (vreset! tex-ready2 true))
+                                   :src      "img/earth.jpg"
+                                   :filter   [glc/linear-mipmap-linear glc/linear]
+                                   :flip     false}))
 
 (defn set-model-matrix
   [t]
@@ -67,13 +67,13 @@
 
 (defn draw-frame! [t]
   (when (and @tex-ready @tex-ready2)
-    (doto state/gl-ctx
+    (doto state/gl-ctx-left
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector-left state/camera state/gl-ctx)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector-left state/camera-left state/gl-ctx-left)
                                      [:uniforms :model] (set-model-matrix (* t 10)))))
-    (doto state/gl-ctx2
+    (doto state/gl-ctx-right
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector-right state/camera state/gl-ctx2)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector-right state/camera-right state/gl-ctx-right)
                                      [:uniforms :model] (set-model-matrix (* t 10)))))))
 
 ;; Start the demo only once.
