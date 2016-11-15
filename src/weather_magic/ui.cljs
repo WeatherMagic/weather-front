@@ -45,25 +45,25 @@
   []
   [:div {:id "data-layer-container" :class (@state/intro-visible {:hidden :visible :visible :hidden})}
    [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
-   [button "Sea-level" swap! state/data-layer-atom util/toggle :Sea-level]
-   [button "Pests" swap! state/data-layer-atom util/toggle :Pests]
-   [button "Drought" swap! state/data-layer-atom util/toggle :Drought]])
+   [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
+   [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
+   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]])
 
 (defn view-selection-buttons
   "Buttons for choosing view"
   []
   [:div {:id "view-selection-container" :class (@state/intro-visible {:hidden :visible :visible :hidden})}
-   [button "Turkey" util/set-view state/model models/plane state/earth-animation-fn world/show-turkey "img/turkey.jpg" state/gl-ctx]
-   [button "World" util/set-view state/model models/sphere state/earth-animation-fn world/spin "img/earth.jpg" state/gl-ctx]
-   [button "Europe" util/set-view state/model models/sphere state/earth-animation-fn world/show-europe "img/earth.jpg" state/gl-ctx]])
+   [button "Turkey" util/set-view state/model models/plane  state/earth-animation-fn world/show-turkey "img/turkey.jpg" state/gl-ctx]
+   [button "World"  util/set-view state/model models/sphere state/earth-animation-fn world/spin        "img/earth.jpg"  state/gl-ctx]
+   [button "Europe" util/set-view state/model models/sphere state/earth-animation-fn world/show-europe "img/earth.jpg"  state/gl-ctx]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"
   []
   [:div {:id "shader-selection-container"}
-   [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
-   [button "Standard shader" util/switch-shader state/shader-selector shaders/standard-shader-spec]
-   [button "Blend shader" util/switch-shader state/shader-selector shaders/blend-shader-spec]
+   [button "Go to map"          swap!              state/intro-visible   #(swap! state/intro-visible hide-unhide)]
+   [button "Standard shader"    util/switch-shader state/shader-selector shaders/standard-shader-spec]
+   [button "Blend shader"       util/switch-shader state/shader-selector shaders/blend-shader-spec]
    [button "Temperature shader" util/switch-shader state/shader-selector shaders/temperature-shader-spec]])
 
 (defn map-ui

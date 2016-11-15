@@ -39,7 +39,4 @@
 
 (defonce model (atom models/sphere))
 
-(defonce b1 (atom "buttons"))
-(defonce b2 (atom "top"))
-
 (defonce shader-selector (atom shaders/standard-shader-spec))

@@ -118,3 +118,8 @@
    :varying  {:vUV      :vec2
               :vNormal  :vec3}
    :state    {:depth-test true}})
+
+(defn switch-shader
+  "Function to switch shader used to visualize"
+  [shader-selector shader]
+  (reset! shader-selector shader))
