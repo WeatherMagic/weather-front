@@ -9,20 +9,16 @@
   "Rotates the sphere so that Europe is shown."
   [earth-atom model-atom t]
   (reset! model-atom models/sphere)
-  (swap! earth-atom assoc :x-angle 45 :y-angle 80))
+  (swap! earth-atom assoc :x-angle 45 :y-angle 80 :z-angle 0 :translation 0))
 
 (defn show-turkey!
   "Shows Turkey on a flat surface."
   [earth-atom model-atom t]
   (reset! model-atom models/plane)
-  (swap! earth-atom assoc
-         :x-angle 0
-         :y-angle 0
-         :z-angle 180
-         :translation (v/vec3 2 1.5 0)))
+  (swap! earth-atom assoc :x-angle 0  :y-angle 0 :z-angle 180 :translation (v/vec3 2 1.5 0)))
 
 (defn spin-earth!
   "Rotates the sphere indefinitely."
   [earth-atom model-atom t]
   (reset! model-atom models/sphere)
-  (swap! earth-atom assoc :x-angle 24.5 :y-angle t))
+  (swap! earth-atom assoc :x-angle 24 :y-angle t :z-angle 0 :translation 0))

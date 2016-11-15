@@ -1,11 +1,11 @@
 (ns weather-magic.state
   (:require
-   [weather-magic.models :as models]
-   [weather-magic.world :as world]
-   [thi.ng.geom.gl.camera :as cam]
-   [thi.ng.geom.gl.core :as gl]
-   [thi.ng.geom.vector :as v :refer [vec2 vec3]]
-   [reagent.core :as reagent :refer [atom]]))
+   [weather-magic.models   :as models]
+   [weather-magic.world    :as world]
+   [thi.ng.geom.gl.camera  :as cam]
+   [thi.ng.geom.gl.core    :as gl]
+   [thi.ng.geom.vector     :as v]
+   [reagent.core           :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
@@ -13,7 +13,7 @@
 ;; How WebGL figures out its aspect ratio.
 (defonce view-rect  (gl/get-viewport-rect gl-ctx))
 
-(defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+(defonce camera (atom (cam/perspective-camera {:eye    (v/vec3 0 0 1.5)
                                                :fov    90
                                                :aspect (gl/get-viewport-rect gl-ctx)})))
 
@@ -30,14 +30,13 @@
 (defonce earth-rotation (atom {:x-angle 24.5
                                :y-angle 0
                                :z-angle 0
-                               :translation (vec3 0 0 0)}))
+                               :translation (v/vec3 0 0 0)}))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce model (atom models/sphere))
-
-(defonce button-class (atom "data-layer-button"))
+(defonce model   (atom models/sphere))
+(defonce texture (atom nil))
 
 ;; Counters for texture loading.
 (defonce textures-loaded (volatile! 0))

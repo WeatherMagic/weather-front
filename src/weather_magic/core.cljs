@@ -37,7 +37,7 @@
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
               :tex1       [:sampler2D 0] ; Specify which texture unit
               :tex2       [:sampler2D 1] ; the uniform is bound to.
-              :lightDir   [:vec3 [1 0 1]]
+              :lightDir   [:vec3 [-1 -1 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
               :fade       :float}

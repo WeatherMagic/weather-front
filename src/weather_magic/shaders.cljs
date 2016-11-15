@@ -12,7 +12,6 @@
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
      vec3 diffuse = mix(texture2D(tex1, vUV).rgb, texture2D(tex2, vUV).rgb, fade);
-     vec3 col = ambientCol + diffuse * lightCol
-                * lam * vec3(1.2, 1.2, 1.2);
+     vec3 col = ambientCol + diffuse * lightCol * lam;
      gl_FragColor = vec4(col, 1.0);
    }")
