@@ -1,7 +1,6 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models   :as models]
-   [weather-magic.world    :as world]
    [thi.ng.geom.gl.camera  :as cam]
    [thi.ng.geom.gl.core    :as gl]
    [thi.ng.geom.vector     :as v]
@@ -25,12 +24,12 @@
                           :month {:value 1 :min 1 :max 12}}))
 
 ;; The function currently animating the earth.
-(defonce earth-animation-fn (atom world/spin-earth!))
+(defonce earth-animation-fn (atom nil))
 ;; The current rotation of earth.
-(defonce earth-rotation (atom {:x-angle 24.5
-                               :y-angle 0
-                               :z-angle 0
-                               :translation (v/vec3 0 0 0)}))
+(defonce earth-orientation (atom {:x-angle     24.5
+                                  :y-angle     0
+                                  :z-angle     0
+                                  :translation (v/vec3 0 0 0)}))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))

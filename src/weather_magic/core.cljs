@@ -50,13 +50,13 @@
 
 (defn set-model-matrix
   [t]
-  (@state/earth-animation-fn state/earth-rotation state/model t)
-  (let [earth-rotation @state/earth-rotation]
+  (@state/earth-animation-fn t)
+  (let [earth-orientation @state/earth-orientation]
     (-> M44
-        (g/translate (:translation earth-rotation))
-        (g/rotate-x (m/radians (:x-angle earth-rotation)))
-        (g/rotate-y (m/radians (:y-angle earth-rotation)))
-        (g/rotate-z (m/radians (:z-angle earth-rotation))))))
+        (g/translate (:translation earth-orientation))
+        (g/rotate-x (m/radians (:x-angle earth-orientation)))
+        (g/rotate-y (m/radians (:y-angle earth-orientation)))
+        (g/rotate-z (m/radians (:z-angle earth-orientation))))))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera t]
@@ -69,7 +69,7 @@
 
 (defn draw-frame! [t]
   (when (= @state/textures-loaded @state/textures-to-be-loaded)
-    (gl/bind textures/earth 0)
+    (gl/bind @state/texture 0)
     (gl/bind textures/trump 1)
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
