@@ -1,5 +1,6 @@
 (ns weather-magic.ui
   (:require
+   [weather-magic.models :as models]
    [weather-magic.state :as state]
    [weather-magic.world :as world]
    [weather-magic.models :as models]
@@ -43,9 +44,9 @@
   "Buttons for choosing view"
   []
   [:div {:id "view-selection-container"}
-   [button "Turkey" util/set-view state/model models/plane state/earth-animation-fn world/show-turkey "img/turkey.jpg" state/gl-ctx]
-   [button "World"  util/set-view state/model models/sphere state/earth-animation-fn world/spin "img/earth.jpg" state/gl-ctx]
-   [button "Europe"   util/set-view state/model models/sphere state/earth-animation-fn world/show-europe "img/earth.jpg" state/gl-ctx]])
+   [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
+   [button "World"  reset! state/earth-animation-fn world/spin-earth!]
+   [button "Europe" reset! state/earth-animation-fn world/show-europe!]])
 
 ;; Blur canvas
 (defn hide-unhide
