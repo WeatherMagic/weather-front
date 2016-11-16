@@ -54,17 +54,17 @@
   []
   [:div {:id "view-selection-container" :class (hide-unhide @state/intro-visible)}
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
-   [button "World"  reset! state/earth-animation-fn world/spin-earth!]
-   [button "Europe" reset! state/earth-animation-fn world/show-europe!]])
+   [button "Europe" reset! state/earth-animation-fn world/show-europe!]
+   [button "World"  reset! state/earth-animation-fn world/spin-earth!]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"
   []
   [:div {:id "shader-selection-container"}
-   [button "Go to map"          swap!  state/intro-visible  #(swap! state/intro-visible hide-unhide)]
-   [button "Standard shader"    reset! state/current-shader shaders/standard-shader-spec]
-   [button "Blend shader"       reset! state/current-shader shaders/blend-shader-spec]
-   [button "Temperature shader" reset! state/current-shader shaders/temperature-shader-spec]])
+   [button "Go to map"          swap!                state/intro-visible                  #(swap! state/intro-visible hide-unhide)]
+   [button "Standard shader"    shaders/set-shaders! shaders/standard-shader-spec-left    shaders/standard-shader-spec-right]
+   [button "Blend shader"       shaders/set-shaders! shaders/blend-shader-spec-left       shaders/blend-shader-spec-right]
+   [button "Temperature shader" shaders/set-shaders! shaders/temperature-shader-spec-left shaders/temperature-shader-spec-right]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."

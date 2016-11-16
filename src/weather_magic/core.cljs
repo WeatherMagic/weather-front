@@ -35,7 +35,7 @@
         (g/rotate-z (m/radians (:z-angle earth-orientation))))))
 
 (defn combine-model-shader-and-camera
-  [model shader-spec camera context t]
+  [model shader-spec camera context]
   (-> model
       (gl/as-gl-buffer-spec {})
       (assoc :shader (sh/make-shader-from-spec context shader-spec))
@@ -43,14 +43,16 @@
       (cam/apply camera)))
 
 (defn draw-frame! [t]
-  (when (and @tex-ready @tex-ready2)
+  (when (= @state/textures-loaded @state/textures-to-be-loaded)
+    (gl/bind @state/texture 0)
+    (gl/bind textures/trump 1)
     (doto state/gl-ctx-left
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector-left state/camera-left state/gl-ctx-left)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @shaders/current-shader-left @state/camera-left state/gl-ctx-left)
                                      [:uniforms :model] (set-model-matrix (* t 10)))))
     (doto state/gl-ctx-right
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector-right state/camera-right state/gl-ctx-right)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @shaders/current-shader-right @state/camera-right state/gl-ctx-right)
                                      [:uniforms :model] (set-model-matrix (* t 10)))))))
 
 ;; Start the demo only once.

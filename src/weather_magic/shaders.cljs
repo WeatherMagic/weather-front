@@ -22,20 +22,23 @@
      gl_FragColor = col;
    }")
 
-(def blend-fs
+(def standard-vs-right
   "void main() {
-     vec4 texture = texture2D(tex, vUV);
-     vec4 temperature;
+     vUV = uv;
+     vNormal = normal;
+     gl_Position = proj * view * model * vec4(position, 1.0);
+   }")
 
-     if(texture.g > 0.5) {
-       temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
-     } else {
-       temperature = vec4(texture.g, texture.g, 1.0, 1.0);
-     }
-     gl_FragColor = mix(temperature, texture, 0.5);
-  }")
+(def standard-fs-right
+  "void main() {
+     float lam = lambert(surfaceNormal(vNormal, normalMat),
+                         normalize(lightDir));
+     vec4 diffuse = texture2D(base2, vUV) + texture2D(trump2, vUV);
+     vec4 col = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
+     gl_FragColor = col;
+   }")
 
-(def blend-fs-right
+(def blend-fs-left
   "void main() {
      vec4 texture = texture2D(base, vUV);
      vec4 temperature;
@@ -45,7 +48,20 @@
      } else {
        temperature = vec4(texture.g, texture.g, 1.0, 1.0);
      }
-     gl_FragColor = mix(temperature, texture, 0.5);
+     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump,vUV);
+  }")
+
+(def blend-fs-right
+  "void main() {
+     vec4 texture = texture2D(base2, vUV);
+     vec4 temperature;
+
+     if(texture.g > 0.5) {
+       temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
+     } else {
+       temperature = vec4(texture.g, texture.g, 1.0, 1.0);
+     }
+     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump2,vUV);
   }")
 
 (def temperature-fs-left
@@ -59,13 +75,13 @@
     } else {
       temperature = vec4(texture.g, texture.g, 1.0, 1.0);
     }
-     gl_FragColor = temperature;
+     gl_FragColor = temperature + texture2D(trump,vUV);;
   }")
 
 (def temperature-fs-right
   "void main() {
 
-    vec4 texture = texture2D(tex2, vUV);
+    vec4 texture = texture2D(base2, vUV);
     vec4 temperature;
 
     if(texture.g > 0.5) {
@@ -73,7 +89,7 @@
     } else {
       temperature = vec4(texture.g, texture.g, 1.0, 1.0);
     }
-     gl_FragColor = temperature;
+     gl_FragColor = temperature + texture2D(trump2,vUV);
   }")
 
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
@@ -112,14 +128,24 @@
 (def standard-shader-spec-right (update-in (assoc standard-shader-spec-left  :vs standard-vs-right
                                                   :fs (->> standard-fs-right
                                                            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                           (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
+                                                           (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base2 :trump :trump2}))
 
 (def blend-shader-spec-right (update-in (assoc blend-shader-spec-left  :vs standard-vs-right
                                                :fs (->> blend-fs-right
                                                         (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                        (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
+                                                        (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base2 :trump :trump2}))
 
+;Hade kvar koden för update-in ifall vi måste byta namn på vissa keys
 (def temperature-shader-spec-right (update-in (assoc temperature-shader-spec-left  :vs standard-vs-right
                                                      :fs (->> temperature-fs-right
                                                               (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                              (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
+                                                              (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base2 :trump :trump2}))
+
+(defonce current-shader-left (atom standard-shader-spec-left))
+(defonce current-shader-right (atom standard-shader-spec-right))
+
+(defn set-shaders!
+  "Set shader for en left and right canvas"
+  [left-shader right-shader]
+  (reset! current-shader-left  left-shader)
+  (reset! current-shader-right right-shader))
