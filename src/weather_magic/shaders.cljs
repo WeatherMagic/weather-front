@@ -120,59 +120,23 @@
               :vNormal  :vec3}
    :state    {:depth-test true}})
 
+(def blend-shader-spec-left (assoc standard-shader-spec-left :fs (->> blend-fs-left
+                                                                      (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                                                                      (glsl/assemble))))
+
+(def temperature-shader-spec-left (assoc standard-shader-spec-left :fs (->> temperature-fs-left
+                                                                            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                                                                            (glsl/assemble))))
+
 (def standard-shader-spec-right (update-in (assoc standard-shader-spec-left  :vs standard-vs-right
                                                   :fs (->> standard-fs-right
                                                            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
                                                            (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
 
-(def blend-shader-spec-left
-  {:vs standard-vs-left
-   :fs (->> blend-fs-left
-            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-            (glsl/assemble))
-   :uniforms {:model      [:mat4 M44]
-              :view       :mat4
-              :proj       :mat4
-              :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex        :sampler2D
-              :lightDir   [:vec3 [1 0 1]]
-              :lightCol   [:vec4 [1 1 1 1]]
-              :ambientCol [:vec4 [0 0 0.1 1.0]]
-              :frameCounter [:int 0]}
-
-   :attribs  {:position :vec3
-              :normal   :vec3
-              :uv       :vec2}
-   :varying  {:vUV      :vec2
-              :vNormal  :vec3}
-   :state    {:depth-test true}})
-
 (def blend-shader-spec-right (update-in (assoc blend-shader-spec-left  :vs standard-vs-right
                                                :fs (->> blend-fs-right
                                                         (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
                                                         (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:tex :tex2}))
-
-(def temperature-shader-spec-left
-  {:vs standard-vs-left
-   :fs (->> temperature-fs-left
-            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-            (glsl/assemble))
-   :uniforms {:model      [:mat4 M44]
-              :view       :mat4
-              :proj       :mat4
-              :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex        :sampler2D
-              :lightDir   [:vec3 [1 0 1]]
-              :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec4 [0 0 0.1 1.0]]
-              :frameCounter [:int 0]}
-
-   :attribs  {:position :vec3
-              :normal   :vec3
-              :uv       :vec2}
-   :varying  {:vUV      :vec2
-              :vNormal  :vec3}
-   :state    {:depth-test true}})
 
 (def temperature-shader-spec-right (update-in (assoc temperature-shader-spec-left  :vs standard-vs-right
                                                      :fs (->> temperature-fs-right
