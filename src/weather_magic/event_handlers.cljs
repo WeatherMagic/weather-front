@@ -54,7 +54,7 @@
         current-y (.-clientY event)
         rel-x (- current-x (:x-val last-pos))
         rel-y (- current-y (:y-val last-pos))]
-  (update-pan rel-x rel-y))
+    (update-pan rel-x rel-y))
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)}))
 
 (defn mouse-not-down [_]
