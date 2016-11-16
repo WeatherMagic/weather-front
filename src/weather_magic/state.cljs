@@ -3,7 +3,7 @@
    [weather-magic.models   :as models]
    [thi.ng.geom.gl.camera  :as cam]
    [thi.ng.geom.gl.core    :as gl]
-   [thi.ng.geom.vector     :as v]
+   [thi.ng.geom.vector     :as v :refer [vec3]]
    [reagent.core           :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
@@ -12,7 +12,7 @@
 ;; How WebGL figures out its aspect ratio.
 (defonce view-rect  (gl/get-viewport-rect gl-ctx))
 
-(defonce camera (atom (cam/perspective-camera {:eye    (v/vec3 0 0 1.5)
+(defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                :fov    90
                                                :aspect (gl/get-viewport-rect gl-ctx)})))
 
@@ -29,7 +29,7 @@
 (defonce earth-orientation (atom {:x-angle     24.5
                                   :y-angle     0
                                   :z-angle     0
-                                  :translation (v/vec3 0 0 0)}))
+                                  :translation (vec3 0 0 0)}))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))

@@ -35,17 +35,16 @@
               :view       :mat4
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex1       [:sampler2D 0] ; Specify which texture unit
-              :tex2       [:sampler2D 1] ; the uniform is bound to.
+              :base       [:sampler2D 0] ; Specify which texture unit
+              :trump      [:sampler2D 1] ; the uniform is bound to.
               :lightDir   [:vec3 [-1 -1 1]]
               :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec3 [0 0 0.1]]
-              :fade       :float}
-   :attribs  {:position :vec3
-              :normal   :vec3
-              :uv       :vec2}
-   :varying  {:vUV      :vec2
-              :vNormal  :vec3}
+              :ambientCol [:vec3 [0 0 0.1]]}
+   :attribs  {:position   :vec3
+              :normal     :vec3
+              :uv         :vec2}
+   :varying  {:vUV        :vec2
+              :vNormal    :vec3}
    :state    {:depth-test true}})
 
 (defn set-model-matrix
@@ -63,7 +62,6 @@
   (-> model
       (gl/as-gl-buffer-spec {})
       (assoc :shader (sh/make-shader-from-spec state/gl-ctx shader-spec))
-      (assoc-in [:uniforms :fade] (+ 0.5 (* 0.5 (Math/sin (* t 2)))))
       (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
       (cam/apply camera)))
 

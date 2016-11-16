@@ -15,7 +15,7 @@
                  :flip     false}))
 
 (defonce earth  (load-texture "img/earth.jpg"))
-(defonce trump  (load-texture "img/trump.jpg"))
+(defonce trump  (load-texture "img/trump.png"))
 (defonce turkey (load-texture "img/turkey.jpg"))
 
 ;; THIS IS BAD AND I SHOULD FEEL BAD.
