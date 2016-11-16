@@ -1,10 +1,11 @@
 (ns weather-magic.state
   (:require
-   [weather-magic.models   :as models]
-   [thi.ng.geom.gl.camera  :as cam]
-   [thi.ng.geom.gl.core    :as gl]
-   [thi.ng.geom.vector     :as v :refer [vec3]]
-   [reagent.core           :refer [atom]]))
+   [weather-magic.models  :as models]
+   [thi.ng.geom.gl.camera :as cam]
+   [thi.ng.geom.gl.core   :as gl]
+   [weather-magic.shaders :as shaders]
+   [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
+   [reagent.core          :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
@@ -13,7 +14,7 @@
 (defonce view-rect  (gl/get-viewport-rect gl-ctx))
 
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                               :fov    90
+                                               :fov    110
                                                :aspect (gl/get-viewport-rect gl-ctx)})))
 
 ;; What data is being displayed on the map right now?
@@ -36,6 +37,8 @@
 
 (defonce model   (atom models/sphere))
 (defonce texture (atom nil))
+
+(defonce current-shader (atom shaders/standard-shader-spec))
 
 ;; Counters for texture loading.
 (defonce textures-loaded (volatile! 0))

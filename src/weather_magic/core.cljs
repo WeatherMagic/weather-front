@@ -24,29 +24,6 @@
 
 (enable-console-print!)
 
-;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
-;;; iff they're modified when the source code is saved.
-(def shader-spec
-  {:vs shaders/vs
-   :fs (->> shaders/fs
-            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-            (glsl/assemble))
-   :uniforms {:model      [:mat4 M44]
-              :view       :mat4
-              :proj       :mat4
-              :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :base       [:sampler2D 0] ; Specify which texture unit
-              :trump      [:sampler2D 1] ; the uniform is bound to.
-              :lightDir   [:vec3 [-1 -1 1]]
-              :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec3 [0 0 0.1]]}
-   :attribs  {:position   :vec3
-              :normal     :vec3
-              :uv         :vec2}
-   :varying  {:vUV        :vec2
-              :vNormal    :vec3}
-   :state    {:depth-test true}})
-
 (defn set-model-matrix
   [t]
   (@state/earth-animation-fn t)
@@ -71,7 +48,7 @@
     (gl/bind textures/trump 1)
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model shader-spec @state/camera t)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
                                      [:uniforms :model] (set-model-matrix t))))))
 
 ;; Start the demo only once.
