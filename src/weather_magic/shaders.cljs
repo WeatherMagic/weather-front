@@ -17,32 +17,12 @@
   "void main() {
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
-     vec4 texture = texture2D(tex, vUV);
-     vec4 col = ambientCol + texture * lightCol
-                * lam * vec4(1.2, 1.2, 1.2, 1.0);
-     gl_FragColor = texture;
-     //gl_FragColor = col;
+     vec4 diffuse = texture2D(base, vUV) + texture2D(trump, vUV);
+     vec4 col = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
+     gl_FragColor = col;
    }")
 
-(def standard-vs-right
-  "void main() {
-    vUV = uv;
-    vNormal = normal;
-    gl_Position = proj * view * model * vec4(position, 1.0);
-  }")
-
-(def standard-fs-right
-  "void main() {
-    float lam = lambert(surfaceNormal(vNormal, normalMat),
-                        normalize(lightDir));
-    vec4 texture = texture2D(tex2, vUV);
-    vec4 col = ambientCol + texture * lightCol
-               * lam * vec4(1.2, 1.2, 1.2, 1.0);
-    gl_FragColor = texture;
-    //gl_FragColor = col;
-  }")
-
-(def blend-fs-left
+(def blend-fs
   "void main() {
      vec4 texture = texture2D(tex, vUV);
      vec4 temperature;
@@ -57,7 +37,7 @@
 
 (def blend-fs-right
   "void main() {
-     vec4 texture = texture2D(tex2, vUV);
+     vec4 texture = texture2D(base, vUV);
      vec4 temperature;
 
      if(texture.g > 0.5) {
@@ -71,7 +51,7 @@
 (def temperature-fs-left
   "void main() {
 
-    vec4 texture = texture2D(tex, vUV);
+    vec4 texture = texture2D(base, vUV);
     vec4 temperature;
 
     if(texture.g > 0.5) {
@@ -107,10 +87,11 @@
               :view       :mat4
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex        :sampler2D
+              :base       [:sampler2D 0] ; Specify which texture unit
+              :trump      [:sampler2D 1] ; the uniform is bound to.
               :lightDir   [:vec3 [1 0 1]]
-              :lightCol   [:vec4 [1 1 1 1]]
-              :ambientCol [:vec4 [0 0 0.1 1.0]]
+              :lightCol   [:vec3 [1 1 1]]
+              :ambientCol [:vec3 [0 0 0.1]]
               :frameCounter [:int 0]}
 
    :attribs  {:position :vec3

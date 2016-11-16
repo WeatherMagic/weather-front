@@ -1,12 +1,11 @@
 (ns weather-magic.state
   (:require
-   [weather-magic.world :as world]
-   [weather-magic.models :as models]
+   [weather-magic.models  :as models]
    [thi.ng.geom.gl.camera :as cam]
-   [thi.ng.geom.gl.core :as gl]
+   [thi.ng.geom.gl.core   :as gl]
    [weather-magic.shaders :as shaders]
-   [thi.ng.geom.vector :as v :refer [vec2 vec3]]
-   [reagent.core :as reagent :refer [atom]]))
+   [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
+   [reagent.core          :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx-left (gl/gl-context "left-canvas"))
@@ -36,22 +35,21 @@
                           :month {:value 1 :min 1 :max 12}}))
 
 ;; The function currently animating the earth.
-(defonce earth-animation-fn (atom world/spin))
-
+(defonce earth-animation-fn (atom nil))
 ;; The current rotation of earth.
-(defonce earth-rotation (atom {:xAngle 24.5
-                               :yAngle 0
-                               :zAngle 0
-                               :translation (vec3 0 0 0)}))
+(defonce earth-orientation (atom {:x-angle     24.5
+                                  :y-angle     0
+                                  :z-angle     0
+                                  :translation (vec3 0 0 0)}))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce model (atom models/sphere))
+(defonce model   (atom models/sphere))
+(defonce texture (atom nil))
 
-(defonce b1 (atom "buttons"))
-(defonce b2 (atom "top"))
+(defonce current-shader (atom shaders/standard-shader-spec))
 
-(defonce shader-selector-left (atom shaders/standard-shader-spec-left))
-
-(defonce shader-selector-right (atom shaders/standard-shader-spec-right))
+;; Counters for texture loading.
+(defonce textures-loaded (volatile! 0))
+(defonce textures-to-be-loaded (volatile! 0))

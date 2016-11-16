@@ -1,8 +1,8 @@
 (ns weather-magic.ui
   (:require
+   [weather-magic.models :as models]
    [weather-magic.state :as state]
    [weather-magic.world :as world]
-   [weather-magic.models :as models]
    [weather-magic.shaders :as shaders]
    [weather-magic.util  :as util]
    [reagent.core :as reagent :refer [atom]]))
@@ -43,28 +43,28 @@
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
-  [:div {:id "data-layer-container" :class (@state/intro-visible {:hidden :visible :visible :hidden})}
+  [:div {:id "data-layer-container" :class (hide-unhide @state/intro-visible)}
    [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
-   [button "Sea-level" swap! state/data-layer-atom util/toggle :Sea-level]
-   [button "Pests" swap! state/data-layer-atom util/toggle :Pests]
-   [button "Drought" swap! state/data-layer-atom util/toggle :Drought]])
+   [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
+   [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
+   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]])
 
 (defn view-selection-buttons
   "Buttons for choosing view"
   []
-  [:div {:id "view-selection-container" :class (@state/intro-visible {:hidden :visible :visible :hidden})}
-   [button "Turkey" util/set-view state/model models/plane state/earth-animation-fn world/show-turkey "img/turkey.jpg"]
-   [button "Europe" util/set-view state/model models/sphere state/earth-animation-fn world/show-europe "img/earth.jpg"]
-   [button "World" util/set-view state/model models/sphere state/earth-animation-fn world/spin "img/earth.jpg"]])
+  [:div {:id "view-selection-container" :class (hide-unhide @state/intro-visible)}
+   [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
+   [button "World"  reset! state/earth-animation-fn world/spin-earth!]
+   [button "Europe" reset! state/earth-animation-fn world/show-europe!]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"
   []
   [:div {:id "shader-selection-container"}
-   [button "Go to map" swap! state/intro-visible #(swap! state/intro-visible hide-unhide)]
-   [button "Standard shader" util/switch-shader shaders/standard-shader-spec-left shaders/standard-shader-spec-right]
-   [button "Blend shader" util/switch-shader shaders/blend-shader-spec-left shaders/blend-shader-spec-right]
-   [button "Temperature shader" util/switch-shader shaders/temperature-shader-spec-left shaders/temperature-shader-spec-right]])
+   [button "Go to map"          swap!  state/intro-visible  #(swap! state/intro-visible hide-unhide)]
+   [button "Standard shader"    reset! state/current-shader shaders/standard-shader-spec]
+   [button "Blend shader"       reset! state/current-shader shaders/blend-shader-spec]
+   [button "Temperature shader" reset! state/current-shader shaders/temperature-shader-spec]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
