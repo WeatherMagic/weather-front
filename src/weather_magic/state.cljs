@@ -26,17 +26,17 @@
                           :month {:value 1 :min 1 :max 12}}))
 
 ;; The function currently animating the earth.
-(defonce earth-animation-fn (atom world/spin))
+(defonce earth-animation-fn (atom nil))
 ;; The current rotation of earth.
-
-(defonce earth-rotation (atom {:xAngle 24.5
-                               :yAngle 0
-                               :zAngle 0
-                               :translation (vec3 0 0 0)}))
+(defonce earth-orientation (atom {:x-angle     24.5
+                                  :y-angle     0
+                                  :z-angle     0
+                                  :translation (vec3 0 0 0)}))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce model (atom models/sphere))
+(defonce model   (atom models/sphere))
+(defonce texture (atom nil))
 
 (defonce current-shader (atom shaders/standard-shader-spec))

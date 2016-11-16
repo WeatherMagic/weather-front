@@ -31,15 +31,6 @@
    [slider-component :year]
    [slider-component :month]])
 
-;; Blur canvas
-(defn hide-unhide
-  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
-  [hidden-or-not]
-  (hidden-or-not {:hidden :visible :visible :hidden}))
-
-(defn map-ui-blur []
-  [:div {:class @state/intro-visible :id "blur"}])
-
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
@@ -53,9 +44,9 @@
   "Buttons for choosing view"
   []
   [:div {:id "view-selection-container" :class (@state/intro-visible {:hidden :visible :visible :hidden})}
-   [button "Turkey" util/set-view state/model models/plane  state/earth-animation-fn world/show-turkey "img/turkey.jpg" state/gl-ctx]
-   [button "World"  util/set-view state/model models/sphere state/earth-animation-fn world/spin        "img/earth.jpg"  state/gl-ctx]
-   [button "Europe" util/set-view state/model models/sphere state/earth-animation-fn world/show-europe "img/earth.jpg"  state/gl-ctx]])
+   [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
+   [button "World"  reset! state/earth-animation-fn world/spin-earth!]
+   [button "Europe" reset! state/earth-animation-fn world/show-europe!]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"
@@ -65,6 +56,14 @@
    [button "Standard shader"    reset! state/current-shader shaders/standard-shader-spec]
    [button "Blend shader"       reset! state/current-shader shaders/blend-shader-spec]
    [button "Temperature shader" reset! state/current-shader shaders/temperature-shader-spec]])
+;; Blur canvas
+(defn hide-unhide
+  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
+  [hidden-or-not]
+  (hidden-or-not {:hidden :visible :visible :hidden}))
+
+(defn map-ui-blur []
+  [:div {:class @state/intro-visible :id "blur"}])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
