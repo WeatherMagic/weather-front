@@ -5,6 +5,9 @@
    [thi.ng.geom.rect  :as rect]
    [weather-magic.world :as world]
    [thi.ng.geom.gl.core  :as gl]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.matrix :as mat :refer [M44]]
+   [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [reagent.core :as reagent :refer [atom]]))
 
 (enable-console-print!)
@@ -34,10 +37,24 @@
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
 
+(defn update-pan
+  [rel-x rel-y]
+  (println "rel-x: " rel-x)
+  (println "rel-y: " (* rel-y -1))
+  (reset! state/pan-atom (-> M44
+                             (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
+                             (g/rotate-y (m/radians (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) 0.1)))
+                             (g/rotate-z (Math/atan2 rel-y rel-x))
+                             (m/* @state/pan-atom)))
+  (println @state/pan-atom))
+
 (defn move-fcn [event]
-  (let [last-pos @last-xy-pos current-x (.-clientX event) current-y (.-clientY event)]
-    (reset! relative-mousemovement {:x-val (- current-x (:x-val last-pos)) :y-val (- current-y (:y-val last-pos))})
-    (println "rel mousemov" relative-mousemovement))
+  (let [last-pos @last-xy-pos
+        current-x (.-clientX event)
+        current-y (.-clientY event)
+        rel-x (- current-x (:x-val last-pos))
+        rel-y (- current-y (:y-val last-pos))]
+  (update-pan rel-x rel-y))
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)}))
 
 (defn mouse-not-down [_]

@@ -73,6 +73,15 @@
         (g/rotate-x (m/radians (:xAngle earth-rotation)))
         (g/rotate-y (m/radians (:yAngle earth-rotation))))))
 
+(defn spin2
+  [t]
+  @state/pan-atom)
+
+(defn spin3
+  [t]
+    (-> M44
+        (g/rotate-around-axis (vec3 0 0 1) t)))
+
 (defn combine-model-shader-and-camera
   [model shader-spec camera-atom]
   (-> model
@@ -86,7 +95,7 @@
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec state/camera)
-                                     [:uniforms :model] (spin t))))))
+                                     [:uniforms :model] (spin2 (* 0.5 t)))))))
 
 ;; Start the demo only once.
 (defonce running
