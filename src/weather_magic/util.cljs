@@ -2,8 +2,7 @@
   (:require
    [thi.ng.geom.gl.buffers :as buf]
    [thi.ng.geom.gl.webgl.constants :as glc]
-   [weather-magic.state            :as state]
-   [weather-magic.shaders          :as shaders]))
+   [weather-magic.state            :as state]))
 
 (defn transparent-println
   "Print something and return that something."
@@ -31,7 +30,3 @@
                              :src      texture
                              :filter   [glc/linear-mipmap-linear glc/linear]
                              :flip     false}))
-(defn switch-shader
-  "Function to switch shader used to visualize"
-  [shader-selector shader]
-  (swap! shader-selector (fn [] shader)))

@@ -48,7 +48,7 @@
     (gl/bind textures/trump 1)
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model shader-spec @state/camera t)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
                                      [:uniforms :model] (set-model-matrix t))))))
 
 ;; Start the demo only once.

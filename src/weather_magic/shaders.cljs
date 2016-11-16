@@ -24,7 +24,7 @@
 
 (def blend-fs
   "void main() {
-     vec4 texture = texture2D(tex, vUV);
+     vec4 texture = texture2D(base, vUV);
      vec4 temperature;
 
      if(texture.g > 0.5) {
@@ -38,7 +38,7 @@
 (def temperature-fs
   "void main() {
 
-    vec4 texture = texture2D(tex, vUV);
+    vec4 texture = texture2D(base, vUV);
     vec4 temperature;
 
     if(texture.g > 0.5) {
@@ -60,10 +60,11 @@
               :view       :mat4
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex        :sampler2D
+              :base       [:sampler2D 0] ; Specify which texture unit
+              :trump      [:sampler2D 1] ; the uniform is bound to.
               :lightDir   [:vec3 [1 0 1]]
-              :lightCol   [:vec4 [1 1 1 1]]
-              :ambientCol [:vec4 [0 0 0.1 1.0]]
+              :lightCol   [:vec3 [1 1 1]]
+              :ambientCol [:vec3 [0 0 0.1]]
               :frameCounter [:int 0]}
 
    :attribs  {:position :vec3
@@ -82,10 +83,11 @@
               :view       :mat4
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex        :sampler2D
+              :base       [:sampler2D 0] ; Specify which texture unit
+              :trump      [:sampler2D 1] ; the uniform is bound to.
               :lightDir   [:vec3 [1 0 1]]
-              :lightCol   [:vec4 [1 1 1 1]]
-              :ambientCol [:vec4 [0 0 0.1 1.0]]
+              :lightCol   [:vec3 [1 1 1]]
+              :ambientCol [:vec3 [0 0 0.1]]
               :frameCounter [:int 0]}
 
    :attribs  {:position :vec3
@@ -104,10 +106,11 @@
               :view       :mat4
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :tex        :sampler2D
+              :base       [:sampler2D 0] ; Specify which texture unit
+              :trump      [:sampler2D 1] ; the uniform is bound to.
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec4 [0 0 0.1 1.0]]
+              :ambientCol [:vec3 [0 0 0.1]]
               :frameCounter [:int 0]}
 
    :attribs  {:position :vec3
