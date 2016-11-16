@@ -59,7 +59,7 @@
   (if @tex-ready
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/shader-selector state/camera)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader state/camera)
                                      [:uniforms :model] (set-model-matrix (* t 10)))))))
 
 ;; Start the demo only once.

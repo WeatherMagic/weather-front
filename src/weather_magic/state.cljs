@@ -39,4 +39,4 @@
 
 (defonce model (atom models/sphere))
 
-(defonce shader-selector (atom shaders/standard-shader-spec))
+(defonce current-shader (atom shaders/standard-shader-spec))
