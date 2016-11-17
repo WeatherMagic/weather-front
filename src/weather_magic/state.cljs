@@ -26,6 +26,7 @@
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom world/spin))
+
 ;; The current rotation of earth.
 (defonce earth-rotation (atom {:x-angle 24.5 :y-angle 0}))
 

@@ -45,8 +45,7 @@
                              (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
                              (g/rotate-y (m/radians (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) 0.1)))
                              (g/rotate-z (Math/atan2 rel-y rel-x))
-                             (m/* @state/pan-atom)))
-  (println @state/pan-atom))
+                             (m/* @state/pan-atom))))
 
 (defn move-fcn [event]
   (let [last-pos @last-xy-pos
@@ -57,22 +56,17 @@
     (update-pan rel-x rel-y))
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)}))
 
-(defn mouse-not-down [_]
-  (println "mouse up")
+(defn mouse-up [_]
   (reset! click-variable false)
-  (.removeEventListener (.getElementById js/document "main") "mousemove"
-                        move-fcn false))
+  (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
 
 (defn pan-handler [event]
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
-  (println @last-xy-pos)
   (reset! click-variable true)
-  (println "mousedown")
   (reset! state/earth-animation-fn world/stop-spin)
   (when-not (= @click-variable false)
-    (.addEventListener (.getElementById js/document "main") "mousemove"
-                       move-fcn false)
-    (.addEventListener (.getElementById js/document "main") "mouseup" mouse-not-down false)))
+    (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
+    (.addEventListener (.getElementById js/document "main") "mouseup" mouse-up false)))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."

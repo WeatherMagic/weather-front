@@ -73,8 +73,8 @@
         (g/rotate-x (m/radians (:xAngle earth-rotation)))
         (g/rotate-y (m/radians (:yAngle earth-rotation))))))
 
-(defn spin2
-  [t]
+(defn pan-spin
+  [_]
   @state/pan-atom)
 
 (defn combine-model-shader-and-camera
@@ -91,6 +91,7 @@
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera model shader-spec state/camera)
                                      [:uniforms :model] @state/pan-atom)))))
+;@state/pan-atom
 
 ;; Start the demo only once.
 (defonce running
