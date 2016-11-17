@@ -1,10 +1,11 @@
 (ns weather-magic.state
   (:require
-   [weather-magic.world :as world]
+   [weather-magic.models  :as models]
    [thi.ng.geom.gl.camera :as cam]
-   [thi.ng.geom.gl.core :as gl]
-   [thi.ng.geom.vector :as v :refer [vec2 vec3]]
-   [reagent.core :as reagent :refer [atom]]
+   [thi.ng.geom.gl.core   :as gl]
+   [weather-magic.shaders :as shaders]
+   [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
+   [reagent.core          :refer [atom]]
    [thi.ng.geom.matrix :as mat :refer [M44]]))
 
 ;; Our WebGL context, given by the browser.
@@ -14,7 +15,7 @@
 (defonce view-rect  (gl/get-viewport-rect gl-ctx))
 
 (defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                               :fov    90
+                                               :fov    110
                                                :aspect (gl/get-viewport-rect gl-ctx)})))
 
 ;; What data is being displayed on the map right now?
@@ -25,16 +26,24 @@
                           :month {:value 1 :min 1 :max 12}}))
 
 ;; The function currently animating the earth.
-(defonce earth-animation-fn (atom world/spin))
-
+(defonce earth-animation-fn (atom nil))
 ;; The current rotation of earth.
-(defonce earth-rotation (atom {:x-angle 24.5 :y-angle 0}))
+(defonce earth-orientation (atom {:x-angle     24.5
+                                  :y-angle     0
+                                  :z-angle     0
+                                  :translation (vec3 0 0 0)}))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce view (atom "Spinning"))
+(defonce model   (atom models/sphere))
+(defonce texture (atom nil))
 
+(defonce current-shader (atom shaders/standard-shader-spec))
+
+;; Counters for texture loading.
+(defonce textures-loaded (volatile! 0))
+(defonce textures-to-be-loaded (volatile! 0))
 (defonce button-class (atom "data-layer-button"))
 
 ;; The atom holding the state when panning the world
