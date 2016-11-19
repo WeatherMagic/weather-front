@@ -1,7 +1,6 @@
 (ns weather-magic.core
   (:require
    [weather-magic.ui               :as ui]
-   [weather-magic.io               :as io]
    [weather-magic.state            :as state]
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
