@@ -32,11 +32,8 @@
         (g/translate (:translation earth-orientation))
         (g/rotate-x (m/radians (:x-angle earth-orientation)))
         (g/rotate-y (m/radians (:y-angle earth-orientation)))
-        (g/rotate-z (m/radians (:z-angle earth-orientation))))))
-
-(defn pan-spin
-  [_]
-  @state/pan-atom)
+        (g/rotate-z (m/radians (:z-angle earth-orientation)))
+        (m/* @state/pan-atom))))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera t]
@@ -53,9 +50,8 @@
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
-                                     [:uniforms :model] @state/pan-atom)))))
-;(set-model-matrix t)
-;@state/pan-atom
+                                     [:uniforms :model] (set-model-matrix t))))))
+
 ;; Start the demo only once.
 (defonce running
   (anim/animate (fn [t] (draw-frame! t) true)))

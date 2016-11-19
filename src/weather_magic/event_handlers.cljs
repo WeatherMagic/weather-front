@@ -5,7 +5,10 @@
    [thi.ng.geom.rect  :as rect]
    [weather-magic.world :as world]
    [thi.ng.geom.gl.core  :as gl]
+   [thi.ng.geom.gl.shaders         :as sh]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.gl.webgl.constants :as glc]
+   [weather-magic.textures         :as textures]
    [thi.ng.geom.matrix :as mat :refer [M44]]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [reagent.core :as reagent :refer [atom]]))
@@ -37,7 +40,8 @@
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
 
-(defn update-pan
+(defn update-pan ;; flytta till core?!!
+  "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
   (println "rel-x: " rel-x)
   (println "rel-y: " (* rel-y -1))
@@ -47,7 +51,9 @@
                              (g/rotate-z (Math/atan2 rel-y rel-x))
                              (m/* @state/pan-atom))))
 
-(defn move-fcn [event]
+(defn move-fcn
+  "Handles the movements of the mouse during panning"
+  [event]
   (let [last-pos @last-xy-pos
         current-x (.-clientX event)
         current-y (.-clientY event)
@@ -56,11 +62,15 @@
     (update-pan rel-x rel-y))
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)}))
 
-(defn mouse-up [_]
+(defn mouse-up
+  "If the mouse is released during panning"
+  [_]
   (reset! click-variable false)
   (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
 
-(defn pan-handler [event]
+(defn pan-handler
+  "Handles the mouse events for panning"
+  [event]
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
   (reset! click-variable true)
   (reset! state/earth-animation-fn world/stop-spin)
