@@ -44,6 +44,7 @@
   [rel-x rel-y]
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
+                                      ;(g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @zoom-level) 5.0E-4)))
                                       (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @zoom-level) 5.0E-4)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
@@ -75,6 +76,21 @@
     (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
     (.addEventListener (.getElementById js/document "main") "mouseup" mouse-up false)))
 
+(defn continuous-panning
+  "Breaks up the panning into smaller steps"
+  [x-pos y-pos nr-of-steps]
+  (println "panning"))
+
+(defn pointer-zoom-handler
+  "Rotates the globe to the point which is dubble clicked"
+  [event]
+  (let [x-pos (.-clientX event)
+        y-pos (.-clientY event)
+        element (.getElementById js/document "main")
+        width (.-clientWidth element)
+        height (.-clientHeight element)]
+    (dotimes [n 1] (update-pan (- (/ width 2) x-pos) (- (/ height 2) y-pos)))))
+
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
@@ -83,5 +99,5 @@
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "main") "mousedown" pan-handler false)
-  (.addEventListener js/window "dblclick" #(println "hej") false)
+  (.addEventListener js/window "dblclick" pointer-zoom-handler false)
   true)
