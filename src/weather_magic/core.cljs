@@ -29,8 +29,7 @@
 (defn set-model-matrix
   [delta-time]
   (@state/earth-animation-fn delta-time)
-  (-> M44
-    (m/* @state/earth-orientation)))
+  (m/* M44 @state/earth-orientation))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera t]

@@ -14,9 +14,9 @@
   (reset! state/model models/sphere)
   (reset! state/texture textures/earth)
   (reset! state/earth-orientation (-> M44
-          (g/rotate-x (m/radians 45))
-          (g/rotate-y (m/radians 80))
-          (g/rotate-z (m/radians 0)))))
+                                      (g/rotate-x (m/radians 45))
+                                      (g/rotate-y (m/radians 80))
+                                      (g/rotate-z (m/radians 0)))))
 
 ; If we decide to display maps on a flat surface we have to reset the translation when changing to world-view
 (defn show-turkey!
@@ -25,10 +25,10 @@
   (reset! state/model models/plane)
   (reset! state/texture textures/turkey)
   (reset! state/earth-orientation (-> M44
-                                    (g/translate (vec3 2 1.5 0))
-                                    (g/rotate-x (m/radians 0))
-                                    (g/rotate-y (m/radians 0))
-                                    (g/rotate-z (m/radians 180)))))
+                                      (g/translate (vec3 2 1.5 0))
+                                      (g/rotate-x (m/radians 0))
+                                      (g/rotate-y (m/radians 0))
+                                      (g/rotate-z (m/radians 180)))))
 
 (defn spin-earth!
   "Rotates the sphere indefinitely."
@@ -36,8 +36,8 @@
   (reset! state/model models/sphere)
   (reset! state/texture textures/earth)
   (reset! state/earth-orientation (-> M44
-                                    (g/rotate-y (m/radians delta-time))
-                                    (m/* @state/earth-orientation))))
+                                      (g/rotate-y (m/radians delta-time))
+                                      (m/* @state/earth-orientation))))
 
 (defn stop-spin
   "Makes the earth stop spinning"
