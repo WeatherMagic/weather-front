@@ -83,4 +83,5 @@
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "main") "mousedown" pan-handler false)
+  (.addEventListener js/window "dblclick" #(println "hej") false)
   true)
