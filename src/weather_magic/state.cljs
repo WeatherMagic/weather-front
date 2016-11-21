@@ -42,4 +42,6 @@
 ;; Counters for texture loading.
 (defonce textures-loaded (volatile! 0))
 (defonce textures-to-be-loaded (volatile! 0))
+
+;; Button class holding the data layer buttons
 (defonce button-class (atom "data-layer-button"))

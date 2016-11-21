@@ -39,7 +39,7 @@
                                       (g/rotate-y (m/radians delta-time))
                                       (m/* @state/earth-orientation))))
 
-(defn stop-spin
+(defn stop-spin!
   "Makes the earth stop spinning"
   [_]
   (reset! state/earth-orientation @state/earth-orientation))

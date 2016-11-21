@@ -14,7 +14,7 @@
 (enable-console-print!)
 
 (defonce zoom-level (atom 110))
-(defonce click-variable (atom false))
+(defonce mouse-pressed (atom false))
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
 
@@ -62,16 +62,16 @@
 (defn mouse-up
   "If the mouse is released during panning"
   [_]
-  (reset! click-variable false)
+  (reset! mouse-pressed false)
   (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
 
 (defn pan-handler
   "Handles the mouse events for panning"
   [event]
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
-  (reset! click-variable true)
-  (reset! state/earth-animation-fn world/stop-spin)
-  (when-not (= @click-variable false)
+  (reset! mouse-pressed true)
+  (reset! state/earth-animation-fn world/stop-spin!)
+  (when (= @mouse-pressed true)
     (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
     (.addEventListener (.getElementById js/document "main") "mouseup" mouse-up false)))
 
