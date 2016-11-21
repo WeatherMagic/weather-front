@@ -28,7 +28,6 @@
 
 (defn set-model-matrix
   [delta-time]
-  (println delta-time)
   (@state/earth-animation-fn delta-time)
   (-> M44
     (m/* @state/earth-orientation)))

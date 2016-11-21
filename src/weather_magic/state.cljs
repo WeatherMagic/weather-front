@@ -27,6 +27,7 @@
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
+
 ;; The current rotation of earth.
 (defonce earth-orientation (atom M44))
 
@@ -42,6 +43,3 @@
 (defonce textures-loaded (volatile! 0))
 (defonce textures-to-be-loaded (volatile! 0))
 (defonce button-class (atom "data-layer-button"))
-
-;; The atom holding the state when panning the world
-(defonce pan-atom (atom M44))
