@@ -74,8 +74,7 @@
    [view-selection-buttons]
    [shader-selection-buttons]
    [time-slider]
-   [map-ui-blur]]
-  [:span])
+   [map-ui-blur]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."

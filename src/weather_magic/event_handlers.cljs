@@ -5,22 +5,26 @@
    [thi.ng.geom.rect  :as rect]
    [weather-magic.world :as world]
    [thi.ng.geom.gl.core  :as gl]
-   [thi.ng.geom.gl.shaders         :as sh]
+   [thi.ng.geom.gl.shaders :as sh]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.gl.webgl.constants :as glc]
-   [weather-magic.textures         :as textures]
+   [weather-magic.textures :as textures]
    [thi.ng.geom.matrix :as mat :refer [M44]]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
+   [thi.ng.geom.core :as g]
    [reagent.core :as reagent :refer [atom]]))
 
 (enable-console-print!)
 
+(defonce cur-val (atom 110))
+
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."
   [camera-map scroll-distance]
-  (let [cur-val (:fov camera-map)]
-    (cam/perspective-camera
-     (assoc camera-map :fov (min 140 (+ cur-val (* cur-val scroll-distance 5.0E-4)))))))
+  (reset! cur-val (:fov camera-map))
+  (println "cur-val: " @cur-val)
+  (cam/perspective-camera
+   (assoc camera-map :fov (min 140 (+ @cur-val (* @cur-val scroll-distance 5.0E-4))))))
 
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
@@ -40,14 +44,12 @@
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
 
-(defn update-pan ;; flytta till core?!!
+(defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
-  (println "rel-x: " rel-x)
-  (println "rel-y: " (* rel-y -1))
   (reset! state/pan-atom (-> M44
                              (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                             (g/rotate-y (m/radians (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) 0.1)))
+                             (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @cur-val) 5.0E-4)))
                              (g/rotate-z (Math/atan2 rel-y rel-x))
                              (m/* @state/pan-atom))))
 
