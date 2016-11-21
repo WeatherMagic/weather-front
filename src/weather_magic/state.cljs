@@ -39,7 +39,3 @@
 (defonce texture (atom nil))
 
 (defonce current-shader (atom shaders/standard-shader-spec))
-
-;; Counters for texture loading.
-(defonce textures-loaded (volatile! 0))
-(defonce textures-to-be-loaded (volatile! 0))

@@ -43,9 +43,9 @@
       (cam/apply camera)))
 
 (defn draw-frame! [t]
-  (when (= @state/textures-loaded @state/textures-to-be-loaded)
-    (gl/bind @state/texture 0)
-    (gl/bind textures/trump 1)
+  (when (and @(:loaded @state/texture) @(:loaded textures/trump))
+    (gl/bind (:texture @state/texture) 0)
+    (gl/bind (:texture textures/trump) 1)
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
