@@ -9,6 +9,11 @@
 
 (enable-console-print!)
 
+(defn hide-unhide
+  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
+  [hidden-or-not]
+  (hidden-or-not {:hidden :visible :visible :hidden}))
+
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [id func atom & args]
@@ -30,15 +35,6 @@
   [:div {:id "time-slider-container"}
    [slider-component :year]
    [slider-component :month]])
-
-;; Blur canvas
-(defn hide-unhide
-  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
-  [hidden-or-not]
-  (hidden-or-not {:hidden :visible :visible :hidden}))
-
-(defn map-ui-blur []
-  [:div {:class @state/intro-visible :id "blur"}])
 
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
@@ -65,6 +61,10 @@
    [button "Standard shader"    reset! state/current-shader shaders/standard-shader-spec]
    [button "Blend shader"       reset! state/current-shader shaders/blend-shader-spec]
    [button "Temperature shader" reset! state/current-shader shaders/temperature-shader-spec]])
+
+(defn map-ui-blur []
+  "What hides the map UI."
+  [:div {:class @state/intro-visible :id "blur"}])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
