@@ -38,15 +38,20 @@
 (def temperature-fs
   "void main() {
 
-    vec4 texture = texture2D(base, vUV);
-    vec4 temperature;
+    float tempTexture1 = texture2D(base, vUV).r;
+    float tempTexture2 = texture2D(base, vUV).b;
 
-    if(texture.g > 0.5) {
-      temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
+    float temperature = mix(tempTexture1, tempTexture2, test/20.0);
+
+    vec4 outColor;
+
+    if(temperature > 0.5) {
+      outColor = vec4(1.0, 1.0 - temperature, 0, 1.0);
     } else {
-      temperature = vec4(texture.g, texture.g, 1.0, 1.0);
+      outColor = vec4(temperature, temperature, 1.0, 1.0);
     }
-     gl_FragColor = temperature;
+
+     gl_FragColor = outColor;
   }")
 
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
@@ -65,7 +70,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]}
+              :frameCounter [:int 0]
+              :test       [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3
@@ -88,7 +94,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]}
+              :frameCounter [:int 0]
+              :test       [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3
@@ -111,7 +118,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]}
+              :frameCounter [:int 0]
+              :test       [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3
