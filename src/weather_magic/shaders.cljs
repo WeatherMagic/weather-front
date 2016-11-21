@@ -41,7 +41,7 @@
     float tempTexture1 = texture2D(base, vUV).r;
     float tempTexture2 = texture2D(base, vUV).b;
 
-    float temperature = mix(tempTexture1, tempTexture2, test/20.0);
+    float temperature = mix(tempTexture1, tempTexture2, year/range);
 
     vec4 outColor;
 
@@ -70,8 +70,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]
-              :test       [:float 0.0]}
+              :year       [:float 0.0]
+              :range      [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3
@@ -94,8 +94,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]
-              :test       [:float 0.0]}
+              :year       [:float 0.0]
+              :range      [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3
@@ -118,8 +118,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]
-              :test       [:float 0.0]}
+              :year       [:float 0.0]
+              :range      [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3
