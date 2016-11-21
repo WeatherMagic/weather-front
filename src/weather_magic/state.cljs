@@ -5,8 +5,7 @@
    [thi.ng.geom.gl.core   :as gl]
    [weather-magic.shaders :as shaders]
    [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
-   [reagent.core          :refer [atom]]
-   [thi.ng.geom.matrix :as mat :refer [M44]]))
+   [reagent.core          :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
@@ -27,9 +26,11 @@
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
-
 ;; The current rotation of earth.
-(defonce earth-orientation (atom M44))
+(defonce earth-orientation (atom {:x-angle     24.5
+                                  :y-angle     0
+                                  :z-angle     0
+                                  :translation (vec3 0 0 0)}))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
@@ -42,6 +43,3 @@
 ;; Counters for texture loading.
 (defonce textures-loaded (volatile! 0))
 (defonce textures-to-be-loaded (volatile! 0))
-
-;; Button class holding the data layer buttons
-(defonce button-class (atom "data-layer-button"))

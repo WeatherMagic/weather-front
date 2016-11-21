@@ -24,12 +24,15 @@
 
 (enable-console-print!)
 
-(defonce last-time (atom 0))
-
 (defn set-model-matrix
-  [delta-time]
-  (@state/earth-animation-fn delta-time)
-  (m/* M44 @state/earth-orientation))
+  [t]
+  (@state/earth-animation-fn t)
+  (let [earth-orientation @state/earth-orientation]
+    (-> M44
+        (g/translate (:translation earth-orientation))
+        (g/rotate-x (m/radians (:x-angle earth-orientation)))
+        (g/rotate-y (m/radians (:y-angle earth-orientation)))
+        (g/rotate-z (m/radians (:z-angle earth-orientation))))))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera t]
@@ -46,8 +49,7 @@
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
       (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
-                                     [:uniforms :model] (set-model-matrix (* (- t @last-time) 10)))))
-    (reset! last-time t)))
+                                     [:uniforms :model] (set-model-matrix t))))))
 
 ;; Start the demo only once.
 (defonce running
