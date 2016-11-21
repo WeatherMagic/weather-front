@@ -9,7 +9,7 @@
                  [org.clojure/core.async "0.2.391"
                   :exclusions [org.clojure/tools.reader]]
                  [cljs-http "0.1.42"] 
-                 [reagent "0.5.1"]
+                 [reagent "0.6.0"]
                  [thi.ng/geom "0.0.1178-SNAPSHOT"]
                  [thi.ng/math "0.2.1"]
                  [thi.ng/color "1.2.0"]
