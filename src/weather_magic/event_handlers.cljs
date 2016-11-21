@@ -47,11 +47,11 @@
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
-  (reset! state/pan-atom (-> M44
+  (reset! state/earth-orientation (-> M44
                              (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
                              (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @cur-val) 5.0E-4)))
                              (g/rotate-z (Math/atan2 rel-y rel-x))
-                             (m/* @state/pan-atom))))
+                             (m/* @state/earth-orientation))))
 
 (defn move-fcn
   "Handles the movements of the mouse during panning"

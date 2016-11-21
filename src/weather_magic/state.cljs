@@ -28,10 +28,7 @@
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
 ;; The current rotation of earth.
-(defonce earth-orientation (atom {:x-angle     24.5
-                                  :y-angle     0
-                                  :z-angle     0
-                                  :translation (vec3 0 0 0)}))
+(defonce earth-orientation (atom M44))
 
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
