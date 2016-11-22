@@ -22,7 +22,7 @@
 (defonce data-layer-atom (atom #{}))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:year  {:value 2016 :min 1950 :max 2100}
+(defonce date-atom (atom {:year  {:value 1950 :min 1950 :max 2100}
                           :month {:value 1 :min 1 :max 12}}))
 
 ;; The function currently animating the earth.

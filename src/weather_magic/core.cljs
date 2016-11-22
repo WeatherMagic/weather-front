@@ -44,14 +44,18 @@
 
 (defn draw-frame! [t]
   (when (and @(:loaded @state/base-texture) @(:loaded (:trump @state/textures)))
-    (gl/bind (:texture @state/base-texture) 0)
-    (gl/bind (:texture (:trump @state/textures)) 1)
-    (doto state/gl-ctx
-      (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model
-                                                                      @state/current-shader
-                                                                      @state/camera t)
-                                     [:uniforms :model] (set-model-matrix t))))))
+    (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
+          time (rem (int (* 5 t)) range)]
+      (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
+      (gl/bind (:texture @state/base-texture) 0)
+      (gl/bind (:texture (:trump @state/textures)) 1)
+      (doto state/gl-ctx
+        (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+        (gl/draw-with-shader
+         (-> (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
+             (assoc-in [:uniforms :model] (set-model-matrix t))
+             (assoc-in [:uniforms :year]  time)
+             (assoc-in [:uniforms :range] range)))))))
 
 ;; Start the demo only once.
 (defonce running
