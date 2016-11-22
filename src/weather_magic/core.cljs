@@ -26,7 +26,7 @@
 
 (defn set-model-matrix
   [t]
-  (@state/earth-animation-fn @state/textures t)
+  (@state/earth-animation-fn t)
   (let [earth-orientation @state/earth-orientation]
     (-> M44
         (g/translate (:translation earth-orientation))
