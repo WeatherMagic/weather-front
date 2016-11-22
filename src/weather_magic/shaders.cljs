@@ -38,15 +38,19 @@
 (def temperature-fs
   "void main() {
 
-    vec4 texture = texture2D(base, vUV);
-    vec4 temperature;
+    float temperatureTex1 = texture2D(base, vUV).r;
+    float temperatureTex2 = texture2D(base, vUV).b;
 
-    if(texture.g > 0.5) {
-      temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
+    float temperature = mix(temperatureTex1, temperatureTex2, year/range);
+
+    vec4 outColor;
+
+    if(temperature > 0.5) {
+      outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
     } else {
-      temperature = vec4(texture.g, texture.g, 1.0, 1.0);
+      outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
     }
-     gl_FragColor = temperature;
+     gl_FragColor = outColor;
   }")
 
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
@@ -65,7 +69,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]}
+              :year       [:float 0.0]
+              :range      [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3
@@ -88,7 +93,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]}
+              :year       [:float 0.0]
+              :range      [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3
@@ -111,7 +117,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]}
+              :year       [:float 0.0]
+              :range      [:float 0.0]}
 
    :attribs  {:position :vec3
               :normal   :vec3

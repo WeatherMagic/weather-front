@@ -22,7 +22,7 @@
 (defonce data-layer-atom (atom #{}))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:year  {:value 2016 :min 1950 :max 2100}
+(defonce date-atom (atom {:year  {:value 1950 :min 1950 :max 2100}
                           :month {:value 1 :min 1 :max 12}}))
 
 ;; The function currently animating the earth.
@@ -42,4 +42,6 @@
 ;; Counters for texture loading.
 (defonce textures-loaded (volatile! 0))
 (defonce textures-to-be-loaded (volatile! 0))
+
+;; Button class holding the data layer buttons
 (defonce button-class (atom "data-layer-button"))
