@@ -38,10 +38,10 @@
 (def temperature-fs
   "void main() {
 
-    float tempTexture1 = texture2D(base, vUV).r;
-    float tempTexture2 = texture2D(base, vUV).b;
+    float temperatureTex1 = texture2D(base, vUV).r;
+    float temperatureTex2 = texture2D(base, vUV).b;
 
-    float temperature = mix(tempTexture1, tempTexture2, year/range);
+    float temperature = mix(temperatureTex1, temperatureTex2, year/range);
 
     vec4 outColor;
 

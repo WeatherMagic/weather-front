@@ -44,7 +44,8 @@
 
 (defn draw-frame! [t]
   (when (= @state/textures-loaded @state/textures-to-be-loaded)
-    (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom))) time (rem (int (* 5 t)) range)]
+    (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
+          time (rem (int (* 5 t)) range)]
       (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
       (gl/bind @state/texture 0)
       (gl/bind textures/trump 1)
