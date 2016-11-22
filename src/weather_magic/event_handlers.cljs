@@ -21,9 +21,9 @@
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."
   [camera-map scroll-distance]
-  (reset! zoom-level (:fov camera-map))
-  (cam/perspective-camera
-   (assoc camera-map :fov (min 140 (+ @zoom-level (* @zoom-level scroll-distance 5.0E-4))))))
+  (let [cur-val (:fov camera-map)]
+    (cam/perspective-camera
+     (assoc camera-map :fov (min 140 (+ cur-val (* cur-val scroll-distance 5.0E-4)))))))
 
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
@@ -44,7 +44,6 @@
   [rel-x rel-y]
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      ;(g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @zoom-level) 5.0E-4)))
                                       (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @zoom-level) 5.0E-4)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
@@ -94,10 +93,10 @@
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
-  (.addEventListener (.getElementById js/document "main") "wheel"
-                     (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
+  (.addEventListener
+   (.getElementById js/document "main") "wheel"
+   (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "main") "mousedown" pan-handler false)
-  (.addEventListener js/window "dblclick" pointer-zoom-handler false)
   true)

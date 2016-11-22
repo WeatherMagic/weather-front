@@ -3,6 +3,8 @@
    [weather-magic.models           :as models]
    [weather-magic.state            :as state]
    [weather-magic.textures         :as textures]
+   [thi.ng.geom.gl.buffers         :as buf]
+   [thi.ng.geom.gl.webgl.constants :as glc]
    [thi.ng.geom.core               :as g]
    [thi.ng.geom.matrix             :as mat :refer [M44]]
    [thi.ng.math.core               :as m :refer [PI HALF_PI TWO_PI]]
