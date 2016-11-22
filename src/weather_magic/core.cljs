@@ -24,15 +24,12 @@
 
 (enable-console-print!)
 
+(defonce last-time (atom 0))
+
 (defn set-model-matrix
-  [t]
-  (@state/earth-animation-fn t)
-  (let [earth-orientation @state/earth-orientation]
-    (-> M44
-        (g/translate (:translation earth-orientation))
-        (g/rotate-x (m/radians (:x-angle earth-orientation)))
-        (g/rotate-y (m/radians (:y-angle earth-orientation)))
-        (g/rotate-z (m/radians (:z-angle earth-orientation))))))
+  [delta-time]
+  (@state/earth-animation-fn delta-time)
+  (m/* M44 @state/earth-orientation))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera t]
@@ -44,15 +41,39 @@
 
 (defn draw-frame! [t]
   (when (= @state/textures-loaded @state/textures-to-be-loaded)
+    (if (:state @state/pointer-zoom-info)
+      (let [delta-x (:delta-x @state/pointer-zoom-info)
+            delta-y (:delta-y @state/pointer-zoom-info)
+            delta-fov (:delta-fov @state/pointer-zoom-info)
+            steps (:steps @state/pointer-zoom-info)
+            range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
+                  time (rem (int (* 5 t)) range)]
+        (println "when-dubbel-clicked")
+        (println @state/pointer-zoom-info)
+        (event-handlers/update-pan2 delta-x delta-y (- 100 steps) delta-fov)
+        (swap! state/pointer-zoom-info assoc-in [:steps] (- steps 1))
+        (println @state/pointer-zoom-info)
+        (when (= (:steps @state/pointer-zoom-info) 0)
+          (println "state: false")
+          (reset! state/pointer-zoom-info {:state false}))
+        (gl/bind @state/texture 0)
+        (gl/bind textures/trump 1)
+        (doto state/gl-ctx
+          (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+          (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
+                                                             [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range))))
+
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]
+      (println "normal-spin")
       (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
       (gl/bind @state/texture 0)
       (gl/bind textures/trump 1)
       (doto state/gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
-                                                           [:uniforms :model] (set-model-matrix t)) [:uniforms :year] time) [:uniforms :range] range))))))
+                                                           [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range)))))
+    (reset! last-time t)))
 
 ;; Start the demo only once.
 (defonce running
