@@ -1,6 +1,5 @@
 (ns weather-magic.textures
   (:require
-   [weather-magic.state            :as state]
    [weather-magic.util             :as util]
    [thi.ng.geom.gl.buffers         :as buf]
    [thi.ng.geom.gl.webgl.constants :as glc]))
@@ -11,12 +10,12 @@
   like: {:texture T :loaded (volatile! false)}"
   (let [loaded (volatile! false)
         texture (buf/load-texture
-                 state/gl-ctx {:callback
-                               (fn [tex img]
-                                 (.generateMipmap state/gl-ctx (:target tex))
-                                 (vreset! loaded true))
-                               :src      path
-                               :filter   [glc/linear-mipmap-linear glc/linear]})]
+                 gl-ctx {:callback
+                         (fn [tex img]
+                           (.generateMipmap gl-ctx (:target tex))
+                           (vreset! loaded true))
+                         :src      path
+                         :filter   [glc/linear-mipmap-linear glc/linear]})]
     {:texture texture :loaded loaded}))
 
 (defn load-texture-if-needed
@@ -40,9 +39,6 @@
             (when-not (contains? textures name)
               {(keyword name) (load-texture gl-ctx path)})))))
 
-(defonce earth  (load-texture state/gl-ctx "img/earth.jpg"))
-(defonce trump  (load-texture state/gl-ctx "img/trump.png"))
-(defonce turkey (load-texture state/gl-ctx "img/turkey.jpg"))
-
-;; THIS IS BAD AND I SHOULD FEEL BAD.
-(reset! state/texture earth)
+(defn load-base-textures
+  [gl-ctx]
+  (load-texture-if-needed gl-ctx {} "img/earth.jpg" "img/trump.png"))

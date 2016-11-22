@@ -1,8 +1,7 @@
 (ns weather-magic.util
   (:require
    [thi.ng.geom.gl.buffers :as buf]
-   [thi.ng.geom.gl.webgl.constants :as glc]
-   [weather-magic.state            :as state]))
+   [thi.ng.geom.gl.webgl.constants :as glc]))
 
 (defn transparent-println
   "Print something and return that something."

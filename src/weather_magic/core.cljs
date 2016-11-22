@@ -26,7 +26,7 @@
 
 (defn set-model-matrix
   [t]
-  (@state/earth-animation-fn t)
+  (@state/earth-animation-fn @state/textures t)
   (let [earth-orientation @state/earth-orientation]
     (-> M44
         (g/translate (:translation earth-orientation))
@@ -43,12 +43,14 @@
       (cam/apply camera)))
 
 (defn draw-frame! [t]
-  (when (and @(:loaded @state/texture) @(:loaded textures/trump))
-    (gl/bind (:texture @state/texture) 0)
-    (gl/bind (:texture textures/trump) 1)
+  (when (and @(:loaded @state/base-texture) @(:loaded (:trump @state/textures)))
+    (gl/bind (:texture @state/base-texture) 0)
+    (gl/bind (:texture (:trump @state/textures)) 1)
     (doto state/gl-ctx
       (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
+      (gl/draw-with-shader (assoc-in (combine-model-shader-and-camera @state/model
+                                                                      @state/current-shader
+                                                                      @state/camera t)
                                      [:uniforms :model] (set-model-matrix t))))))
 
 ;; Start the demo only once.

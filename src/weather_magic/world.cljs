@@ -9,25 +9,28 @@
 
 (defn show-europe!
   "Rotates the sphere so that Europe is shown."
-  [t]
+  [textures t]
   (reset! state/model models/sphere)
-  (reset! state/texture textures/earth)
+  (reset! state/base-texture (:earth textures))
   (swap!  state/earth-orientation assoc
           :x-angle 45 :y-angle 80 :z-angle 0 :translation (vec3 0 0 0)))
 
 (defn show-turkey!
   "Shows Turkey on a flat surface."
-  [t]
+  [textures t]
+  (swap!  state/textures merge
+          (textures/load-texture-if-needed state/gl-ctx @state/textures "img/turkey.jpg"))
   (reset! state/model models/plane)
-  (reset! state/texture textures/turkey)
+  (reset! state/base-texture (:turkey textures))
   (swap!  state/earth-orientation assoc
           :x-angle 0  :y-angle 0 :z-angle 180 :translation (vec3 2 1.5 0)))
 
 (defn spin-earth!
   "Rotates the sphere indefinitely."
-  [t]
+  [textures t]
   (reset! state/model models/sphere)
-  (reset! state/texture textures/earth)
+  (reset! state/base-texture (:earth textures))
+
   (swap!  state/earth-orientation assoc
           :x-angle 24 :y-angle t :z-angle 0 :translation (vec3 0 0 0)))
 
