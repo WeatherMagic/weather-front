@@ -25,14 +25,9 @@
 (enable-console-print!)
 
 (defn set-model-matrix
-  [t]
-  (@state/earth-animation-fn t)
-  (let [earth-orientation @state/earth-orientation]
-    (-> M44
-        (g/translate (:translation earth-orientation))
-        (g/rotate-x (m/radians (:x-angle earth-orientation)))
-        (g/rotate-y (m/radians (:y-angle earth-orientation)))
-        (g/rotate-z (m/radians (:z-angle earth-orientation))))))
+  [delta-time]
+  (@state/earth-animation-fn delta-time)
+  (m/* M44 @state/earth-orientation))
 
 (defn combine-model-shader-and-camera
   [model shader-spec camera t]
@@ -53,9 +48,10 @@
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
          (-> (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
-             (assoc-in [:uniforms :model] (set-model-matrix t))
+             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
-             (assoc-in [:uniforms :range] range)))))))
+             (assoc-in [:uniforms :range] range))))
+      (vreset! state/time-of-last-frame t))))
 
 ;; Start the demo only once.
 (defonce running

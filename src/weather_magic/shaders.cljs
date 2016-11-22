@@ -46,11 +46,10 @@
     vec4 outColor;
 
     if(temperature > 0.5) {
-      outColor = vec4(1.0, 1.0 - temperature, 0, 1.0);
+      outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
     } else {
-      outColor = vec4(temperature, temperature, 1.0, 1.0);
+      outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
     }
-
      gl_FragColor = outColor;
   }")
 
