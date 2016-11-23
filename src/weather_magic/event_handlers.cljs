@@ -7,6 +7,7 @@
    [thi.ng.geom.gl.core  :as gl]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.matrix :as mat :refer [M44]]
+   [thi.ng.geom.vector :as v :refer [vec2 vec3]]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.core :as g]
    [reagent.core :as reagent :refer [atom]]))
@@ -42,22 +43,23 @@
 
 (defn get-uprighting-angles
   ""
-  []
-  (let [current-up-vector-x (.-m10 @state/earth-orientation)
-        current-up-vector-y (.-m11 @state/earth-orientation)
-        current-up-vector-z (.-m12 @state/earth-orientation)
-        phi (Math/atan2 current-up-vector-z current-up-vector-x)
-        current-up-vector-x (.-m10 (m/* (g/rotate-y M44 phi) @state/earth-orientation))
-        current-up-vector-y (.-m11 (m/* (g/rotate-y M44 phi) @state/earth-orientation))
-        theta (Math/atan2 current-up-vector-x current-up-vector-y)]
-        (swap! state/pointer-zoom-info assoc :phi phi :theta theta)))
+  [x-diff y-diff]
+  (let [future-earth-orientation (-> M44
+                                    (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
+                                    (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow y-diff 2) (Math/pow x-diff 2)) 0.5) @zoom-level) 1.0E-3)))
+                                    (g/rotate-z (Math/atan2 y-diff x-diff))
+                                    (m/* @state/earth-orientation))
+        northpole-x (.-m10 future-earth-orientation)
+        northpole-y (.-m11 future-earth-orientation)
+        northpole-z (.-m12 future-earth-orientation)
+        northpole-y-norm (/ northpole-y (Math/sqrt (+ (Math/pow northpole-y 2) (Math/pow northpole-x 2))))
+        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
+        (swap! state/pointer-zoom-info assoc :delta-angle delta-angle)))
 
 
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
-  (get-uprighting-angles)
-  (println state/pointer-zoom-info)
   (reset! state/earth-orientation (-> M44
                                       ;(g/rotate-z (m/radians 0.5))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
@@ -67,17 +69,14 @@
 
 (defn update-pan2
   "Updates the atom holding the rotation of the world"
-  [rel-x rel-y delta-phi delta-theta step delta-fov]
-  (println state/pointer-zoom-info)
-  ;(swap! state/camera zoom-camera -15.0)
+  [rel-x rel-y delta-angle step delta-fov]
+  (swap! state/camera zoom-camera -15.0)
   (reset! state/earth-orientation (-> M44
-                                      (g/rotate-z (* (m/radians (* 0.5 step)) -1))
+                                      (g/rotate-z (* (* delta-angle step) 1))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
                                       (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @zoom-level) 1.0E-3)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
-                                      ;(g/rotate-y (* (* delta-phi (- step 1)) -1))
-                                      ;(g/rotate-z (* (* delta-theta (- step 1)) -1))
-                                      (g/rotate-z (* (m/radians (* 0.5 (- step 1))) 1))
+                                      (g/rotate-z (* (* delta-angle (- step 1)) -1))
                                       (m/* @state/earth-orientation))))
 
 (defn move-fcn
@@ -101,15 +100,16 @@
 (defn pointer-zoom-handler
   "Rotates the globe to the point which is dubble clicked"
   [event]
-  (get-uprighting-angles)
-
   (let [x-pos (.-clientX event)
         y-pos (.-clientY event)
         element (.getElementById js/document "main")
         width (.-clientWidth element)
-        height (.-clientHeight element)]
-    (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera)) 100) :delta-x (/ (- (/ width 2) x-pos) 100) :delta-y (/ (- (/ height 2) y-pos) 100) :steps 100))
-    (println @state/pointer-zoom-info))
+        height (.-clientHeight element)
+        x-diff (- (/ width 2) x-pos)
+        y-diff (- (/ height 2) y-pos)
+        total-steps (:total-steps @state/pointer-zoom-info)]
+    (get-uprighting-angles x-diff y-diff)
+    (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera)) total-steps) :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
     ;(dotimes [n 1] (update-pan (- (/ width 2) x-pos) (- (/ height 2) y-pos)))))
 
 (defn pan-handler
