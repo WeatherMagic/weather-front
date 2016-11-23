@@ -5,15 +5,14 @@
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [weather-magic.event-handlers   :as event-handlers]
-   [thi.ng.math.core               :as m :refer [PI HALF_PI TWO_PI]]
+   [thi.ng.math.core               :as m   :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core            :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
    [thi.ng.geom.gl.webgl.animator  :as anim]
-   [thi.ng.geom.gl.shaders         :as sh]
    [thi.ng.geom.gl.glmesh          :as glm]
    [thi.ng.geom.gl.camera          :as cam]
    [thi.ng.geom.core               :as g]
-   [thi.ng.geom.vector             :as v :refer [vec2 vec3]]
+   [thi.ng.geom.vector             :as v   :refer [vec2 vec3]]
    [thi.ng.geom.matrix             :as mat :refer [M44]]
    [thi.ng.geom.sphere             :as s]
    [thi.ng.geom.attribs            :as attr]
@@ -30,10 +29,10 @@
   (m/* M44 @state/earth-orientation))
 
 (defn combine-model-shader-and-camera
-  [model shader-spec camera t]
+  [model shader camera t]
   (-> model
       (gl/as-gl-buffer-spec {})
-      (assoc :shader (sh/make-shader-from-spec state/gl-ctx shader-spec))
+      (assoc :shader shader)
       (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
       (cam/apply camera)))
 

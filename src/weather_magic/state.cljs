@@ -1,13 +1,14 @@
 (ns weather-magic.state
   (:require
-   [weather-magic.models  :as models]
-   [weather-magic.textures  :as textures]
-   [thi.ng.geom.gl.camera :as cam]
-   [thi.ng.geom.gl.core   :as gl]
-   [weather-magic.shaders :as shaders]
-   [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
-   [reagent.core          :refer [atom]]
-   [thi.ng.geom.matrix :as mat :refer [M44]]))
+   [weather-magic.models   :as models]
+   [weather-magic.shaders  :as shaders]
+   [weather-magic.textures :as textures]
+   [thi.ng.geom.gl.camera  :as cam]
+   [thi.ng.geom.gl.core    :as gl]
+   [thi.ng.geom.gl.shaders :as sh]
+   [thi.ng.geom.vector     :as v   :refer [vec2 vec3]]
+   [reagent.core                   :refer [atom]]
+   [thi.ng.geom.matrix     :as mat :refer [M44]]))
 
 ;; Our WebGL context, given by the browser.
 (defonce gl-ctx (gl/gl-context "main"))
@@ -40,7 +41,8 @@
 (defonce textures     (atom (textures/load-base-textures gl-ctx)))
 (defonce base-texture (atom (:earth @textures)))
 
-(defonce current-shader (atom shaders/standard-shader-spec))
+(defonce current-shader (atom (sh/make-shader-from-spec gl-ctx shaders/standard-shader-spec)))
+
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))

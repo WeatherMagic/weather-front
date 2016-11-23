@@ -1,12 +1,12 @@
 (ns weather-magic.world
   (:require
-   [weather-magic.models           :as models]
-   [weather-magic.state            :as state]
-   [weather-magic.textures         :as textures]
-   [thi.ng.geom.core               :as g]
-   [thi.ng.geom.matrix             :as mat :refer [M44]]
-   [thi.ng.math.core               :as m :refer [PI HALF_PI TWO_PI]]
-   [thi.ng.geom.vector             :as v :refer [vec3]]))
+   [weather-magic.models   :as models]
+   [weather-magic.state    :as state]
+   [weather-magic.textures :as textures]
+   [thi.ng.geom.core       :as g]
+   [thi.ng.geom.matrix     :as mat :refer [M44]]
+   [thi.ng.math.core       :as m]
+   [thi.ng.geom.vector     :as v   :refer [vec3]]))
 
 (defn show-europe!
   "Rotates the sphere so that Europe is shown."
