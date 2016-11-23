@@ -63,9 +63,9 @@
   []
   [:div {:id "shader-selection-container"}
    [button "Go to map"          swap!  state/intro-visible  #(swap! state/intro-visible hide-unhide)]
-   [button "Standard shader"    reset! state/current-shader (compile-shader shaders/standard-shader-spec)]
-   [button "Blend shader"       reset! state/current-shader (compile-shader shaders/blend-shader-spec)]
-   [button "Temperature shader" reset! state/current-shader (compile-shader shaders/temperature-shader-spec)]])
+   [button "Standard shader"    reset! state/current-shader-key :standard]
+   [button "Blend shader"       reset! state/current-shader-key :blend]
+   [button "Temperature shader" reset! state/current-shader-key :temp]])
 
 (defn map-ui-blur []
   "What hides the map UI."

@@ -41,8 +41,10 @@
 (defonce textures     (atom (textures/load-base-textures gl-ctx)))
 (defonce base-texture (atom (:earth @textures)))
 
-(defonce current-shader (atom (sh/make-shader-from-spec gl-ctx shaders/standard-shader-spec)))
-
+(def shaders {:standard (sh/make-shader-from-spec gl-ctx shaders/standard-shader-spec)
+              :blend    (sh/make-shader-from-spec gl-ctx shaders/blend-shader-spec)
+              :temp     (sh/make-shader-from-spec gl-ctx shaders/temperature-shader-spec)})
+(defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))

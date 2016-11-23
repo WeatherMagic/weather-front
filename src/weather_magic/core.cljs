@@ -28,11 +28,10 @@
   (@state/earth-animation-fn delta-time)
   (m/* M44 @state/earth-orientation))
 
-(defn combine-model-shader-and-camera
-  [model shader camera t]
+(defn combine-model-and-camera
+  [model camera t]
   (-> model
       (gl/as-gl-buffer-spec {})
-      (assoc :shader shader)
       (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
       (cam/apply camera)))
 
@@ -46,7 +45,8 @@
       (doto state/gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
-         (-> (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
+         (-> (combine-model-and-camera @state/model @state/camera t)
+             (assoc :shader (@state/current-shader-key state/shaders))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range))))
