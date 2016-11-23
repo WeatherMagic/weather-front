@@ -51,7 +51,8 @@
   [:div {:id "view-selection-container" :class (hide-unhide @state/intro-visible)}
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
-   [button "Europe" reset! state/earth-animation-fn world/show-europe!]])
+   [button "Europe" reset! state/earth-animation-fn world/show-europe!]
+   [button "Northpole Up" reset! state/earth-animation-fn world/northpole-up!]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"

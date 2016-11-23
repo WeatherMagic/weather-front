@@ -18,6 +18,13 @@
                                       (g/rotate-y (m/radians 80))
                                       (g/rotate-z (m/radians 0)))))
 
+(defn northpole-up!
+  "Rotates the sphere so that the northpole is up after panning."
+  []
+  (reset! state/model models/sphere)
+  (reset! state/texture textures/earth)
+  (reset! state/earth-orientation M44))
+
 ; If we decide to display maps on a flat surface we have to reset the translation when changing to world-view
 (defn show-turkey!
   "Shows Turkey on a flat surface."
