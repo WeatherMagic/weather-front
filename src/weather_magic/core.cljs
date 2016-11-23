@@ -46,15 +46,14 @@
             delta-y (:delta-y @state/pointer-zoom-info)
             delta-fov (:delta-fov @state/pointer-zoom-info)
             steps (:steps @state/pointer-zoom-info)
+            delta-phi (/ (:phi @state/pointer-zoom-info) steps)
+            delta-theta (/ (:theta @state/pointer-zoom-info) steps)
             range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
                   time (rem (int (* 5 t)) range)]
-        (println "when-dubbel-clicked")
-        (println @state/pointer-zoom-info)
-        (event-handlers/update-pan2 delta-x delta-y (- 100 steps) delta-fov)
+        (event-handlers/update-pan2 delta-x delta-y (:phi @state/pointer-zoom-info) delta-theta (- 100 steps) delta-fov)
         (swap! state/pointer-zoom-info assoc-in [:steps] (- steps 1))
         (println @state/pointer-zoom-info)
         (when (= (:steps @state/pointer-zoom-info) 0)
-          (println "state: false")
           (reset! state/pointer-zoom-info {:state false}))
         (gl/bind @state/texture 0)
         (gl/bind textures/trump 1)
@@ -65,7 +64,6 @@
 
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]
-      (println "normal-spin")
       (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
       (gl/bind @state/texture 0)
       (gl/bind textures/trump 1)

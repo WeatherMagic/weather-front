@@ -43,7 +43,7 @@
 (defonce textures-loaded (volatile! 0))
 (defonce textures-to-be-loaded (volatile! 0))
 
-(defonce pointer-zoom-info (atom {:state false :delta-x 0 :delta-y 0 :steps 0}))
+(defonce pointer-zoom-info (atom {:state false :delta-x 0 :delta-y 0 :steps 0 :phi 0 :theta 0}))
 
 ;; Button class holding the data layer buttons
 (defonce button-class (atom "data-layer-button"))
