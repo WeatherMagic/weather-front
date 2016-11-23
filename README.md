@@ -23,8 +23,10 @@ On Windows there's apparently an [installer](http://leiningen-win-installer.djpo
 
 ## Our code
 
-With that installed, in order to get an interactive development
-environment run:
+With that installed, clone our repository
+`https://github.com/WeatherMagic/weather-front.git` and step into the
+folder git created for you. With that done, in order to get an
+interactive development environment run:
 
     lein figwheel
 
