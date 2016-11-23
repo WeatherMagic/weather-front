@@ -44,3 +44,9 @@
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
+
+;; lat-lon-to-cart point containing cordinates
+(defonce cart-point (atom {:x 0 :y 0 :z 0}))
+
+;; cart-to-lat-lon geografic coordinates
+(defonce geografic-point (atom {:lat 0 :lon 0}))
