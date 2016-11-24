@@ -45,7 +45,9 @@
 
     vec4 outColor;
 
-    if(temperature > 0.5) {
+    if (mod(temperature, 0.1) < 0.01 && temperature > 0.5) {
+      outColor = vec4(0.96, 0.96, 0.86, 1.0);
+    } else if(temperature > 0.5) {
       outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
     } else {
       outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
@@ -126,3 +128,4 @@
    :varying  {:vUV      :vec2
               :vNormal  :vec3}
    :state    {:depth-test true}})
+
