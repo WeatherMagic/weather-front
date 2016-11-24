@@ -50,7 +50,8 @@
          (-> (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
-             (assoc-in [:uniforms :range] range))))
+             (assoc-in [:uniforms :range] range)
+             (assoc-in [:uniforms :fov]   (:fov @state/camera)))))
       (vreset! state/time-of-last-frame t))))
 
 ;; Start the demo only once.

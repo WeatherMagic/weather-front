@@ -8,8 +8,10 @@
 
 (def standard-vs
   "void main() {
-     vUV = uv;
+     vUV     = uv;
      vNormal = normal;
+     vFOV    = fov;
+     vModel  = model;
      gl_Position = proj * view * model * vec4(position, 1.0);
    }")
 
@@ -17,7 +19,8 @@
   "void main() {
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
-     vec4 diffuse = texture2D(base, vUV) + texture2D(trump, vUV);
+     vec4 diffuse = texture2D(base, vUV) +
+         texture2D(trump, vUV / vFOV * 200.0 + vec2(vModel[0][1], vModel[0][1]));
      vec4 col = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
      gl_FragColor = col;
    }")
@@ -68,12 +71,15 @@
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
               :year       :float
-              :range      :float}
+              :range      :float
+              :fov        :float}
    :attribs  {:position :vec3
               :normal   :vec3
               :uv       :vec2}
    :varying  {:vUV      :vec2
-              :vNormal  :vec3}
+              :vNormal  :vec3
+              :vFOV     :float
+              :vModel   :mat4}
    :state    {:depth-test true}})
 
 (def blend-shader-spec
