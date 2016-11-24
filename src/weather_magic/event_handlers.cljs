@@ -15,7 +15,6 @@
 (enable-console-print!)
 
 (defonce zoom-level (atom 110))
-(defonce click-variable (atom false))
 (defonce mouse-pressed (atom false))
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
@@ -45,17 +44,16 @@
   ""
   [x-diff y-diff]
   (let [future-earth-orientation (-> M44
-                                    (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                    (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow y-diff 2) (Math/pow x-diff 2)) 0.5) @zoom-level) 1.0E-3)))
-                                    (g/rotate-z (Math/atan2 y-diff x-diff))
-                                    (m/* @state/earth-orientation))
+                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
+                                     (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow y-diff 2) (Math/pow x-diff 2)) 0.5) @zoom-level) 1.0E-3)))
+                                     (g/rotate-z (Math/atan2 y-diff x-diff))
+                                     (m/* @state/earth-orientation))
         northpole-x (.-m10 future-earth-orientation)
         northpole-y (.-m11 future-earth-orientation)
         northpole-z (.-m12 future-earth-orientation)
-        northpole-y-norm (/ northpole-y (Math/sqrt (+ (Math/pow northpole-y 2) (Math/pow northpole-x 2))))
+        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
         delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
-        (swap! state/pointer-zoom-info assoc :delta-angle delta-angle)))
-
+    (swap! state/pointer-zoom-info assoc :delta-angle delta-angle)))
 
 (defn update-pan
   "Updates the atom holding the rotation of the world"
@@ -72,11 +70,11 @@
   [rel-x rel-y delta-angle step delta-fov]
   (swap! state/camera zoom-camera -15.0)
   (reset! state/earth-orientation (-> M44
-                                      (g/rotate-z (* (* delta-angle step) 1))
+                                      (g/rotate-z (* delta-angle step))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
                                       (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @zoom-level) 1.0E-3)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
-                                      (g/rotate-z (* (* delta-angle (- step 1)) -1))
+                                      (g/rotate-z (* (* delta-angle (dec step)) -1))
                                       (m/* @state/earth-orientation))))
 
 (defn move-fcn
@@ -93,7 +91,6 @@
 (defn mouse-up
   "If the mouse is released during panning"
   [_]
-  (reset! click-variable false)
   (reset! mouse-pressed false)
   (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
 

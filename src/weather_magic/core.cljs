@@ -49,9 +49,9 @@
             current-step (:current-step @state/pointer-zoom-info)
             delta-angle (:delta-angle @state/pointer-zoom-info)
             range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
-                  time (rem (int (* 5 t)) range)]
+            time (rem (int (* 5 t)) range)]
         (event-handlers/update-pan2 delta-x delta-y delta-angle current-step delta-fov)
-        (swap! state/pointer-zoom-info assoc-in [:current-step] (+ current-step 1))
+        (swap! state/pointer-zoom-info assoc-in [:current-step] (inc current-step))
         (when (= current-step total-steps)
           (reset! state/pointer-zoom-info {:state false}))
         (gl/bind @state/texture 0)
@@ -61,15 +61,15 @@
           (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
                                                              [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range))))
 
-    (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
-          time (rem (int (* 5 t)) range)]
-      (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
-      (gl/bind @state/texture 0)
-      (gl/bind textures/trump 1)
-      (doto state/gl-ctx
-        (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-        (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
-                                                           [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range)))))
+      (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
+            time (rem (int (* 5 t)) range)]
+        (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
+        (gl/bind @state/texture 0)
+        (gl/bind textures/trump 1)
+        (doto state/gl-ctx
+          (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+          (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
+                                                             [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range)))))
     (reset! last-time t)))
 
 ;; Start the demo only once.
