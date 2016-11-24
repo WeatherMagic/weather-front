@@ -45,8 +45,20 @@
 
     vec4 outColor;
 
-    if (mod(temperature, 0.1) < 0.01 && temperature > 0.5) {
-      outColor = vec4(0.96, 0.96, 0.86, 1.0);
+    float threshold = 1.0/fov;
+    threshold = (threshold - 0.01) / 10.0;
+    threshold = clamp(threshold, 0.0, 0.01);
+
+    float alphaValue = threshold * 100.0;
+
+    if (mod(temperature, 0.1) < threshold) {
+      if (temperature > 0.5 && temperature < 0.75) {
+        outColor = vec4(0.5, 0.5, 0.5, alphaValue);
+      } else if (temperature > 0.75) {
+        outColor = vec4(0.0, 0.0, 0.0, alphaValue);
+      } else if (temperature < 0.5) {
+        outColor = vec4(1.0, 1.0, 1.0, alphaValue);
+      }
     } else if(temperature > 0.5) {
       outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
     } else {
@@ -72,7 +84,8 @@
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
               :year       [:float 0.0]
-              :range      [:float 0.0]}
+              :range      [:float 0.0]
+              :fov        :float}
 
    :attribs  {:position :vec3
               :normal   :vec3
@@ -96,7 +109,8 @@
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
               :year       [:float 0.0]
-              :range      [:float 0.0]}
+              :range      [:float 0.0]
+              :fov        :float}
 
    :attribs  {:position :vec3
               :normal   :vec3
@@ -120,7 +134,8 @@
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
               :year       [:float 0.0]
-              :range      [:float 0.0]}
+              :range      [:float 0.0]
+              :fov        :float}
 
    :attribs  {:position :vec3
               :normal   :vec3
