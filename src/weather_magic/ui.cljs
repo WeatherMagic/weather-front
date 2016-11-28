@@ -37,12 +37,6 @@
    [slider-component :year]
    [slider-component :month]])
 
-;; Blur canvas
-(defn hide-unhide
-  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
-  [hidden-or-not]
-  (hidden-or-not {:hidden :visible :visible :hidden}))
-
 (defn map-ui-blur []
   [:div {:class @state/intro-visible :id "blur"}])
 
