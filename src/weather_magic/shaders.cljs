@@ -133,21 +133,20 @@
                                                                             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
                                                                             (glsl/assemble))))
 
-(def standard-shader-spec-right (update-in (assoc standard-shader-spec-left  :vs standard-vs-right
-                                                  :fs (->> standard-fs-right
-                                                           (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                           (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base :trump :trump}))
+(def standard-shader-spec-right (assoc standard-shader-spec-left  :vs standard-vs-right
+                                       :fs (->> standard-fs-right
+                                                (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                                                (glsl/assemble))))
 
-(def blend-shader-spec-right (update-in (assoc blend-shader-spec-left  :vs standard-vs-right
-                                               :fs (->> blend-fs-right
-                                                        (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                        (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base :trump :trump}))
+(def blend-shader-spec-right (assoc blend-shader-spec-left  :vs standard-vs-right
+                                    :fs (->> blend-fs-right
+                                             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                                             (glsl/assemble))))
 
-;Hade kvar koden för update-in ifall vi måste byta namn på vissa keys
-(def temperature-shader-spec-right (update-in (assoc temperature-shader-spec-left  :vs standard-vs-right
-                                                     :fs (->> temperature-fs-right
-                                                              (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                              (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base :trump :trump}))
+(def temperature-shader-spec-right (assoc temperature-shader-spec-left  :vs standard-vs-right
+                                          :fs (->> temperature-fs-right
+                                                   (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                                                   (glsl/assemble))))
 
 (defonce current-shader-left (atom standard-shader-spec-left))
 (defonce current-shader-right (atom standard-shader-spec-right))
