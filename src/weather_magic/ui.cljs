@@ -1,11 +1,12 @@
 (ns weather-magic.ui
   (:require
-   [weather-magic.models :as models]
-   [weather-magic.state :as state]
-   [weather-magic.world :as world]
-   [weather-magic.shaders :as shaders]
-   [weather-magic.util  :as util]
-   [reagent.core :as reagent :refer [atom]]))
+   [weather-magic.models   :as models]
+   [weather-magic.state    :as state]
+   [weather-magic.world    :as world]
+   [weather-magic.shaders  :as shaders]
+   [weather-magic.util     :as util]
+   [reagent.core           :as reagent :refer [atom]]
+   [thi.ng.geom.gl.shaders :as sh]))
 
 (enable-console-print!)
 
@@ -54,14 +55,17 @@
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
    [button "Northpole Up" reset! state/earth-animation-fn world/northpole-up!]])
 
+(defn compile-shader [s]
+  (sh/make-shader-from-spec state/gl-ctx s))
+
 (defn shader-selection-buttons
   "Buttons for choosing shader"
   []
   [:div {:id "shader-selection-container"}
    [button "Go to map"          swap!  state/intro-visible  hide-unhide]
-   [button "Standard shader"    reset! state/current-shader shaders/standard-shader-spec]
-   [button "Blend shader"       reset! state/current-shader shaders/blend-shader-spec]
-   [button "Temperature shader" reset! state/current-shader shaders/temperature-shader-spec]])
+   [button "Standard shader"    reset! state/current-shader-key :standard]
+   [button "Blend shader"       reset! state/current-shader-key :blend]
+   [button "Temperature shader" reset! state/current-shader-key :temp]])
 
 (defn map-ui-blur []
   "What hides the map UI."

@@ -1,10 +1,10 @@
 (ns weather-magic.shaders
   (:require
-   [thi.ng.geom.gl.core :as gl]
-   [thi.ng.glsl.core :as glsl :include-macros true]
-   [thi.ng.glsl.vertex             :as vertex]
-   [thi.ng.glsl.lighting           :as light]
-   [thi.ng.geom.matrix             :as mat :refer [M44]]))
+   [thi.ng.geom.gl.core  :as gl]
+   [thi.ng.glsl.core     :as glsl :include-macros true]
+   [thi.ng.glsl.vertex   :as vertex]
+   [thi.ng.glsl.lighting :as light]
+   [thi.ng.geom.matrix   :as mat :refer [M44]]))
 
 (def standard-vs
   "void main() {

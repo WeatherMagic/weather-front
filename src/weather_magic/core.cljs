@@ -5,15 +5,14 @@
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [weather-magic.event-handlers   :as event-handlers]
-   [thi.ng.math.core               :as m :refer [PI HALF_PI TWO_PI]]
+   [thi.ng.math.core               :as m   :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core            :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
    [thi.ng.geom.gl.webgl.animator  :as anim]
-   [thi.ng.geom.gl.shaders         :as sh]
    [thi.ng.geom.gl.glmesh          :as glm]
    [thi.ng.geom.gl.camera          :as cam]
    [thi.ng.geom.core               :as g]
-   [thi.ng.geom.vector             :as v :refer [vec2 vec3]]
+   [thi.ng.geom.vector             :as v   :refer [vec2 vec3]]
    [thi.ng.geom.matrix             :as mat :refer [M44]]
    [thi.ng.geom.sphere             :as s]
    [thi.ng.geom.attribs            :as attr]
@@ -29,11 +28,10 @@
   (@state/earth-animation-fn delta-time)
   (m/* M44 @state/earth-orientation))
 
-(defn combine-model-shader-and-camera
-  [model shader-spec camera t]
+(defn combine-model-and-camera
+  [model camera t]
   (-> model
       (gl/as-gl-buffer-spec {})
-      (assoc :shader (sh/make-shader-from-spec state/gl-ctx shader-spec))
       (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
       (cam/apply camera)))
 
@@ -47,7 +45,8 @@
       (doto state/gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
-         (-> (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
+         (-> (combine-model-and-camera @state/model @state/camera t)
+             (assoc :shader (@state/current-shader-key state/shaders))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range))))
