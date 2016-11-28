@@ -43,7 +43,7 @@
                                   (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx-left (:aspect @state/camera-left))
       (gl/set-viewport state/gl-ctx-right (:aspect @state/camera-right)))))
-      
+
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
@@ -68,7 +68,7 @@
   "If the mouse is released during panning"
   [_]
   (reset! mouse-pressed false)
-  (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
+  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false))
 
 (defn pan-handler
   "Handles the mouse events for panning"
@@ -77,8 +77,8 @@
   (reset! mouse-pressed true)
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
-    (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
-    (.addEventListener (.getElementById js/document "main") "mouseup" mouse-up false)))
+    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false)
+    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
@@ -89,5 +89,5 @@
      (swap! state/camera-right zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
-  (.addEventListener (.getElementById js/document "main") "mousedown" pan-handler false)
+  (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
   true)

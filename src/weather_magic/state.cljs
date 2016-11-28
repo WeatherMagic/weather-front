@@ -4,7 +4,10 @@
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.gl.core   :as gl]
    [weather-magic.shaders :as shaders]
+   [weather-magic.textures :as textures]
+   [thi.ng.geom.gl.shaders :as sh]
    [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
+   [thi.ng.geom.matrix    :as mat :refer [M44]]
    [reagent.core          :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
@@ -45,12 +48,22 @@
 
 (defonce model        (atom models/sphere))
 
-(defonce textures     (atom (textures/load-base-textures gl-ctx)))
-(defonce base-texture (atom (:earth @textures)))
+(defonce textures-left     (atom (textures/load-base-textures gl-ctx-left)))
 
-(def shaders {:standard (sh/make-shader-from-spec gl-ctx shaders/standard-shader-spec)
-              :blend    (sh/make-shader-from-spec gl-ctx shaders/blend-shader-spec)
-              :temp     (sh/make-shader-from-spec gl-ctx shaders/temperature-shader-spec)})
+(defonce textures-right     (atom (textures/load-base-textures gl-ctx-right)))
+
+(defonce base-texture-left (atom (:earth @textures-left)))
+
+(defonce base-texture-right (atom (:earth @textures-right)))
+
+(def shaders-left {:standard (sh/make-shader-from-spec gl-ctx-left shaders/standard-shader-spec-left)
+                   :blend    (sh/make-shader-from-spec gl-ctx-left shaders/blend-shader-spec-left)
+                   :temp     (sh/make-shader-from-spec gl-ctx-left shaders/temperature-shader-spec-left)})
+
+(def shaders-right {:standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec-right)
+                    :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec-right)
+                    :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec-right)})
+
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.

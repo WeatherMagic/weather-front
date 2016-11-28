@@ -33,7 +33,7 @@
   "void main() {
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
-     vec4 diffuse = texture2D(base2, vUV) + texture2D(trump2, vUV);
+     vec4 diffuse = texture2D(base, vUV) + texture2D(trump, vUV);
      vec4 col = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
      gl_FragColor = col;
    }")
@@ -53,7 +53,7 @@
 
 (def blend-fs-right
   "void main() {
-     vec4 texture = texture2D(base2, vUV);
+     vec4 texture = texture2D(base, vUV);
      vec4 temperature;
 
      if(texture.g > 0.5) {
@@ -61,7 +61,7 @@
      } else {
        temperature = vec4(texture.g, texture.g, 1.0, 1.0);
      }
-     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump2,vUV);
+     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump,vUV);
   }")
 
 (def temperature-fs-left
@@ -99,6 +99,7 @@
     }
      gl_FragColor = outColor;
   }")
+
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
 (def standard-shader-spec-left
@@ -135,18 +136,18 @@
 (def standard-shader-spec-right (update-in (assoc standard-shader-spec-left  :vs standard-vs-right
                                                   :fs (->> standard-fs-right
                                                            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                           (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base2 :trump :trump2}))
+                                                           (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base :trump :trump}))
 
 (def blend-shader-spec-right (update-in (assoc blend-shader-spec-left  :vs standard-vs-right
                                                :fs (->> blend-fs-right
                                                         (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                        (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base2 :trump :trump2}))
+                                                        (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base :trump :trump}))
 
 ;Hade kvar koden för update-in ifall vi måste byta namn på vissa keys
 (def temperature-shader-spec-right (update-in (assoc temperature-shader-spec-left  :vs standard-vs-right
                                                      :fs (->> temperature-fs-right
                                                               (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                              (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base2 :trump :trump2}))
+                                                              (glsl/assemble))) [:uniforms] clojure.set/rename-keys {:base :base :trump :trump}))
 
 (defonce current-shader-left (atom standard-shader-spec-left))
 (defonce current-shader-right (atom standard-shader-spec-right))
