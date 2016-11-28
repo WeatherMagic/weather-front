@@ -39,6 +39,27 @@
                             (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
 
+(defn update-corners
+  "Updating how much the globe should be rotated around the z axis to align northpole"
+  [event]
+  (let [x-coord (/ (.-clientWidth element) 2)
+        y-coord (/ (.-clientHeight element) 2)]
+        matrix (-> M44
+                   (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
+                   (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @zoom-level) 1.0E-3)))
+                   (g/rotate-z (Math/atan2 y-diff x-diff)))
+  (let [future-earth-orientation (-> M44
+                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
+                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @zoom-level) 1.0E-3)))
+                                     (g/rotate-z (Math/atan2 y-diff x-diff))
+                                     (m/* @state/earth-orientation))
+        northpole-x (.-m10 future-earth-orientation)
+        northpole-y (.-m11 future-earth-orientation)
+        northpole-z (.-m12 future-earth-orientation)
+        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
+        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
+    (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
+
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
