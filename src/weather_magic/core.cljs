@@ -49,7 +49,7 @@
         current-step (:current-step @state/pointer-zoom-info)
         delta-angle (:delta-angle @state/pointer-zoom-info)]
     (event-handlers/update-zoom-point-alignment delta-x delta-y delta-angle current-step delta-fov)
-    (swap! state/pointer-zoom-info assoc-in [:current-step] (+ current-step 1))
+    (swap! state/pointer-zoom-info assoc-in [:current-step] (inc current-step))
     (when (= current-step total-steps)
       (swap! state/pointer-zoom-info assoc :state false))))
 
