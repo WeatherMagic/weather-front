@@ -54,7 +54,7 @@
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
    [button "Aline" event-handlers/aline-handler]
-   [button "Reset!" reset! state/earth-animation-fn world/reset-spin!]])
+   [button "Reset!" event-handlers/reset-spin-handler]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"

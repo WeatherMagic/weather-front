@@ -5,6 +5,7 @@
    [weather-magic.textures         :as textures]
    [thi.ng.geom.gl.buffers         :as buf]
    [thi.ng.geom.gl.webgl.constants :as glc]
+   [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.core               :as g]
    [thi.ng.geom.matrix             :as mat :refer [M44]]
    [thi.ng.math.core               :as m :refer [PI HALF_PI TWO_PI]]
@@ -46,9 +47,6 @@
   [delta-time]
   (reset! state/model models/sphere)
   (reset! state/texture textures/earth)
-  (println @state/camera)
-  (swap! state/camera assoc :fov 110)
-  (println @state/camera)
   (reset! state/earth-orientation M44)
   (reset! state/earth-animation-fn spin-earth!))
 

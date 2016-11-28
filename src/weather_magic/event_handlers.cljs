@@ -26,6 +26,11 @@
   (cam/perspective-camera
    (assoc camera-map :fov (min 140 (+ @zoom-level (* @zoom-level scroll-distance 5.0E-4))))))
 
+(defn reset-zoom
+  [camera-map]
+  (cam/perspective-camera
+   (assoc camera-map :fov 110)))
+
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
   (let [element (.getElementById js/document "main")
@@ -81,6 +86,11 @@
 (defn aline-handler []
   (get-uprighting-angles 0 0) ;mitten på jorden
   (swap! state/northpole-up-pressed assoc :state true))
+
+(defn reset-spin-handler
+  []
+  (swap! state/camera reset-zoom)
+  (reset! state/earth-animation-fn world/reset-spin!))
 
 (defn move-fcn
   "Handles the movements of the mouse during panning"
