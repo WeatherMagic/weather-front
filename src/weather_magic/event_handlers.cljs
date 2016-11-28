@@ -7,6 +7,7 @@
    [thi.ng.geom.gl.core  :as gl]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.matrix :as mat :refer [M44]]
+   [thi.ng.geom.vector :as v :refer [vec2 vec3]]
    [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.core :as g]
    [reagent.core :as reagent :refer [atom]]))
@@ -25,7 +26,30 @@
   (cam/perspective-camera
    (assoc camera-map :fov (min 140 (+ @zoom-level (* @zoom-level scroll-distance 5.0E-4))))))
 
+ (defn get-corner
+   "Updating how much the globe should be rotated around the z axis to align northpole"
+   [x-coord y-coord]
+   (let [matrix (-> (m/invert @state/earth-orientation)
+                    (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
+                    (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @zoom-level) 1.0E-3)))
+                    (g/rotate-z (Math/atan2 y-coord x-coord)))
+         corner-x (.-m20 matrix)
+         corner-y (.-m21 matrix)
+         corner-z (.-m22 matrix)]
+         (vec3 corner-x corner-y corner-z)))
+
+ (defn corner-handler
+   ""
+   [_]
+   (let [element (.getElementById js/document "main")
+         half-width (/ (.-clientWidth element) 2)
+         half-height (/ (.-clientHeight element) 2)]
+         (swap! state/corners assoc :upper-left (get-corner (* half-width -1) half-height) :upper-right (get-corner half-width half-height)
+                :lower-left (get-corner (* half-width -1) (* half-height -1)) :lower-right (get-corner half-width (* half-height -1)))
+         (println state/corners)))
+
 (defn resize-handler [_]
+  (corner-handler)
   "Handles the aspect ratio of the webGL rendered world"
   (let [element (.getElementById js/document "main")
         actual-width (.-clientWidth element)
@@ -39,33 +63,12 @@
                             (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
 
-(defn update-corners
-  "Updating how much the globe should be rotated around the z axis to align northpole"
-  [event]
-  (let [x-coord (/ (.-clientWidth element) 2)
-        y-coord (/ (.-clientHeight element) 2)]
-        matrix (-> M44
-                   (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                   (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @zoom-level) 1.0E-3)))
-                   (g/rotate-z (Math/atan2 y-diff x-diff)))
-  (let [future-earth-orientation (-> M44
-                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @zoom-level) 1.0E-3)))
-                                     (g/rotate-z (Math/atan2 y-diff x-diff))
-                                     (m/* @state/earth-orientation))
-        northpole-x (.-m10 future-earth-orientation)
-        northpole-y (.-m11 future-earth-orientation)
-        northpole-z (.-m12 future-earth-orientation)
-        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
-        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
-    (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
-
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @zoom-level) 5.0E-4)))
+                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) @zoom-level) 1.0E-3)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
 
