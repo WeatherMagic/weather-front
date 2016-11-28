@@ -67,8 +67,6 @@
     gl_FragColor = outColor;
   }")
 
-;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
-;;; iff they're modified when the source code is saved.
 (def standard-shader-spec
   {:vs standard-vs
    :fs (->> standard-fs
@@ -83,8 +81,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :year       [:float 0.0]
-              :range      [:float 0.0]
+              :year       :float
+              :range      :float
               :fov        :float}
 
    :attribs  {:position :vec3
@@ -95,52 +93,13 @@
    :state    {:depth-test true}})
 
 (def blend-shader-spec
-  {:vs standard-vs
-   :fs (->> blend-fs
-            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-            (glsl/assemble))
-   :uniforms {:model      [:mat4 M44]
-              :view       :mat4
-              :proj       :mat4
-              :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :base       [:sampler2D 0] ; Specify which texture unit
-              :trump      [:sampler2D 1] ; the uniform is bound to.
-              :lightDir   [:vec3 [1 0 1]]
-              :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec3 [0 0 0.1]]
-              :year       [:float 0.0]
-              :range      [:float 0.0]
-              :fov        :float}
-
-   :attribs  {:position :vec3
-              :normal   :vec3
-              :uv       :vec2}
-   :varying  {:vUV      :vec2
-              :vNormal  :vec3}
-   :state    {:depth-test true}})
+  (assoc standard-shader-spec
+         :fs (->> blend-fs
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
 
 (def temperature-shader-spec
-  {:vs standard-vs
-   :fs (->> temperature-fs
-            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-            (glsl/assemble))
-   :uniforms {:model      [:mat4 M44]
-              :view       :mat4
-              :proj       :mat4
-              :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :base       [:sampler2D 0] ; Specify which texture unit
-              :trump      [:sampler2D 1] ; the uniform is bound to.
-              :lightDir   [:vec3 [1 0 1]]
-              :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec3 [0 0 0.1]]
-              :year       [:float 0.0]
-              :range      [:float 0.0]
-              :fov        :float}
-
-   :attribs  {:position :vec3
-              :normal   :vec3
-              :uv       :vec2}
-   :varying  {:vUV      :vec2
-              :vNormal  :vec3}
-   :state    {:depth-test true}})
-
+  (assoc standard-shader-spec
+         :fs (->> temperature-fs
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
