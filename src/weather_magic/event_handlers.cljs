@@ -45,16 +45,16 @@
   ""
   [x-diff y-diff]
   (let [future-earth-orientation (-> M44
-                                    (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                    (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow y-diff 2) (Math/pow x-diff 2)) 0.5) @zoom-level) 1.0E-3)))
-                                    (g/rotate-z (Math/atan2 y-diff x-diff))
-                                    (m/* @state/earth-orientation))
+                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
+                                     (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow y-diff 2) (Math/pow x-diff 2)) 0.5) @zoom-level) 1.0E-3)))
+                                     (g/rotate-z (Math/atan2 y-diff x-diff))
+                                     (m/* @state/earth-orientation))
         northpole-x (.-m10 future-earth-orientation)
         northpole-y (.-m11 future-earth-orientation)
         northpole-z (.-m12 future-earth-orientation)
         northpole-y-norm (/ northpole-y (Math/sqrt (+ (Math/pow northpole-y 2) (Math/pow northpole-x 2))))
         delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
-        (swap! state/pointer-zoom-info assoc :delta-angle delta-angle)))
+    (swap! state/pointer-zoom-info assoc :delta-angle delta-angle)))
 
 (defn update-pan
   "Updates the atom holding the rotation of the world"

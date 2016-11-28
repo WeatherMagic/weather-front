@@ -48,10 +48,10 @@
         total-steps (:total-steps @state/pointer-zoom-info)
         current-step (:current-step @state/pointer-zoom-info)
         delta-angle (:delta-angle @state/pointer-zoom-info)]
-        (event-handlers/update-zoom-point-alignment delta-x delta-y delta-angle current-step delta-fov)
-        (swap! state/pointer-zoom-info assoc-in [:current-step] (+ current-step 1))
-        (when (= current-step total-steps)
-          (swap! state/pointer-zoom-info assoc :state false))))
+    (event-handlers/update-zoom-point-alignment delta-x delta-y delta-angle current-step delta-fov)
+    (swap! state/pointer-zoom-info assoc-in [:current-step] (+ current-step 1))
+    (when (= current-step total-steps)
+      (swap! state/pointer-zoom-info assoc :state false))))
 
 (defn draw-frame! [t]
   (when (and @(:loaded @state/base-texture) @(:loaded (:trump @state/textures)))
