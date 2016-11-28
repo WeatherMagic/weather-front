@@ -28,32 +28,22 @@
 
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
-  (let [element (.getElementById js/document "main")
-        actual-width (.-clientWidth element)
-        actual-height (.-clientHeight element)
-        webgl-width (.-width element)
-        webgl-height (.-height element)]
+  (let [left-canvas (.getElementById js/document "left-canvas")
+        actual-width (.-clientWidth left-canvas)
+        actual-height (.-clientHeight left-canvas)
+        webgl-width (.-width left-canvas)
+        webgl-height (.-height left-canvas)]
     (when-not (and (= actual-width webgl-width) (= actual-height webgl-height))
-      (set! (.-width (.-canvas state/gl-ctx)) actual-width)
-      (set! (.-height (.-canvas state/gl-ctx)) actual-height)
-      (swap! state/camera #(cam/perspective-camera
-                            (assoc % :aspect (rect/rect actual-width actual-height))))
-      (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
-
-(defn update-alignment-angle
-  "Updating how much the globe should be rotated around the z axis to align northpole"
-  [x-diff y-diff]
-  (let [future-earth-orientation (-> M44
-                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @zoom-level) 1.0E-3)))
-                                     (g/rotate-z (Math/atan2 y-diff x-diff))
-                                     (m/* @state/earth-orientation))
-        northpole-x (.-m10 future-earth-orientation)
-        northpole-y (.-m11 future-earth-orientation)
-        northpole-z (.-m12 future-earth-orientation)
-        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
-        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
-    (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
+      (set! (.-width (.-canvas state/gl-ctx-left)) actual-width)
+      (set! (.-height (.-canvas state/gl-ctx-left)) actual-height)
+      (set! (.-width (.-canvas state/gl-ctx-right)) actual-width)
+      (set! (.-height (.-canvas state/gl-ctx-right)) actual-height)
+      (swap! state/camera-left #(cam/perspective-camera
+                                 (assoc % :aspect (rect/rect actual-width actual-height))))
+      (swap! state/camera-right #(cam/perspective-camera
+                                  (assoc % :aspect (rect/rect actual-width actual-height))))
+      (gl/set-viewport state/gl-ctx-left (:aspect @state/camera-left))
+      (gl/set-viewport state/gl-ctx-right (:aspect @state/camera-right)))))
 
 (defn update-pan
   "Updates the atom holding the rotation of the world"
@@ -91,7 +81,7 @@
   "If the mouse is released during panning"
   [_]
   (reset! mouse-pressed false)
-  (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
+  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false))
 
 (defn pointer-zoom-handler
   "Rotates the globe to the point which is dubble clicked"
@@ -114,16 +104,18 @@
   (reset! mouse-pressed true)
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
-    (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
-    (.addEventListener (.getElementById js/document "main") "mouseup" mouse-up false)))
+    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
+    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
-  (.addEventListener (.getElementById js/document "main") "wheel"
-                     (fn [event] (swap! state/camera zoom-camera (.-deltaY event))) false)
+  (.addEventListener
+   (.getElementById js/document "canvases") "wheel"
+   (fn [event]
+     (swap! state/camera-left zoom-camera (.-deltaY event))
+     (swap! state/camera-right zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
-  (.addEventListener (.getElementById js/document "main") "mousedown" pan-handler false)
-  (.addEventListener (.getElementById js/document "main") "dblclick" pointer-zoom-handler false)
+  (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
   true)
