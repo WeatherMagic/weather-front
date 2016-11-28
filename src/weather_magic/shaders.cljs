@@ -45,13 +45,14 @@
 
     vec4 outColor;
 
-    float threshold = 1.0/fov;
-    threshold = (threshold - 0.01) / 10.0;
-    threshold = clamp(threshold, 0.0, 0.01);
+    float threshold = fov/1000.0;
+    if (fov > 35.0) {
+      threshold = pow((70.0 - fov)/70.0, 4.0)/4.0 - 0.001;
+    } 
 
-    float alphaValue = threshold * 100.0;
+    float alphaValue = clamp(15.0 / fov, 0.0, 1.0);
 
-    if (mod(temperature, 0.1) < threshold) {
+    if (mod(temperature, 0.1) < threshold && fov < 50.0) {
       if (temperature > 0.5 && temperature < 0.75) {
         outColor = vec4(0.5, 0.5, 0.5, alphaValue);
       } else if (temperature > 0.75) {
