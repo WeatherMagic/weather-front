@@ -9,6 +9,7 @@
    [thi.ng.geom.gl.core            :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
    [thi.ng.geom.gl.webgl.animator  :as anim]
+   [thi.ng.geom.gl.shaders         :as sh]
    [thi.ng.geom.gl.glmesh          :as glm]
    [thi.ng.geom.gl.camera          :as cam]
    [thi.ng.geom.core               :as g]
@@ -29,28 +30,42 @@
   (m/* M44 @state/earth-orientation))
 
 (defn combine-model-and-camera
-  [model camera t]
+  [model camera gl-ctx t]
   (-> model
       (gl/as-gl-buffer-spec {})
-      (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
+      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
 (defn draw-frame! [t]
-  (when (and @(:loaded @state/base-texture) @(:loaded (:trump @state/textures)))
+  (when (and @(:loaded @state/base-texture-left) @(:loaded (:trump @state/textures-left)))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]
       (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
-      (gl/bind (:texture @state/base-texture) 0)
-      (gl/bind (:texture (:trump @state/textures)) 1)
-      (doto state/gl-ctx
+      (gl/bind (:texture @state/base-texture-left) 0)
+      (gl/bind (:texture (:trump @state/textures-left)) 1)
+      (doto state/gl-ctx-left
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
-         (-> (combine-model-and-camera @state/model @state/camera t)
-             (assoc :shader (@state/current-shader-key state/shaders))
+         (-> (combine-model-and-camera @state/model @state/camera-left state/gl-ctx-left t)
+             (assoc :shader (@state/current-shader-key state/shaders-left))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
-             (assoc-in [:uniforms :range] range))))
-      (vreset! state/time-of-last-frame t))))
+             (assoc-in [:uniforms :range] range))))))
+  (when (and @(:loaded @state/base-texture-right) @(:loaded (:trump @state/textures-right)))
+    (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
+          time (rem (int (* 5 t)) range)]
+      (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
+      (gl/bind (:texture @state/base-texture-right) 0)
+      (gl/bind (:texture (:trump @state/textures-right)) 1)
+      (doto state/gl-ctx-right
+        (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+        (gl/draw-with-shader
+         (-> (combine-model-and-camera @state/model @state/camera-right state/gl-ctx-right t)
+             (assoc :shader (@state/current-shader-key state/shaders-right))
+             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
+             (assoc-in [:uniforms :year]  time)
+             (assoc-in [:uniforms :range] range))))))
+  (vreset! state/time-of-last-frame t))
 
 ;; Start the demo only once.
 (defonce running
