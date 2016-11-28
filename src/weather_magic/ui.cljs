@@ -38,6 +38,7 @@
    [slider-component :month]])
 
 (defn map-ui-blur []
+  "What hides the map UI."
   [:div {:class @state/intro-visible :id "blur"}])
 
 (defn data-layer-buttons
@@ -66,10 +67,6 @@
    [button "Standard shader"    reset! state/current-shader-key :standard]
    [button "Blend shader"       reset! state/current-shader-key :blend]
    [button "Temperature shader" reset! state/current-shader-key :temp]])
-
-(defn map-ui-blur []
-  "What hides the map UI."
-  [:div {:class @state/intro-visible :id "blur"}])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
