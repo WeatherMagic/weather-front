@@ -1,6 +1,7 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models  :as models]
+   [weather-magic.textures  :as textures]
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.gl.core   :as gl]
    [weather-magic.shaders :as shaders]
@@ -34,16 +35,14 @@
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce model   (atom models/sphere))
-(defonce texture (atom nil))
+(defonce model        (atom models/sphere))
+
+(defonce textures     (atom (textures/load-base-textures gl-ctx)))
+(defonce base-texture (atom (:earth @textures)))
 
 (defonce current-shader (atom shaders/standard-shader-spec))
 
-;; Counters for texture loading.
-(defonce textures-loaded (volatile! 0))
-(defonce textures-to-be-loaded (volatile! 0))
+;; Used for determining frame delta, the time between each frame.
+(defonce time-of-last-frame (volatile! 0))
 
 (defonce pointer-zoom-info (atom {:state false :delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :phi 0 :theta 0}))
-
-;; Button class holding the data layer buttons
-(defonce button-class (atom "data-layer-button"))
