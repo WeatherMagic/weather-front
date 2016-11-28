@@ -11,21 +11,16 @@
    [reagent.core          :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
-(defonce gl-ctx-left (gl/gl-context "left-canvas"))
-
-;; Another WebGL context
+(defonce gl-ctx-left  (gl/gl-context "left-canvas"))
 (defonce gl-ctx-right (gl/gl-context "right-canvas"))
 
-;; How WebGL figures out its aspect ratio.
+;; Canvas sizes.
 (defonce view-rect-left  (gl/get-viewport-rect gl-ctx-left))
-
-;; How WebGL figures out its aspect ratio.
-(defonce view-rect-right  (gl/get-viewport-rect gl-ctx-right))
+(defonce view-rect-right (gl/get-viewport-rect gl-ctx-right))
 
 (defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                     :fov    110
                                                     :aspect (gl/get-viewport-rect gl-ctx-left)})))
-
 (defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
                                                      :fov    110
                                                      :aspect (gl/get-viewport-rect gl-ctx-right)})))
@@ -46,23 +41,19 @@
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce model        (atom models/sphere))
+(defonce model         (atom models/sphere))
 
-(defonce textures-left     (atom (textures/load-base-textures gl-ctx-left)))
+(defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
+(defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
+(defonce base-texture-left    (atom (:earth @textures-left)))
+(defonce base-texture-right   (atom (:earth @textures-right)))
 
-(defonce textures-right     (atom (textures/load-base-textures gl-ctx-right)))
-
-(defonce base-texture-left (atom (:earth @textures-left)))
-
-(defonce base-texture-right (atom (:earth @textures-right)))
-
-(def shaders-left {:standard (sh/make-shader-from-spec gl-ctx-left shaders/standard-shader-spec-left)
-                   :blend    (sh/make-shader-from-spec gl-ctx-left shaders/blend-shader-spec-left)
-                   :temp     (sh/make-shader-from-spec gl-ctx-left shaders/temperature-shader-spec-left)})
-
-(def shaders-right {:standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec-right)
-                    :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec-right)
-                    :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec-right)})
+(def shaders-left  {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
+                    :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
+                    :temp     (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)})
+(def shaders-right {:standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
+                    :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec)
+                    :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)})
 
 (defonce current-shader-key (atom :standard))
 
