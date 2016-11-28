@@ -1,13 +1,19 @@
 (ns weather-magic.ui
   (:require
-   [weather-magic.models :as models]
-   [weather-magic.state :as state]
-   [weather-magic.world :as world]
-   [weather-magic.shaders :as shaders]
-   [weather-magic.util  :as util]
-   [reagent.core :as reagent :refer [atom]]))
+   [weather-magic.models   :as models]
+   [weather-magic.state    :as state]
+   [weather-magic.world    :as world]
+   [weather-magic.shaders  :as shaders]
+   [weather-magic.util     :as util]
+   [reagent.core           :as reagent :refer [atom]]
+   [thi.ng.geom.gl.shaders :as sh]))
 
 (enable-console-print!)
+
+(defn hide-unhide
+  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
+  [hidden-or-not]
+  (hidden-or-not {:hidden :visible :visible :hidden}))
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
@@ -54,17 +60,25 @@
   []
   [:div {:id "view-selection-container" :class (hide-unhide @state/intro-visible)}
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
+   [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "World"  reset! state/earth-animation-fn world/spin-earth!]])
+   [button "Northpole Up" reset! state/earth-animation-fn world/northpole-up!]])
+
+(defn compile-shader [s]
+  (sh/make-shader-from-spec state/gl-ctx s))
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"
   []
   [:div {:id "shader-selection-container"}
-   [button "Go to map"          swap!                state/intro-visible                  #(swap! state/intro-visible hide-unhide)]
-   [button "Standard shader"    shaders/set-shaders! shaders/standard-shader-spec-left    shaders/standard-shader-spec-right]
-   [button "Blend shader"       shaders/set-shaders! shaders/blend-shader-spec-left       shaders/blend-shader-spec-right]
-   [button "Temperature shader" shaders/set-shaders! shaders/temperature-shader-spec-left shaders/temperature-shader-spec-right]])
+   [button "Go to map"          swap!  state/intro-visible  hide-unhide]
+   [button "Standard shader"    reset! state/current-shader-key :standard]
+   [button "Blend shader"       reset! state/current-shader-key :blend]
+   [button "Temperature shader" reset! state/current-shader-key :temp]])
+
+(defn map-ui-blur []
+  "What hides the map UI."
+  [:div {:class @state/intro-visible :id "blur"}])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."

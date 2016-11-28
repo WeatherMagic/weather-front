@@ -1,10 +1,10 @@
 (ns weather-magic.shaders
   (:require
-   [thi.ng.geom.gl.core :as gl]
-   [thi.ng.glsl.core :as glsl :include-macros true]
-   [thi.ng.glsl.vertex             :as vertex]
-   [thi.ng.glsl.lighting           :as light]
-   [thi.ng.geom.matrix             :as mat :refer [M44]]))
+   [thi.ng.geom.gl.core  :as gl]
+   [thi.ng.glsl.core     :as glsl :include-macros true]
+   [thi.ng.glsl.vertex   :as vertex]
+   [thi.ng.glsl.lighting :as light]
+   [thi.ng.geom.matrix   :as mat :refer [M44]]))
 
 (def standard-vs-left
   "void main() {
@@ -67,31 +67,38 @@
 (def temperature-fs-left
   "void main() {
 
-    vec4 texture = texture2D(base, vUV);
-    vec4 temperature;
+    float temperatureTex1 = texture2D(base, vUV).r;
+    float temperatureTex2 = texture2D(base, vUV).b;
 
-    if(texture.g > 0.5) {
-      temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
+    float temperature = mix(temperatureTex1, temperatureTex2, year/range);
+
+    vec4 outColor;
+
+    if(temperature > 0.5) {
+      outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
     } else {
-      temperature = vec4(texture.g, texture.g, 1.0, 1.0);
+      outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
     }
-     gl_FragColor = temperature + texture2D(trump,vUV);;
+     gl_FragColor = outColor;
   }")
 
 (def temperature-fs-right
   "void main() {
 
-    vec4 texture = texture2D(base2, vUV);
-    vec4 temperature;
+    float temperatureTex1 = texture2D(base, vUV).r;
+    float temperatureTex2 = texture2D(base, vUV).b;
 
-    if(texture.g > 0.5) {
-      temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
+    float temperature = mix(temperatureTex1, temperatureTex2, year/range);
+
+    vec4 outColor;
+
+    if(temperature > 0.5) {
+      outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
     } else {
-      temperature = vec4(texture.g, texture.g, 1.0, 1.0);
+      outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
     }
-     gl_FragColor = temperature + texture2D(trump2,vUV);
+     gl_FragColor = outColor;
   }")
-
 ;;; On the other hand: The below def's and defn's can and will be reloaded by figwheel
 ;;; iff they're modified when the source code is saved.
 (def standard-shader-spec-left
@@ -108,8 +115,8 @@
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
-              :frameCounter [:int 0]}
-
+              :year       :float
+              :range      :float}
    :attribs  {:position :vec3
               :normal   :vec3
               :uv       :vec2}
