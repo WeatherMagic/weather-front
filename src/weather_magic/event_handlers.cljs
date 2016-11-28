@@ -26,27 +26,26 @@
   (cam/perspective-camera
    (assoc camera-map :fov (min 140 (+ @zoom-level (* @zoom-level scroll-distance 5.0E-4))))))
 
- (defn get-corner
-   "Updating how much the globe should be rotated around the z axis to align northpole"
-   [x-coord y-coord]
-   (let [matrix (-> (m/invert @state/earth-orientation)
-                    (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
-                    (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @zoom-level) 1.0E-3)))
-                    (g/rotate-z (* (Math/atan2 y-coord x-coord) 1)))
-         corner-x (.-m20 matrix)
-         corner-y (.-m21 matrix)
-         corner-z (.-m22 matrix)]
-         (vec3 corner-x corner-y corner-z)))
+(defn get-corner
+  "Updating how much the globe should be rotated around the z axis to align northpole"
+  [x-coord y-coord]
+  (let [matrix (-> (m/invert @state/earth-orientation)
+                   (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
+                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @zoom-level) 1.0E-3)))
+                   (g/rotate-z (Math/atan2 y-coord x-coord)))
+        corner-x (.-m20 matrix)
+        corner-y (.-m21 matrix)
+        corner-z (.-m22 matrix)]
+    (vec3 corner-x corner-y corner-z)))
 
- (defn corner-handler
-   ""
-   [_]
-   (let [element (.getElementById js/document "main")
-         half-width (* (/ (.-clientWidth element) 2) -1)
-         half-height (* (/ (.-clientHeight element) 2) -1)]
-         (swap! state/corners assoc :upper-left (get-corner (* half-width -1) half-height) :upper-right (get-corner half-width half-height)
-                :lower-left (get-corner (* half-width -1) (* half-height -1)) :lower-right (get-corner half-width (* half-height -1)))
-         (println state/corners)))
+(defn corner-handler
+  ""
+  []
+  (let [element (.getElementById js/document "main")
+        half-width (- (/ (.-clientWidth element) 2) 250)
+        half-height (- (/ (.-clientHeight element) 2) 100)]
+    (swap! state/corners assoc :upper-left (get-corner (* half-width -1) (* half-height -1)) :upper-right (get-corner half-width (* half-height -1))
+           :lower-left (get-corner (* half-width -1) half-height) :lower-right (get-corner half-width half-height))))
 
 (defn resize-handler [_]
   (corner-handler)
@@ -66,6 +65,7 @@
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
+  (corner-handler)
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
                                       (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) @zoom-level) 1.0E-3)))
