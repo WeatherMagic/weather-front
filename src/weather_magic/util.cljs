@@ -2,7 +2,7 @@
   (:require
    [thi.ng.geom.gl.buffers :as buf]
    [thi.ng.geom.gl.webgl.constants :as glc]
-   [thi.ng.geom.vector  :refer vec2]))
+   [thi.ng.geom.vector  :refer [vec2]]))
 
 (defn transparent-println
   "Print something and return that something."
@@ -30,5 +30,5 @@
   [lat lon]
   (let
       [u (+ (/ lon 360) 1/2)
-       v (+(/ lat 180) 1/2)])
-  (vec2 u v))
+       v (+(/ lat 180) 1/2)]
+    (vec2 u v)))
