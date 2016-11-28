@@ -53,7 +53,7 @@
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
 
-(defn move-fcn
+(defn move-fn
   "Handles the movements of the mouse during panning"
   [event]
   (let [last-pos @last-xy-pos
@@ -68,7 +68,7 @@
   "If the mouse is released during panning"
   [_]
   (reset! mouse-pressed false)
-  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false))
+  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fn false))
 
 (defn pan-handler
   "Handles the mouse events for panning"
@@ -77,7 +77,7 @@
   (reset! mouse-pressed true)
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
-    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false)
+    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
     (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
 
 (defn hook-up-events!
@@ -85,7 +85,8 @@
   []
   (.addEventListener
    (.getElementById js/document "canvases") "wheel"
-   (fn [event] (swap! state/camera-left zoom-camera (.-deltaY event))
+   (fn [event]
+     (swap! state/camera-left zoom-camera (.-deltaY event))
      (swap! state/camera-right zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)

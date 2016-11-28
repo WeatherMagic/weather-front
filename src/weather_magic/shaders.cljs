@@ -32,7 +32,7 @@
      } else {
        temperature = vec4(texture.g, texture.g, 1.0, 1.0);
      }
-     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump,vUV);
+     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump, vUV);
   }")
 
 (def temperature-fs
