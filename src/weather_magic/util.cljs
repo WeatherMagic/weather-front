@@ -2,7 +2,8 @@
   (:require
    [thi.ng.geom.gl.buffers :as buf]
    [thi.ng.geom.gl.webgl.constants :as glc]
-   [thi.ng.geom.vector  :refer [vec2]]))
+   [thi.ng.geom.vector  :refer [vec2]]
+   [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]))
 
 (defn transparent-println
   "Print something and return that something."
@@ -26,9 +27,37 @@
   ;; filename extension), always ended with a line ending.
   (second (re-find #"([^/^\.]+)\.?[^/]*$" path)))
 
-(defn latlon-to-uv
+(defn lat-lon-to-cart
+  "Converting latitude and longitude to model cordinates"
+  [lat lon]
+  (let [rlat (m/radians lat)
+        rlon (m/radians lon)]
+    {:x (* (Math/sin rlon) (Math/cos rlat))
+     :y (Math/sin rlat)
+     :z (* (Math/cos rlon) (Math/cos rlat))}))
+
+(defn cart-to-lat-lon
+  "Converting latitude and longitude to model cordinates"
+  [x y z]
+  (let [eps 0.001
+        lon (atom 0)
+        lat (atom 0)]
+    (if (> (Math/abs z) eps)
+      (reset! lon (* (/ 180 PI) (Math/atan2 x z)))
+      (if (> (Math/abs y) (- 1 eps))
+        (reset! lon 0)
+        (if (pos? x)
+          (reset! lon 90)
+          (reset! lon -90))))
+    (if (> y (- 1 eps))
+      (reset! lat 90)
+      (if (< y (+ -1 eps))
+        (reset! lat -90)
+        (reset! lat (* (/ 180 PI) (Math/asin y)))))
+    {:lat @lat :lon @lon}))
+
+(defn lat-lon-to-uv
   [lat lon]
   (let [u (+ (/ lon 360) 0.5)
         v (+ (/ lat 180) 0.5)]
     (vec2 u v)))
-
