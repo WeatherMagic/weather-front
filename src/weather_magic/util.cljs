@@ -28,7 +28,7 @@
 
 (defn latlon-to-uv
   [lat lon]
-  (let [u (+ (/ lon 360) 1/2)
-        v (+ (/ lat 180) 1/2)]
+  (let [u (+ (/ lon 360) 0.5)
+        v (+ (/ lat 180) 0.5)]
     (vec2 u v)))
 
