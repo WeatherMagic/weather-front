@@ -45,6 +45,21 @@
       (gl/set-viewport state/gl-ctx-left (:aspect @state/camera-left))
       (gl/set-viewport state/gl-ctx-right (:aspect @state/camera-right)))))
 
+(defn update-alignment-angle
+  "Updating how much the globe should be rotated around the z axis to align northpole"
+  [x-diff y-diff]
+  (let [future-earth-orientation (-> M44
+                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
+                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @zoom-level) 1.0E-3)))
+                                     (g/rotate-z (Math/atan2 y-diff x-diff))
+                                     (m/* @state/earth-orientation))
+        northpole-x (.-m10 future-earth-orientation)
+        northpole-y (.-m11 future-earth-orientation)
+        northpole-z (.-m12 future-earth-orientation)
+        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
+        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
+    (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
+
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
@@ -57,7 +72,8 @@
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y delta-angle step delta-fov]
-  (swap! state/camera zoom-camera -15.0)
+  (swap! state/camera-left zoom-camera -15.0)
+  (swap! state/camera-right zoom-camera -15.0)
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* delta-angle step))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
@@ -88,14 +104,14 @@
   [event]
   (let [x-pos (.-clientX event)
         y-pos (.-clientY event)
-        element (.getElementById js/document "main")
+        element (.getElementById js/document "left-canvas")
         width (.-clientWidth element)
         height (.-clientHeight element)
         x-diff (- (/ width 2) x-pos)
         y-diff (- (/ height 2) y-pos)
         total-steps (:total-steps @state/pointer-zoom-info)]
     (update-alignment-angle x-diff y-diff)
-    (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera)) total-steps) :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
+    (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps) :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
 
 (defn pan-handler
   "Handles the mouse events for panning"
@@ -104,7 +120,7 @@
   (reset! mouse-pressed true)
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
-    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
+    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false)
     (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
 
 (defn hook-up-events!
@@ -118,4 +134,5 @@
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
+  (.addEventListener (.getElementById js/document "left-canvas") "dblclick" pointer-zoom-handler false)
   true)
