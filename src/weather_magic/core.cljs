@@ -47,14 +47,12 @@
         delta-z-angle (:delta-z-angle @state/pointer-zoom-info)]
     (event-handlers/update-zoom-point-alignment delta-x delta-y delta-z-angle current-step delta-fov)
     (swap! state/pointer-zoom-info assoc-in [:current-step] (inc current-step))
-    (println current-step)
-    (println total-steps)
     (when (= current-step total-steps)
       (swap! state/pointer-zoom-info assoc :state false))))
 
 (defn draw-frame! [t]
   (when (:state @state/pointer-zoom-info)
-      (align-animation))
+    (align-animation))
   (when (and @(:loaded @state/base-texture-left) @(:loaded (:trump @state/textures-left)))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]
