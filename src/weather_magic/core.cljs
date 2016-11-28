@@ -24,8 +24,6 @@
 
 (enable-console-print!)
 
-(defonce last-time (atom 0))
-
 (defn set-model-matrix
   [delta-time]
   (@state/earth-animation-fn delta-time)
@@ -47,8 +45,8 @@
         delta-fov (:delta-fov @state/pointer-zoom-info)
         total-steps (:total-steps @state/pointer-zoom-info)
         current-step (:current-step @state/pointer-zoom-info)
-        delta-angle (:delta-angle @state/pointer-zoom-info)]
-    (event-handlers/update-zoom-point-alignment delta-x delta-y delta-angle current-step delta-fov)
+        delta-z-angle (:delta-z-angle @state/pointer-zoom-info)]
+    (event-handlers/update-zoom-point-alignment delta-x delta-y delta-z-angle current-step delta-fov)
     (swap! state/pointer-zoom-info assoc-in [:current-step] (inc current-step))
     (when (= current-step total-steps)
       (swap! state/pointer-zoom-info assoc :state false))))

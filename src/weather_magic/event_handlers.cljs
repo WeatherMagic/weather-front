@@ -15,7 +15,6 @@
 (enable-console-print!)
 
 (defonce zoom-level (atom 110))
-(defonce click-variable (atom false))
 (defonce mouse-pressed (atom false))
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
@@ -41,8 +40,8 @@
                             (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx (:aspect @state/camera)))))
 
-(defn get-uprighting-angles
-  ""
+(defn update-alignment-angle
+  "Updating how much the globe should be rotated around the z axis to align northpole"
   [x-diff y-diff]
   (let [future-earth-orientation (-> M44
                                      (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
@@ -54,7 +53,7 @@
         northpole-z (.-m12 future-earth-orientation)
         northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
         delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
-    (swap! state/pointer-zoom-info assoc :delta-angle delta-angle)))
+    (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
 
 (defn update-pan
   "Updates the atom holding the rotation of the world"
@@ -91,7 +90,6 @@
 (defn mouse-up
   "If the mouse is released during panning"
   [_]
-  (reset! click-variable false)
   (reset! mouse-pressed false)
   (.removeEventListener (.getElementById js/document "main") "mousemove" move-fcn false))
 
@@ -106,7 +104,7 @@
         x-diff (- (/ width 2) x-pos)
         y-diff (- (/ height 2) y-pos)
         total-steps (:total-steps @state/pointer-zoom-info)]
-    (get-uprighting-angles x-diff y-diff)
+    (update-alignment-angle x-diff y-diff)
     (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera)) total-steps) :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
 
 (defn pan-handler
