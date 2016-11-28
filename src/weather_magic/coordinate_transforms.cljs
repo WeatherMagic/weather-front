@@ -8,9 +8,9 @@
   [lat lon]
   (let [rlat (m/radians lat)
         rlon (m/radians lon)]
-    (reset! state/cart-point {:x (* (Math/sin rlon) (Math/cos rlat))
-                              :y (Math/sin rlat)
-                              :z (* (Math/cos rlon) (Math/cos rlat))})))
+    {:x (* (Math/sin rlon) (Math/cos rlat))
+     :y (Math/sin rlat)
+     :z (* (Math/cos rlon) (Math/cos rlat))}))
 
 (defn cart-to-lat-lon
   "Converting latitude and longitude to model cordinates"
