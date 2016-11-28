@@ -32,7 +32,7 @@
    (let [matrix (-> (m/invert @state/earth-orientation)
                     (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
                     (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @zoom-level) 1.0E-3)))
-                    (g/rotate-z (Math/atan2 y-coord x-coord)))
+                    (g/rotate-z (* (Math/atan2 y-coord x-coord) 1)))
          corner-x (.-m20 matrix)
          corner-y (.-m21 matrix)
          corner-z (.-m22 matrix)]
@@ -42,8 +42,8 @@
    ""
    [_]
    (let [element (.getElementById js/document "main")
-         half-width (/ (.-clientWidth element) 2)
-         half-height (/ (.-clientHeight element) 2)]
+         half-width (* (/ (.-clientWidth element) 2) -1)
+         half-height (* (/ (.-clientHeight element) 2) -1)]
          (swap! state/corners assoc :upper-left (get-corner (* half-width -1) half-height) :upper-right (get-corner half-width half-height)
                 :lower-left (get-corner (* half-width -1) (* half-height -1)) :lower-right (get-corner half-width (* half-height -1)))
          (println state/corners)))
