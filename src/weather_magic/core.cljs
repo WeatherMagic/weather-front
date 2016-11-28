@@ -5,7 +5,7 @@
    [weather-magic.shaders                 :as shaders]
    [weather-magic.textures                :as textures]
    [weather-magic.event-handlers          :as event-handlers]
-   [weather-magic.coordinate-transforms   :as coordinate-transforms]
+   [weather-magic.util                    :as util]
    [thi.ng.math.core                      :as m :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core                   :as gl]
    [thi.ng.geom.gl.webgl.constants        :as glc]
