@@ -65,7 +65,7 @@
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
 
-(defn update-pan2
+(defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y delta-angle step delta-fov]
   (swap! state/camera zoom-camera -15.0)
@@ -108,7 +108,6 @@
         total-steps (:total-steps @state/pointer-zoom-info)]
     (get-uprighting-angles x-diff y-diff)
     (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera)) total-steps) :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
-    ;(dotimes [n 1] (update-pan (- (/ width 2) x-pos) (- (/ height 2) y-pos)))))
 
 (defn pan-handler
   "Handles the mouse events for panning"
@@ -116,7 +115,6 @@
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
   (reset! mouse-pressed true)
   (reset! state/earth-animation-fn world/stop-spin!)
-  (println "mouse-presed")
   (when (= @mouse-pressed true)
     (.addEventListener (.getElementById js/document "main") "mousemove" move-fcn false)
     (.addEventListener (.getElementById js/document "main") "mouseup" mouse-up false)))

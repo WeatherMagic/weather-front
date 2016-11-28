@@ -39,28 +39,24 @@
       (gl/make-buffers-in-spec state/gl-ctx glc/static-draw)
       (cam/apply camera)))
 
-(defn draw-frame! [t]
-  (when (= @state/textures-loaded @state/textures-to-be-loaded)
-    (if (:state @state/pointer-zoom-info)
-      (let [delta-x (:delta-x @state/pointer-zoom-info)
-            delta-y (:delta-y @state/pointer-zoom-info)
-            delta-fov (:delta-fov @state/pointer-zoom-info)
-            total-steps (:total-steps @state/pointer-zoom-info)
-            current-step (:current-step @state/pointer-zoom-info)
-            delta-angle (:delta-angle @state/pointer-zoom-info)
-            range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
-                  time (rem (int (* 5 t)) range)]
-        (event-handlers/update-pan2 delta-x delta-y delta-angle current-step delta-fov)
+(defn align-animation
+  "Function that handles alignment or zoom-alignment"
+  []
+  (let [delta-x (:delta-x @state/pointer-zoom-info)
+        delta-y (:delta-y @state/pointer-zoom-info)
+        delta-fov (:delta-fov @state/pointer-zoom-info)
+        total-steps (:total-steps @state/pointer-zoom-info)
+        current-step (:current-step @state/pointer-zoom-info)
+        delta-angle (:delta-angle @state/pointer-zoom-info)]
+        (event-handlers/update-zoom-point-alignment delta-x delta-y delta-angle current-step delta-fov)
         (swap! state/pointer-zoom-info assoc-in [:current-step] (+ current-step 1))
         (when (= current-step total-steps)
-          (swap! state/pointer-zoom-info assoc :state false))
-        (gl/bind @state/texture 0)
-        (gl/bind textures/trump 1)
-        (doto state/gl-ctx
-          (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-          (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
-                                                             [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range))))
+          (swap! state/pointer-zoom-info assoc :state false))))
 
+(defn draw-frame! [t]
+  (when (= @state/textures-loaded @state/textures-to-be-loaded)
+    (when (:state @state/pointer-zoom-info)
+        (align-animation))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]
       (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
@@ -70,7 +66,7 @@
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
                                                            [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range)))))
-    (reset! last-time t)))
+    (reset! last-time t))
 
 ;; Start the demo only once.
 (defonce running
