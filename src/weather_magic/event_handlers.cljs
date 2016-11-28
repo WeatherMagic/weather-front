@@ -56,12 +56,10 @@
         delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
         (swap! state/pointer-zoom-info assoc :delta-angle delta-angle)))
 
-
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
   (reset! state/earth-orientation (-> M44
-                                      ;(g/rotate-z (m/radians 0.5))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
                                       (g/rotate-y (m/radians (* (* (Math/pow (+ (Math/pow rel-y 2) (Math/pow rel-x 2)) 0.5) @zoom-level) 1.0E-3)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))

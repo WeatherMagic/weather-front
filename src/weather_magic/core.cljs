@@ -53,7 +53,7 @@
         (event-handlers/update-pan2 delta-x delta-y delta-angle current-step delta-fov)
         (swap! state/pointer-zoom-info assoc-in [:current-step] (+ current-step 1))
         (when (= current-step total-steps)
-          (reset! state/pointer-zoom-info {:state false}))
+          (swap! state/pointer-zoom-info assoc :state false))
         (gl/bind @state/texture 0)
         (gl/bind textures/trump 1)
         (doto state/gl-ctx
