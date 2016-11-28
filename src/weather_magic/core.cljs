@@ -41,7 +41,7 @@
 
 (defn draw-frame! [t]
   (when (= @state/textures-loaded @state/textures-to-be-loaded)
-    (if (:state @state/pointer-zoom-info)
+    (if (or (:state @state/pointer-zoom-info) (:state @state/northpole-up-pressed))
       (let [delta-x (:delta-x @state/pointer-zoom-info)
             delta-y (:delta-y @state/pointer-zoom-info)
             delta-fov (:delta-fov @state/pointer-zoom-info)
@@ -59,7 +59,8 @@
         (doto state/gl-ctx
           (gl/clear-color-and-depth-buffer 0 0 0 1 1)
           (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
-                                                             [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range))))
+                                                             [:uniforms :model] (set-model-matrix (- t @last-time)))
+                                                   [:uniforms :year] time) [:uniforms :range] range))))
 
       (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
             time (rem (int (* 5 t)) range)]
@@ -69,7 +70,8 @@
         (doto state/gl-ctx
           (gl/clear-color-and-depth-buffer 0 0 0 1 1)
           (gl/draw-with-shader (assoc-in (assoc-in (assoc-in (combine-model-shader-and-camera @state/model @state/current-shader @state/camera t)
-                                                             [:uniforms :model] (set-model-matrix (- t @last-time))) [:uniforms :year] time) [:uniforms :range] range)))))
+                                                             [:uniforms :model] (set-model-matrix (- t @last-time)))
+                                                   [:uniforms :year] time) [:uniforms :range] range)))))
     (reset! last-time t)))
 
 ;; Start the demo only once.

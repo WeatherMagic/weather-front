@@ -3,6 +3,7 @@
    [weather-magic.models :as models]
    [weather-magic.state :as state]
    [weather-magic.world :as world]
+   [weather-magic.event-handlers   :as event-handlers]
    [weather-magic.shaders :as shaders]
    [weather-magic.util  :as util]
    [reagent.core :as reagent :refer [atom]]))
@@ -52,7 +53,8 @@
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "Northpole Up" reset! state/earth-animation-fn world/northpole-up!]])
+   [button "Aline" event-handlers/aline-handler]
+   [button "Reset!" reset! state/earth-animation-fn world/reset-spin!]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"

@@ -68,7 +68,8 @@
 (defn update-pan2
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y delta-angle step delta-fov]
-  (swap! state/camera zoom-camera -15.0)
+  (when (:state @state/pointer-zoom-info)
+    (swap! state/camera zoom-camera -15.0))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* delta-angle step))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
@@ -76,6 +77,10 @@
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (g/rotate-z (* (* delta-angle (dec step)) -1))
                                       (m/* @state/earth-orientation))))
+
+(defn aline-handler []
+  (get-uprighting-angles 0 0) ;mitten på jorden
+  (swap! state/northpole-up-pressed assoc :state true))
 
 (defn move-fcn
   "Handles the movements of the mouse during panning"
@@ -106,7 +111,8 @@
         y-diff (- (/ height 2) y-pos)
         total-steps (:total-steps @state/pointer-zoom-info)]
     (get-uprighting-angles x-diff y-diff)
-    (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera)) total-steps) :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
+    (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera)) total-steps)
+           :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
     ;(dotimes [n 1] (update-pan (- (/ width 2) x-pos) (- (/ height 2) y-pos)))))
 
 (defn pan-handler
