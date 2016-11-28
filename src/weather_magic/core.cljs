@@ -55,6 +55,8 @@
 
 (defn draw-frame! [t]
   (when (and @(:loaded @state/base-texture) @(:loaded (:trump @state/textures)))
+    (when (:state @state/pointer-zoom-info)
+      (align-animation))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]
       (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
