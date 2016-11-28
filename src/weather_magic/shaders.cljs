@@ -125,28 +125,35 @@
               :vNormal  :vec3}
    :state    {:depth-test true}})
 
-(def blend-shader-spec-left (assoc standard-shader-spec-left :fs (->> blend-fs-left
-                                                                      (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                                      (glsl/assemble))))
+(def blend-shader-spec-left
+  (assoc standard-shader-spec-left
+         :fs (->> blend-fs-left
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
 
-(def temperature-shader-spec-left (assoc standard-shader-spec-left :fs (->> temperature-fs-left
-                                                                            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                                            (glsl/assemble))))
+(def temperature-shader-spec-left
+  (assoc standard-shader-spec-left
+         :fs (->> temperature-fs-left
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
 
-(def standard-shader-spec-right (assoc standard-shader-spec-left  :vs standard-vs-right
-                                       :fs (->> standard-fs-right
-                                                (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                (glsl/assemble))))
+(def standard-shader-spec-right
+  (assoc standard-shader-spec-left  :vs standard-vs-right
+         :fs (->> standard-fs-right
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
 
-(def blend-shader-spec-right (assoc blend-shader-spec-left  :vs standard-vs-right
-                                    :fs (->> blend-fs-right
-                                             (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                             (glsl/assemble))))
+(def blend-shader-spec-right
+  (assoc blend-shader-spec-left  :vs standard-vs-right
+         :fs (->> blend-fs-right
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
 
-(def temperature-shader-spec-right (assoc temperature-shader-spec-left  :vs standard-vs-right
-                                          :fs (->> temperature-fs-right
-                                                   (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                                                   (glsl/assemble))))
+(def temperature-shader-spec-right
+  (assoc temperature-shader-spec-left  :vs standard-vs-right
+         :fs (->> temperature-fs-right
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
 
 (defonce current-shader-left (atom standard-shader-spec-left))
 (defonce current-shader-right (atom standard-shader-spec-right))
