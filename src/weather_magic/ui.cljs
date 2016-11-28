@@ -58,9 +58,6 @@
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
    [button "Northpole Up" reset! state/earth-animation-fn world/northpole-up!]])
 
-(defn compile-shader [s]
-  (sh/make-shader-from-spec state/gl-ctx s))
-
 (defn shader-selection-buttons
   "Buttons for choosing shader"
   []
