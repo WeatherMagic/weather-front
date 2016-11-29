@@ -58,7 +58,7 @@
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "Align" event-handlers/aline-handler]
+   [button "Align" event-handlers/align-handler]
    [button "Reset!" event-handlers/reset-spin-handler]])
 
 (defn shader-selection-buttons

@@ -66,7 +66,7 @@
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
 
-(defn aline-handler []
+(defn align-handler []
   (update-alignment-angle 0 0) ;mitten på jorden
   (swap! state/pointer-zoom-info assoc :current-step 0 :delta-zoom 0)
   (reset! state/earth-animation-fn world/align-animation!))

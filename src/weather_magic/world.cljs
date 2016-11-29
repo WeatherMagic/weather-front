@@ -82,7 +82,6 @@
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y delta-angle step delta-fov]
-  (println (:delta-zoom @state/pointer-zoom-info))
   (swap! state/camera-left zoom-camera (:delta-zoom @state/pointer-zoom-info))
   (swap! state/camera-right zoom-camera (:delta-zoom @state/pointer-zoom-info))
   (reset! state/earth-orientation (-> M44
