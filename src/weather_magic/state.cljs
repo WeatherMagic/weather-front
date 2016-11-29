@@ -4,19 +4,26 @@
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.gl.core   :as gl]
    [weather-magic.shaders :as shaders]
+   [weather-magic.textures :as textures]
+   [thi.ng.geom.gl.shaders :as sh]
    [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
-   [reagent.core          :refer [atom]]
-   [thi.ng.geom.matrix :as mat :refer [M44]]))
+   [thi.ng.geom.matrix    :as mat :refer [M44]]
+   [reagent.core          :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
-(defonce gl-ctx (gl/gl-context "main"))
+(defonce gl-ctx-left  (gl/gl-context "left-canvas"))
+(defonce gl-ctx-right (gl/gl-context "right-canvas"))
 
-;; How WebGL figures out its aspect ratio.
-(defonce view-rect  (gl/get-viewport-rect gl-ctx))
+;; Canvas sizes.
+(defonce view-rect-left  (gl/get-viewport-rect gl-ctx-left))
+(defonce view-rect-right (gl/get-viewport-rect gl-ctx-right))
 
-(defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                               :fov    110
-                                               :aspect (gl/get-viewport-rect gl-ctx)})))
+(defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                                    :fov    110
+                                                    :aspect (gl/get-viewport-rect gl-ctx-left)})))
+(defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                                     :fov    110
+                                                     :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
 (defonce data-layer-atom (atom #{}))
@@ -34,18 +41,24 @@
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce model   (atom models/sphere))
-(defonce texture (atom nil))
+(defonce model         (atom models/sphere))
 
-(defonce current-shader (atom shaders/standard-shader-spec))
+(defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
+(defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
+(defonce base-texture-left    (atom (:earth @textures-left)))
+(defonce base-texture-right   (atom (:earth @textures-right)))
 
-;; Counters for texture loading.
-(defonce textures-loaded (volatile! 0))
-(defonce textures-to-be-loaded (volatile! 0))
+(def shaders-left  {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
+                    :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
+                    :temp     (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)})
+(def shaders-right {:standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
+                    :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec)
+                    :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)})
 
-(defonce northpole-up-pressed (atom {:state false}))
+;(defonce northpole-up-pressed (atom {:state false}))
+(defonce current-shader-key (atom :standard))
 
-(defonce pointer-zoom-info (atom {:state false :delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :phi 0 :theta 0}))
+;; Used for determining frame delta, the time between each frame.
+(defonce time-of-last-frame (volatile! 0))
 
-;; Button class holding the data layer buttons
-(defonce button-class (atom "data-layer-button"))
+(defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0}))

@@ -35,22 +35,24 @@ input[type=range] {
   visibility: hidden;
 }
 
-#main, #blur{
+#blur{
   height: 100vh;
   width: 100vw;
   top: 0;
   left: 0;
-}
-
-#blur {
-position: absolute;
+  position: absolute;
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-#main {
+#left-canvas, #right-canvas {
   height: 100vh;
-  width: 100vw;
+  width: 50vw;
 }
+
+#right-canvas {
+  position: absolute;
+}
+
 * {
   margin:0;
   padding:0;

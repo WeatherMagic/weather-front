@@ -1,12 +1,13 @@
 (ns weather-magic.ui
   (:require
-   [weather-magic.models :as models]
-   [weather-magic.state :as state]
-   [weather-magic.world :as world]
-   [weather-magic.event-handlers   :as event-handlers]
-   [weather-magic.shaders :as shaders]
-   [weather-magic.util  :as util]
-   [reagent.core :as reagent :refer [atom]]))
+   [weather-magic.models   :as models]
+   [weather-magic.state    :as state]
+   [weather-magic.event-handlers :as event-handlers]
+   [weather-magic.world    :as world]
+   [weather-magic.shaders  :as shaders]
+   [weather-magic.util     :as util]
+   [reagent.core           :as reagent :refer [atom]]
+   [thi.ng.geom.gl.shaders :as sh]))
 
 (enable-console-print!)
 
@@ -37,6 +38,10 @@
    [slider-component :year]
    [slider-component :month]])
 
+(defn map-ui-blur []
+  "What hides the map UI."
+  [:div {:class @state/intro-visible :id "blur"}])
+
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
@@ -53,21 +58,17 @@
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "Aline" event-handlers/aline-handler]
+   [button "Align" event-handlers/aline-handler]
    [button "Reset!" event-handlers/reset-spin-handler]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"
   []
   [:div {:id "shader-selection-container"}
-   [button "Go to map"          swap!  state/intro-visible  #(swap! state/intro-visible hide-unhide)]
-   [button "Standard shader"    reset! state/current-shader shaders/standard-shader-spec]
-   [button "Blend shader"       reset! state/current-shader shaders/blend-shader-spec]
-   [button "Temperature shader" reset! state/current-shader shaders/temperature-shader-spec]])
-
-(defn map-ui-blur []
-  "What hides the map UI."
-  [:div {:class @state/intro-visible :id "blur"}])
+   [button "Go to map"          swap!  state/intro-visible  hide-unhide]
+   [button "Standard shader"    reset! state/current-shader-key :standard]
+   [button "Blend shader"       reset! state/current-shader-key :blend]
+   [button "Temperature shader" reset! state/current-shader-key :temp]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
