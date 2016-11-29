@@ -1,23 +1,29 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models  :as models]
-   [weather-magic.textures  :as textures]
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.gl.core   :as gl]
    [weather-magic.shaders :as shaders]
+   [weather-magic.textures :as textures]
+   [thi.ng.geom.gl.shaders :as sh]
    [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
-   [reagent.core          :refer [atom]]
-   [thi.ng.geom.matrix :as mat :refer [M44]]))
+   [thi.ng.geom.matrix    :as mat :refer [M44]]
+   [reagent.core          :refer [atom]]))
 
 ;; Our WebGL context, given by the browser.
-(defonce gl-ctx (gl/gl-context "main"))
+(defonce gl-ctx-left  (gl/gl-context "left-canvas"))
+(defonce gl-ctx-right (gl/gl-context "right-canvas"))
 
-;; How WebGL figures out its aspect ratio.
-(defonce view-rect  (gl/get-viewport-rect gl-ctx))
+;; Canvas sizes.
+(defonce view-rect-left  (gl/get-viewport-rect gl-ctx-left))
+(defonce view-rect-right (gl/get-viewport-rect gl-ctx-right))
 
-(defonce camera (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                               :fov    110
-                                               :aspect (gl/get-viewport-rect gl-ctx)})))
+(defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                                    :fov    110
+                                                    :aspect (gl/get-viewport-rect gl-ctx-left)})))
+(defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                                     :fov    110
+                                                     :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
 (defonce data-layer-atom (atom #{}))
@@ -35,12 +41,21 @@
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce model        (atom models/sphere))
+(defonce model         (atom models/sphere))
 
-(defonce textures     (atom (textures/load-base-textures gl-ctx)))
-(defonce base-texture (atom (:earth @textures)))
+(defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
+(defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
+(defonce base-texture-left    (atom (:earth @textures-left)))
+(defonce base-texture-right   (atom (:earth @textures-right)))
 
-(defonce current-shader (atom shaders/standard-shader-spec))
+(def shaders-left  {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
+                    :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
+                    :temp     (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)})
+(def shaders-right {:standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
+                    :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec)
+                    :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)})
+
+(defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))

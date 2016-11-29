@@ -1,10 +1,10 @@
 (ns weather-magic.shaders
   (:require
-   [thi.ng.geom.gl.core :as gl]
-   [thi.ng.glsl.core :as glsl :include-macros true]
-   [thi.ng.glsl.vertex             :as vertex]
-   [thi.ng.glsl.lighting           :as light]
-   [thi.ng.geom.matrix             :as mat :refer [M44]]))
+   [thi.ng.geom.gl.core  :as gl]
+   [thi.ng.glsl.core     :as glsl :include-macros true]
+   [thi.ng.glsl.vertex   :as vertex]
+   [thi.ng.glsl.lighting :as light]
+   [thi.ng.geom.matrix   :as mat :refer [M44]]))
 
 (def standard-vs
   "void main() {
@@ -32,7 +32,7 @@
      } else {
        temperature = vec4(texture.g, texture.g, 1.0, 1.0);
      }
-     gl_FragColor = mix(temperature, texture, 0.5);
+     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump, vUV);
   }")
 
 (def temperature-fs
