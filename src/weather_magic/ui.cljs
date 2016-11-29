@@ -40,9 +40,11 @@
 (defn time-sliders []
   [:div {:id "time-slider-containers"}
    [:div {:class "time-sliders-left"}
+    [button "Play/Stop Left" toggle-play-stop state/date-atom :left]
     [slider-component :left :year]
     [slider-component :left :month]]
    [:div {:class "time-sliders-right"}
+    [button "Play/Stop Right" toggle-play-stop state/date-atom :right]
     [slider-component :right :year]
     [slider-component :right :month]]])
 
@@ -54,7 +56,6 @@
   "Buttons for choosing which data layer to display"
   []
   [:div {:id "data-layer-container" :class (hide-unhide @state/intro-visible)}
-   [button "Play/Stop Left" toggle-play-stop state/date-atom :left]
    [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
    [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
    [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
@@ -64,7 +65,6 @@
   "Buttons for choosing view"
   []
   [:div {:id "view-selection-container" :class (hide-unhide @state/intro-visible)}
-   [button "Play/Stop Right" toggle-play-stop state/date-atom :right]
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
