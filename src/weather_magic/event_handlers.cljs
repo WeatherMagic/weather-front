@@ -14,41 +14,11 @@
 
 (enable-console-print!)
 
-(defonce zoom-level (atom 110))
 (defonce mouse-pressed (atom false))
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
 
-(defn zoom-camera
-  "Returns the camera given in camera-map modified zooming by scroll-distance."
-  [camera-map scroll-distance]
-  (reset! zoom-level (:fov camera-map))
-  (cam/perspective-camera
-   (assoc camera-map :fov (min 140 (+ @zoom-level (* @zoom-level scroll-distance 5.0E-4))))))
-
-(defn get-corner
-  "Updating how much the globe should be rotated around the z axis to align northpole"
-  [x-coord y-coord]
-  (let [matrix (-> (m/invert @state/earth-orientation)
-                   (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
-                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @zoom-level) 1.0E-3)))
-                   (g/rotate-z (Math/atan2 y-coord x-coord)))
-        corner-x (.-m20 matrix)
-        corner-y (.-m21 matrix)
-        corner-z (.-m22 matrix)]
-    (vec3 corner-x corner-y corner-z)))
-
-(defn corner-handler
-  ""
-  []
-  (let [element (.getElementById js/document "main")
-        half-width (- (/ (.-clientWidth element) 2) 250)
-        half-height (- (/ (.-clientHeight element) 2) 100)]
-    (swap! state/corners assoc :upper-left (get-corner (* half-width -1) (* half-height -1)) :upper-right (get-corner half-width (* half-height -1))
-           :lower-left (get-corner (* half-width -1) half-height) :lower-right (get-corner half-width half-height))))
-
 (defn resize-handler [_]
-  (corner-handler)
   "Handles the aspect ratio of the webGL rendered world"
   (let [left-canvas (.getElementById js/document "left-canvas")
         actual-width (.-clientWidth left-canvas)
@@ -70,10 +40,9 @@
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
-  (corner-handler)
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) @zoom-level) 1.0E-3)))
+                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) @world/zoom-level) 1.0E-3)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
 
@@ -92,7 +61,29 @@
   "If the mouse is released during panning"
   [_]
   (reset! mouse-pressed false)
-  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fn false))
+  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false))
+
+(defn pointer-zoom-handler
+  "Rotates the globe to the point which is dubble clicked"
+  [event canvas]
+  (let [x-pos (.-clientX event)
+        y-pos (.-clientY event)
+        canvas-element (.getElementById js/document canvas)
+        canvas-width (.-clientWidth canvas-element)
+        canvas-height (.-clientHeight canvas-element)
+        window-element (.getElementById js/document "canvases")
+        window-width (.-clientWidth window-element)
+        window-height (.-clientHeight window-element)
+        x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
+        y-diff (- (/ window-height 2) y-pos)
+        total-steps (:total-steps @state/pointer-zoom-info)]
+    (update-alignment-angle x-diff y-diff)
+    (swap! state/pointer-zoom-info assoc :state true
+           :delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps)
+           :delta-x (/ x-diff total-steps)
+           :delta-y (/ y-diff total-steps)
+           :current-step 0))
+  (reset! state/earth-animation-fn world/align-animation!))
 
 (defn pan-handler
   "Handles the mouse events for panning"
@@ -110,9 +101,11 @@
   (.addEventListener
    (.getElementById js/document "canvases") "wheel"
    (fn [event]
-     (swap! state/camera-left zoom-camera (.-deltaY event))
-     (swap! state/camera-right zoom-camera (.-deltaY event))) false)
+     (swap! state/camera-left world/zoom-camera (.-deltaY event))
+     (swap! state/camera-right world/zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
+  (.addEventListener (.getElementById js/document "left-canvas") "dblclick" (fn [event] (pointer-zoom-handler event "left-canvas")) false)
+  (.addEventListener (.getElementById js/document "right-canvas") "dblclick" (fn [event] (pointer-zoom-handler event "right-canvas")) false)
   true)

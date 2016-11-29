@@ -61,3 +61,5 @@
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
+
+(defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0}))
