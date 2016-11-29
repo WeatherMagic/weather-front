@@ -29,9 +29,7 @@
 (defn slider [key1 key2 value min max]
   [:input {:type "range" :value value :min min :max max
            :on-change (fn [event] (swap! state/date-atom assoc-in [key1 key2 :value]
-                                         (.-target.value event))
-                                         (println state/date-atom)
-                                         )}])
+                                         (.-target.value event)))}])
 
 (defn slider-component [key1 key2]
   (let [data (key2 (key1 @state/date-atom))]
@@ -40,15 +38,13 @@
      [slider key1 key2 (:value data) (:min data) (:max data)]]))
 
 (defn time-sliders []
-  (println state/date-atom)
   [:div {:id "time-slider-containers"}
    [:div {:class "time-sliders-left"}
-   [slider-component :left :year]
-   [slider-component :left :month]]
+    [slider-component :left :year]
+    [slider-component :left :month]]
    [:div {:class "time-sliders-right"}
-   [slider-component :right :year]
-   [slider-component :right :month]]])
-
+    [slider-component :right :year]
+    [slider-component :right :month]]])
 
 (defn map-ui-blur []
   "What hides the map UI."
