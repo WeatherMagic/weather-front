@@ -18,6 +18,31 @@
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
 
+(defn model-coords-from-corner
+  "Updating how much the globe should be rotated around the z axis to align northpole"
+  [x-coord y-coord]
+  (let [matrix (-> (m/invert @state/earth-orientation)
+                   (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
+                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @world/zoom-level) 1.0E-3)))
+                   (g/rotate-z (Math/atan2 y-coord x-coord)))
+        model-x (.-m20 matrix)
+        model-y (.-m21 matrix)
+        model-z (.-m22 matrix)]
+    (vec3 model-x model-y model-z)))
+
+(defn update-model-coords
+  ""
+  []
+  (let [canvas-element (.getElementById js/document "left-canvas")
+        canvas-width (.-clientWidth canvas-element)
+        canvas-height (.-clientHeight canvas-element)
+        half-width (- (/ canvas-width 2) 250)
+        half-height (- (/ canvas-height 2) 100)]
+    (swap! state/model-coords assoc :upper-left (model-coords-from-corner (* half-width -1) (* half-height -1))
+           :upper-right (model-coords-from-corner half-width (* half-height -1))
+           :lower-left (model-coords-from-corner (* half-width -1) half-height)
+           :lower-right (model-coords-from-corner half-width half-height))))
+
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
   (let [left-canvas (.getElementById js/document "left-canvas")
@@ -36,6 +61,21 @@
                                   (assoc % :aspect (rect/rect actual-width actual-height))))
       (gl/set-viewport state/gl-ctx-left (:aspect @state/camera-left))
       (gl/set-viewport state/gl-ctx-right (:aspect @state/camera-right)))))
+
+(defn update-alignment-angle
+  "Updating how much the globe should be rotated around the z axis to align northpole"
+  [x-diff y-diff]
+  (let [future-earth-orientation (-> M44
+                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
+                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @world/zoom-level) 1.0E-3)))
+                                     (g/rotate-z (Math/atan2 y-diff x-diff))
+                                     (m/* @state/earth-orientation))
+        northpole-x (.-m10 future-earth-orientation)
+        northpole-y (.-m11 future-earth-orientation)
+        northpole-z (.-m12 future-earth-orientation)
+        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
+        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
+    (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
 
 (defn update-pan
   "Updates the atom holding the rotation of the world"
@@ -61,7 +101,7 @@
   "If the mouse is released during panning"
   [_]
   (reset! mouse-pressed false)
-  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false))
+  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fn false))
 
 (defn pointer-zoom-handler
   "Rotates the globe to the point which is dubble clicked"
