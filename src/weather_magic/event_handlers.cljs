@@ -101,14 +101,17 @@
 
 (defn pointer-zoom-handler
   "Rotates the globe to the point which is dubble clicked"
-  [event]
+  [event canvas]
   (let [x-pos (.-clientX event)
         y-pos (.-clientY event)
-        element (.getElementById js/document "left-canvas")
-        width (.-clientWidth element)
-        height (.-clientHeight element)
-        x-diff (- (/ width 2) x-pos)
-        y-diff (- (/ height 2) y-pos)
+        canvas-element (.getElementById js/document canvas)
+        canvas-width (.-clientWidth canvas-element)
+        canvas-height (.-clientHeight canvas-element)
+        window-element (.getElementById js/document "canvases")
+        window-width (.-clientWidth window-element)
+        window-height (.-clientHeight window-element)
+        x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
+        y-diff (- (/ window-height 2) y-pos)
         total-steps (:total-steps @state/pointer-zoom-info)]
     (update-alignment-angle x-diff y-diff)
     (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps) :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
@@ -134,5 +137,6 @@
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
-  (.addEventListener (.getElementById js/document "left-canvas") "dblclick" pointer-zoom-handler false)
+  (.addEventListener (.getElementById js/document "left-canvas") "dblclick" (fn [event] (pointer-zoom-handler event "left-canvas")) false)
+  (.addEventListener (.getElementById js/document "right-canvas") "dblclick" (fn [event] (pointer-zoom-handler event "right-canvas")) false)
   true)
