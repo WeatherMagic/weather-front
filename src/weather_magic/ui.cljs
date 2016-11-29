@@ -37,6 +37,10 @@
    [slider-component :year]
    [slider-component :month]])
 
+(defn map-ui-blur []
+  "What hides the map UI."
+  [:div {:class @state/intro-visible :id "blur"}])
+
 (defn data-layer-buttons
   "Buttons for choosing which data layer to display"
   []
@@ -55,9 +59,6 @@
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
    [button "Northpole Up" reset! state/earth-animation-fn world/northpole-up!]])
 
-(defn compile-shader [s]
-  (sh/make-shader-from-spec state/gl-ctx s))
-
 (defn shader-selection-buttons
   "Buttons for choosing shader"
   []
@@ -66,10 +67,6 @@
    [button "Standard shader"    reset! state/current-shader-key :standard]
    [button "Blend shader"       reset! state/current-shader-key :blend]
    [button "Temperature shader" reset! state/current-shader-key :temp]])
-
-(defn map-ui-blur []
-  "What hides the map UI."
-  [:div {:class @state/intro-visible :id "blur"}])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
