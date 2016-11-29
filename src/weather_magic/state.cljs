@@ -47,8 +47,11 @@
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
+(defonce dynamic-texture-keys (atom {:current (let [retval (textures/load-data @textures-left gl-ctx-left "temperature" {})]
+                                                (swap! textures-left merge (:map retval))
+                                                (:key retval))}))
 
-(def shaders-left  {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
+(def shaders-left {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
                     :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
                     :temp     (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)})
 (def shaders-right {:standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)

@@ -30,7 +30,7 @@
   "Shows Turkey on a flat surface."
   [t]
   (swap!  state/textures-left merge
-          (textures/load-texture-if-needed state/gl-ctx-left @state/textures-left "img/turkey.jpg"))
+          (textures/load-texture-if-needed @state/textures-left state/gl-ctx-left "img/turkey.jpg"))
   (reset! state/model models/plane)
   (reset! state/base-texture-left (:turkey @state/textures-left))
   (reset! state/earth-orientation (-> M44
