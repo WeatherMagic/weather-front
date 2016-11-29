@@ -2,6 +2,7 @@
   (:require
    [weather-magic.models   :as models]
    [weather-magic.state    :as state]
+   [weather-magic.event-handlers :as event-handlers]
    [weather-magic.world    :as world]
    [weather-magic.shaders  :as shaders]
    [weather-magic.util     :as util]
@@ -68,7 +69,8 @@
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "Northpole Up" reset! state/earth-animation-fn world/northpole-up!]])
+   [button "Align" event-handlers/align-handler]
+   [button "Reset!" event-handlers/reset-spin-handler]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"
