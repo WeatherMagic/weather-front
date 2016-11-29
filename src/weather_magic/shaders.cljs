@@ -47,7 +47,7 @@
 
     float threshold = fov/1000.0;
     if (fov > 45.0) {
-      threshold = pow((90.0 - fov)/90.0, 5.0)/8.0 - 0.001;
+      threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.005;
     } 
 
     float alphaValue = clamp(15.0 / fov, 0.0, 1.0);
