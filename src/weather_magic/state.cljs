@@ -29,8 +29,12 @@
 (defonce data-layer-atom (atom #{}))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:year  {:value 1950 :min 1950 :max 2100}
-                          :month {:value 1 :min 1 :max 12}}))
+(defonce date-atom (atom {:left  {:play-mode false
+                                  :year  {:value 1950 :min 1950 :max 2100}
+                                  :month {:value 1 :min 1 :max 12}}
+                          :right {:play-mode false
+                                  :year  {:value 1950 :min 1950 :max 2100}
+                                  :month {:value 1 :min 1 :max 12}}}))
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
@@ -59,3 +63,6 @@
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
+
+(defonce year-update (atom {:left {:time-of-last-update 0}
+                            :right {:time-of-last-update 0}}))

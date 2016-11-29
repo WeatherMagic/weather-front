@@ -14,12 +14,22 @@ body, html {
 
 /* Our CSS */
 
-#time-slider-container {
+#time-slider-containers {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+.time-sliders-left {
+  float: left;
+  width: 50%;
+}
+
+.time-sliders-right {
+  float: right;
+  width: 50%;
 }
 
 input[type=range] {

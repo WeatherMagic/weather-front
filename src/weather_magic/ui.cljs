@@ -15,27 +15,40 @@
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
+(defn toggle-play-stop
+  ""
+  [atom key]
+  (if (:play-mode (key @atom)) (swap! atom assoc-in [key :play-mode] false) (swap! atom assoc-in [key :play-mode] true)))
+
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [id func atom & args]
   [:input {:type "button" :value id :id id :class "button"
            :on-click #(apply func atom args)}])
 
-(defn slider [key value min max]
+(defn slider [key1 key2 value min max]
   [:input {:type "range" :value value :min min :max max
-           :on-change (fn [event] (swap! state/date-atom assoc-in [key :value]
-                                         (.-target.value event)))}])
+           :on-change (fn [event] (swap! state/date-atom assoc-in [key1 key2 :value]
+                                         (.-target.value event))
+                                         (println state/date-atom)
+                                         )}])
 
-(defn slider-component [key]
-  (let [data (key @state/date-atom)]
+(defn slider-component [key1 key2]
+  (let [data (key2 (key1 @state/date-atom))]
     [:div {:class "time-slider"}
-     [:span (clojure.string/capitalize (name key)) ": " (:value data)]
-     [slider key (:value data) (:min data) (:max data)]]))
+     [:span (clojure.string/capitalize (name key2)) ": " (:value data)]
+     [slider key1 key2 (:value data) (:min data) (:max data)]]))
 
-(defn time-slider []
-  [:div {:id "time-slider-container"}
-   [slider-component :year]
-   [slider-component :month]])
+(defn time-sliders []
+  (println state/date-atom)
+  [:div {:id "time-slider-containers"}
+   [:div {:class "time-sliders-left"}
+   [slider-component :left :year]
+   [slider-component :left :month]]
+   [:div {:class "time-sliders-right"}
+   [slider-component :right :year]
+   [slider-component :right :month]]])
+
 
 (defn map-ui-blur []
   "What hides the map UI."
@@ -45,6 +58,7 @@
   "Buttons for choosing which data layer to display"
   []
   [:div {:id "data-layer-container" :class (hide-unhide @state/intro-visible)}
+   [button "Play/Stop Left" toggle-play-stop state/date-atom :left]
    [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
    [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
    [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
@@ -54,6 +68,7 @@
   "Buttons for choosing view"
   []
   [:div {:id "view-selection-container" :class (hide-unhide @state/intro-visible)}
+   [button "Play/Stop Right" toggle-play-stop state/date-atom :right]
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
@@ -75,7 +90,7 @@
    [data-layer-buttons]
    [view-selection-buttons]
    [shader-selection-buttons]
-   [time-slider]
+   [time-sliders]
    [map-ui-blur]])
 
 (defn mount-ui!
