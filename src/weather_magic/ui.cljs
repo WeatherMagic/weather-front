@@ -29,7 +29,7 @@
 (defn slider [key1 key2 value min max]
   [:input {:type "range" :value value :min min :max max
            :on-change (fn [event] (swap! state/date-atom assoc-in [key1 key2 :value]
-                                         (.-target.value event)))}])
+                                         (int (.-target.value event))))}])
 
 (defn slider-component [key1 key2]
   (let [data (key2 (key1 @state/date-atom))]
