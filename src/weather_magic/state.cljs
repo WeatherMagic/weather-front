@@ -67,3 +67,6 @@
 (defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0) :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
 
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0}))
+
+(defonce year-update (atom {:left {:time-of-last-update 0}
+                            :right {:time-of-last-update 0}}))
