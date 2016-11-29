@@ -31,13 +31,13 @@
     (vec3 model-x model-y model-z)))
 
 (defn update-model-coords
-  ""
+  "Updates the model-coords-boundaries"
   []
   (let [canvas-element (.getElementById js/document "left-canvas")
         canvas-width (.-clientWidth canvas-element)
         canvas-height (.-clientHeight canvas-element)
-        half-width (- (/ canvas-width 2) 250)
-        half-height (- (/ canvas-height 2) 100)]
+        half-width (/ canvas-width 2)
+        half-height (/ canvas-height 2)]
     (swap! state/model-coords assoc :upper-left (model-coords-from-corner (* half-width -1) (* half-height -1))
            :upper-right (model-coords-from-corner half-width (* half-height -1))
            :lower-left (model-coords-from-corner (* half-width -1) half-height)

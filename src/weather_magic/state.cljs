@@ -32,8 +32,6 @@
 (defonce date-atom (atom {:year  {:value 1950 :min 1950 :max 2100}
                           :month {:value 1 :min 1 :max 12}}))
 
-(defonce corners (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0) :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
-
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
 
