@@ -43,6 +43,11 @@
            :lower-left (model-coords-from-corner (* half-width -1) half-height)
            :lower-right (model-coords-from-corner half-width half-height))))
 
+(defn reset-zoom
+  [camera-map]
+  (cam/perspective-camera
+   (assoc camera-map :fov 110)))
+
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
   (let [left-canvas (.getElementById js/document "left-canvas")
@@ -86,6 +91,17 @@
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
 
+(defn align-handler []
+  (update-alignment-angle 0 0) ;mitten på jorden
+  (swap! state/pointer-zoom-info assoc :current-step 0 :delta-zoom 0)
+  (reset! state/earth-animation-fn world/align-animation!))
+
+(defn reset-spin-handler
+  []
+  (swap! state/camera-left reset-zoom)
+  (swap! state/camera-right reset-zoom)
+  (reset! state/earth-animation-fn world/reset-spin!))
+
 (defn move-fn
   "Handles the movements of the mouse during panning"
   [event]
@@ -122,7 +138,8 @@
            :delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps)
            :delta-x (/ x-diff total-steps)
            :delta-y (/ y-diff total-steps)
-           :current-step 0))
+           :current-step 0
+           :delta-zoom -15))
   (reset! state/earth-animation-fn world/align-animation!))
 
 (defn pan-handler

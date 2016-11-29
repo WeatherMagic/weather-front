@@ -49,6 +49,14 @@
                                       (g/rotate-y (m/radians delta-time))
                                       (m/* @state/earth-orientation))))
 
+(defn reset-spin!
+  "Rotates the sphere so that the northpole is up after panning."
+  [delta-time]
+  (reset! state/model models/sphere)
+  (reset! state/base-texture-left (:earth @state/textures-left))
+  (reset! state/earth-orientation M44)
+  (reset! state/earth-animation-fn spin-earth!))
+
 (defn stop-spin!
   "Makes the earth stop spinning"
   [_]
@@ -74,8 +82,8 @@
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y delta-angle step delta-fov]
-  (swap! state/camera-left zoom-camera -15.0)
-  (swap! state/camera-right zoom-camera -15.0)
+  (swap! state/camera-left zoom-camera (:delta-zoom @state/pointer-zoom-info))
+  (swap! state/camera-right zoom-camera (:delta-zoom @state/pointer-zoom-info))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* delta-angle step))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
