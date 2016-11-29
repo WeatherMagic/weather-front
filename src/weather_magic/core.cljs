@@ -36,20 +36,6 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
-(defn align-animation
-  "Function that handles alignment or zoom-alignment"
-  []
-  (let [delta-x (:delta-x @state/pointer-zoom-info)
-        delta-y (:delta-y @state/pointer-zoom-info)
-        delta-fov (:delta-fov @state/pointer-zoom-info)
-        total-steps (:total-steps @state/pointer-zoom-info)
-        current-step (:current-step @state/pointer-zoom-info)
-        delta-z-angle (:delta-z-angle @state/pointer-zoom-info)]
-    (event-handlers/update-zoom-point-alignment delta-x delta-y delta-z-angle current-step delta-fov)
-    (swap! state/pointer-zoom-info assoc-in [:current-step] (inc current-step))
-    (when (= current-step total-steps)
-      (swap! state/pointer-zoom-info assoc :state false))))
-
 (defn enable-shader-alpha-blending []
   (gl/prepare-render-state state/gl-ctx-left
                            {:blend true
@@ -61,8 +47,6 @@
                                        glc/one-minus-src-alpha]}))
 
 (defn draw-frame! [t]
-  (when (:state @state/pointer-zoom-info)
-    (align-animation))
   (when (and @(:loaded @state/base-texture-left) @(:loaded (:trump @state/textures-left)))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]

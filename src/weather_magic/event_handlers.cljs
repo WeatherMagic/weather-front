@@ -14,17 +14,9 @@
 
 (enable-console-print!)
 
-(defonce zoom-level (atom 110))
 (defonce mouse-pressed (atom false))
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
-
-(defn zoom-camera
-  "Returns the camera given in camera-map modified zooming by scroll-distance."
-  [camera-map scroll-distance]
-  (reset! zoom-level (:fov camera-map))
-  (cam/perspective-camera
-   (assoc camera-map :fov (min 140 (+ @zoom-level (* @zoom-level scroll-distance 5.0E-4))))))
 
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
@@ -50,7 +42,7 @@
   [x-diff y-diff]
   (let [future-earth-orientation (-> M44
                                      (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @zoom-level) 1.0E-3)))
+                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @world/zoom-level) 1.0E-3)))
                                      (g/rotate-z (Math/atan2 y-diff x-diff))
                                      (m/* @state/earth-orientation))
         northpole-x (.-m10 future-earth-orientation)
@@ -65,21 +57,8 @@
   [rel-x rel-y]
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) @zoom-level) 1.0E-3)))
+                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) @world/zoom-level) 1.0E-3)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
-                                      (m/* @state/earth-orientation))))
-
-(defn update-zoom-point-alignment
-  "Updates the atom holding the rotation of the world"
-  [rel-x rel-y delta-angle step delta-fov]
-  (swap! state/camera-left zoom-camera -15.0)
-  (swap! state/camera-right zoom-camera -15.0)
-  (reset! state/earth-orientation (-> M44
-                                      (g/rotate-z (* delta-angle step))
-                                      (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) @zoom-level) 1.0E-3)))
-                                      (g/rotate-z (Math/atan2 rel-y rel-x))
-                                      (g/rotate-z (* (* delta-angle (dec step)) -1))
                                       (m/* @state/earth-orientation))))
 
 (defn move-fcn
@@ -114,7 +93,12 @@
         y-diff (- (/ window-height 2) y-pos)
         total-steps (:total-steps @state/pointer-zoom-info)]
     (update-alignment-angle x-diff y-diff)
-    (swap! state/pointer-zoom-info assoc :state true :delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps) :delta-x (/ x-diff total-steps) :delta-y (/ y-diff total-steps) :current-step 1)))
+    (swap! state/pointer-zoom-info assoc :state true
+           :delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps)
+           :delta-x (/ x-diff total-steps)
+           :delta-y (/ y-diff total-steps)
+           :current-step 0))
+  (reset! state/earth-animation-fn world/align-animation!))
 
 (defn pan-handler
   "Handles the mouse events for panning"
@@ -132,8 +116,8 @@
   (.addEventListener
    (.getElementById js/document "canvases") "wheel"
    (fn [event]
-     (swap! state/camera-left zoom-camera (.-deltaY event))
-     (swap! state/camera-right zoom-camera (.-deltaY event))) false)
+     (swap! state/camera-left world/zoom-camera (.-deltaY event))
+     (swap! state/camera-right world/zoom-camera (.-deltaY event))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
