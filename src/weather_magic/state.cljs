@@ -63,6 +63,3 @@
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
-
-(defonce year-update (atom {:left {:time-of-last-update 0}
-                            :right {:time-of-last-update 0}}))
