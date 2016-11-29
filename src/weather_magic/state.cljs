@@ -55,10 +55,11 @@
                     :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec)
                     :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)})
 
-;(defonce northpole-up-pressed (atom {:state false}))
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
+
+(defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0) :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
 
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0}))
