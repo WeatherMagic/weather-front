@@ -47,6 +47,8 @@
                                        glc/one-minus-src-alpha]}))
 
 (defn draw-frame! [t]
+  (event-handlers/update-model-coords)
+  (println state/model-coords)
   (when (and @(:loaded @state/base-texture-left) @(:loaded (:trump @state/textures-left)))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]

@@ -18,6 +18,31 @@
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
 
+(defn model-coords-from-corner
+  "Updating how much the globe should be rotated around the z axis to align northpole"
+  [x-coord y-coord]
+  (let [matrix (-> (m/invert @state/earth-orientation)
+                   (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
+                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @world/zoom-level) 1.0E-3)))
+                   (g/rotate-z (Math/atan2 y-coord x-coord)))
+        model-x (.-m20 matrix)
+        model-y (.-m21 matrix)
+        model-z (.-m22 matrix)]
+    (vec3 model-x model-y model-z)))
+
+(defn update-model-coords
+  "Updates the model-coords-boundaries"
+  []
+  (let [canvas-element (.getElementById js/document "left-canvas")
+        canvas-width (.-clientWidth canvas-element)
+        canvas-height (.-clientHeight canvas-element)
+        half-width (/ canvas-width 2)
+        half-height (/ canvas-height 2)]
+    (swap! state/model-coords assoc :upper-left (model-coords-from-corner (* half-width -1) (* half-height -1))
+           :upper-right (model-coords-from-corner half-width (* half-height -1))
+           :lower-left (model-coords-from-corner (* half-width -1) half-height)
+           :lower-right (model-coords-from-corner half-width half-height))))
+
 (defn resize-handler [_]
   "Handles the aspect ratio of the webGL rendered world"
   (let [left-canvas (.getElementById js/document "left-canvas")
@@ -61,7 +86,7 @@
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
 
-(defn move-fcn
+(defn move-fn
   "Handles the movements of the mouse during panning"
   [event]
   (let [last-pos @last-xy-pos
@@ -76,7 +101,7 @@
   "If the mouse is released during panning"
   [_]
   (reset! mouse-pressed false)
-  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false))
+  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fn false))
 
 (defn pointer-zoom-handler
   "Rotates the globe to the point which is dubble clicked"
@@ -107,7 +132,7 @@
   (reset! mouse-pressed true)
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
-    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fcn false)
+    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
     (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
 
 (defn hook-up-events!
