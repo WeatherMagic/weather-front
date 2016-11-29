@@ -36,6 +36,16 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
+(defn enable-shader-alpha-blending []
+  (gl/prepare-render-state state/gl-ctx-left
+                           {:blend true
+                            :blend-fn [glc/src-alpha
+                                       glc/one-minus-src-alpha]})
+  (gl/prepare-render-state state/gl-ctx-right
+                           {:blend true
+                            :blend-fn [glc/src-alpha
+                                       glc/one-minus-src-alpha]}))
+
 (defn draw-frame! [t]
   (when (and @(:loaded @state/base-texture-left) @(:loaded (:trump @state/textures-left)))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
@@ -50,7 +60,8 @@
              (assoc :shader (@state/current-shader-key state/shaders-left))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
-             (assoc-in [:uniforms :range] range))))))
+             (assoc-in [:uniforms :range] range)
+             (assoc-in [:uniforms :fov] (:fov @state/camera-left)))))))
   (when (and @(:loaded @state/base-texture-right) @(:loaded (:trump @state/textures-right)))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]
@@ -64,8 +75,9 @@
              (assoc :shader (@state/current-shader-key state/shaders-right))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
-             (assoc-in [:uniforms :range] range))))))
-  (vreset! state/time-of-last-frame t))
+             (assoc-in [:uniforms :range] range)
+             (assoc-in [:uniforms :fov] (:fov @state/camera-right))))))
+    (vreset! state/time-of-last-frame t)))
 
 ;; Start the demo only once.
 (defonce running
