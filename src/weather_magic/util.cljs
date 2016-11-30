@@ -39,22 +39,19 @@
 (defn cart-to-lat-lon
   "Converting latitude and longitude to model cordinates"
   [x y z]
-  (let [eps 0.001
-        lon (atom 0)
-        lat (atom 0)]
-    (if (> (Math/abs z) eps)
-      (reset! lon (* (/ 180 PI) (Math/atan2 x z)))
-      (if (> (Math/abs y) (- 1 eps))
-        (reset! lon 0)
-        (if (pos? x)
-          (reset! lon 90)
-          (reset! lon -90))))
-    (if (> y (- 1 eps))
-      (reset! lat 90)
-      (if (< y (+ -1 eps))
-        (reset! lat -90)
-        (reset! lat (* (/ 180 PI) (Math/asin y)))))
-    {:lat @lat :lon @lon}))
+  (let [ε 0.001]
+    {:lat (if (> y (- 1 ε))
+            90
+            (if (< y (- ε 1))
+              -90
+              (* (/ 180 PI) (Math/asin y))))
+     :lon (if (> (Math/abs z) ε)
+            (* (/ 180 PI) (Math/atan2 x z))
+            (if (> (Math/abs y) (- 1 ε))
+              0
+              (if (pos? x)
+                90
+                -90)))}))
 
 (defn lat-lon-to-uv
   [lat lon]
