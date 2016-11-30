@@ -12,10 +12,9 @@
         texture (buf/load-texture
                  gl-ctx {:callback
                          (fn [tex img]
-                           (.generateMipmap gl-ctx (:target tex))
                            (vreset! loaded true))
                          :src      path
-                         :filter   [glc/linear-mipmap-linear glc/linear]})]
+                         :filter   [glc/linear glc/linear]})]
     {:texture texture :loaded loaded}))
 
 (defn load-texture-if-needed
@@ -43,7 +42,7 @@
   "Loads data from thor into a texture. Returs a map with {:key
   str :map texture-map} where :key holds how to find the newly loaded
   texture in texture-map."
-  [texture-map gl-ctx variable request-params]
+  [texture-map gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
   (let [request-map (merge {:from-year        2082
                             :to-year          2082
                             :from-month       6
@@ -59,11 +58,11 @@
         key (keyword (util/get-filename url))]
     {:key key :map (load-texture-if-needed texture-map gl-ctx url)}))
 
-(def texture-map {:blaha 5})
-
-(defn load-into-atom-and-return-key
-  [texture-map-atom gl-ctx variable request-params]
-  (let [retval (load-data @texture-map-atom gl-ctx variable request-params)]
+(defn load-data-into-atom-and-return-key!
+  "Load a texture if needed and mutate the given atom to contain
+  it. Return the key of the newly loaded texture."
+  [texture-map-atom gl-ctx & {:keys [variable request-params]}]
+  (let [retval (load-data @texture-map-atom gl-ctx :variable variable :request-params request-params)]
     (swap! texture-map-atom merge (:map retval))
     (:key retval)))
 
