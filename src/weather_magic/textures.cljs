@@ -43,15 +43,15 @@
   str :map texture-map} where :key holds how to find the newly loaded
   texture in texture-map."
   [texture-map gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
-  (let [request-map (merge {:from-year        2082
-                            :to-year          2082
-                            :from-month       6
-                            :to-month         12
-                            :from-longitude   1
-                            :to-longitude     5
-                            :from-latitude    37
-                            :to-latitude      45
-                            :return-dimension "[100, 100]"}
+  (let [request-map (merge {:from-year        2083
+                            :to-year          2083
+                            :from-month       2
+                            :to-month         2
+                            :from-longitude  -14
+                            :to-longitude     50
+                            :from-latitude    30
+                            :to-latitude      70
+                            :return-dimension "[1400, 1600]"}
                            request-params)
         url (str "http://thor.hfelo.se/api/" variable
                  (util/map->query-string request-map))
@@ -61,7 +61,7 @@
 (defn load-data-into-atom-and-return-key!
   "Load a texture if needed and mutate the given atom to contain
   it. Return the key of the newly loaded texture."
-  [texture-map-atom gl-ctx & {:keys [variable request-params]}]
+  [texture-map-atom gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
   (let [retval (load-data @texture-map-atom gl-ctx :variable variable :request-params request-params)]
     (swap! texture-map-atom merge (:map retval))
     (:key retval)))
