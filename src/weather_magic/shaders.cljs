@@ -52,7 +52,7 @@
 
     float alphaValue = clamp(15.0 / fov, 0.0, 1.0);
 
-    if (mod(temperature, 0.1) < threshold && fov < 50.0) {
+    if (mod(temperature, 0.1) < threshold && fov < 50.0 && temperature > 0.15) {
       if (temperature > 0.5 && temperature < 0.75) {
         outColor = vec4(0.5, 0.5, 0.5, alphaValue);
       } else if (temperature > 0.75) {
