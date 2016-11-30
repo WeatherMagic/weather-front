@@ -74,7 +74,9 @@
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
-             (assoc-in [:uniforms :fov] (:fov camera))))))))
+             (assoc-in [:uniforms :fov] (:fov camera))
+             (assoc-in [:uniforms :dataScale] (vec2 0.1 0.1))
+             (assoc-in [:uniforms :dataPos] (vec2 1 1))))))))
 
 (defn draw-frame! [t]
   (if (:play-mode (:left @state/date-atom))
