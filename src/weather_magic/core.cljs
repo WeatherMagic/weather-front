@@ -46,39 +46,46 @@
                             :blend-fn [glc/src-alpha
                                        glc/one-minus-src-alpha]}))
 
+(defn update-year-month-info
+  ""
+  [t key]
+  (let [min  (:min (:year (key @state/date-atom)))
+        range (- (:max (:year (key @state/date-atom))) min)
+        current-year (:value (:year (key @state/date-atom)))
+        last-year-update (:time-of-last-update (key @state/year-update))
+        delta-year (int (- (* 5 t) last-year-update))]
+    (when (> delta-year 0.5)
+      (swap! state/date-atom assoc-in [key :year :value] (+ min (rem (- (+ current-year delta-year) min) range)))
+      (swap! state/year-update assoc-in [key :time-of-last-update] (* 5 t)))))
+
+(defn draw-in-context
+  ""
+  [gl-ctx camera base-texture textures shaders key t]
+  (let [range (- (:max (:year (key @state/date-atom))) (:min (:year (key @state/date-atom))))
+        time (- (:value (:year (key @state/date-atom))) (:min (:year (key @state/date-atom))))]
+    (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
+      (gl/bind (:texture base-texture) 0)
+      (gl/bind (:texture (:trump textures)) 1)
+      (doto gl-ctx
+        (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+        (gl/draw-with-shader
+         (-> (combine-model-and-camera @state/model camera gl-ctx t)
+             (assoc :shader (@state/current-shader-key shaders))
+             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
+             (assoc-in [:uniforms :year]  time)
+             (assoc-in [:uniforms :range] range)
+             (assoc-in [:uniforms :fov] (:fov camera))))))))
+
 (defn draw-frame! [t]
-  (event-handlers/update-model-coords)
-  (when (and @(:loaded @state/base-texture-left) @(:loaded (:trump @state/textures-left)))
-    (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
-          time (rem (int (* 5 t)) range)]
-      (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
-      (gl/bind (:texture @state/base-texture-left) 0)
-      (gl/bind (:texture (:trump @state/textures-left)) 1)
-      (doto state/gl-ctx-left
-        (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-        (gl/draw-with-shader
-         (-> (combine-model-and-camera @state/model @state/camera-left state/gl-ctx-left t)
-             (assoc :shader (@state/current-shader-key state/shaders-left))
-             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
-             (assoc-in [:uniforms :year]  time)
-             (assoc-in [:uniforms :range] range)
-             (assoc-in [:uniforms :fov] (:fov @state/camera-left)))))))
-  (when (and @(:loaded @state/base-texture-right) @(:loaded (:trump @state/textures-right)))
-    (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
-          time (rem (int (* 5 t)) range)]
-      (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
-      (gl/bind (:texture @state/base-texture-right) 0)
-      (gl/bind (:texture (:trump @state/textures-right)) 1)
-      (doto state/gl-ctx-right
-        (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-        (gl/draw-with-shader
-         (-> (combine-model-and-camera @state/model @state/camera-right state/gl-ctx-right t)
-             (assoc :shader (@state/current-shader-key state/shaders-right))
-             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
-             (assoc-in [:uniforms :year]  time)
-             (assoc-in [:uniforms :range] range)
-             (assoc-in [:uniforms :fov] (:fov @state/camera-right))))))
-    (vreset! state/time-of-last-frame t)))
+  (if (:play-mode (:left @state/date-atom))
+    (update-year-month-info t :left)
+    (swap! state/year-update assoc-in [:left :time-of-last-update] (* 5 t)))
+  (if (:play-mode (:right @state/date-atom))
+    (update-year-month-info t :right)
+    (swap! state/year-update assoc-in [:right :time-of-last-update] (* 5 t)))
+  (draw-in-context state/gl-ctx-left @state/camera-left @state/base-texture-left @state/textures-left state/shaders-left :left t)
+  (draw-in-context state/gl-ctx-right @state/camera-right @state/base-texture-right @state/textures-right state/shaders-right :right t)
+  (vreset! state/time-of-last-frame t))
 
 ;; Start the demo only once.
 (defonce running
