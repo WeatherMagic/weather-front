@@ -70,14 +70,16 @@
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
-         (-> (combine-model-and-camera @state/model @state/camera-left state/gl-ctx-left t)
-             (assoc :shader (@state/current-shader-key state/shaders-left))
+         (-> (combine-model-and-camera @state/model camera gl-ctx t)
+             (assoc :shader (@state/current-shader-key shaders))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :fov] (:fov camera))))))))
 
 (defn draw-frame! [t]
+  (transforms/update-lat-lon)
+  (println state/lat-lon-coords)
   (if (:play-mode (:left @state/date-atom))
     (update-year-month-info t :left)
     (swap! state/year-update assoc-in [:left :time-of-last-update] (* 5 t)))
