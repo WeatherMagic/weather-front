@@ -17,9 +17,10 @@
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
 (defn toggle-play-stop
-  ""
   [atom key]
-  (if (:play-mode (key @atom)) (swap! atom assoc-in [key :play-mode] false) (swap! atom assoc-in [key :play-mode] true)))
+  (if (:play-mode (key @atom))
+    (swap! atom update-in [key] merge {:play-mode false :play-mode-before-sliding false})
+    (swap! atom update-in [key] merge {:play-mode true :play-mode-before-sliding true})))
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
@@ -29,6 +30,8 @@
 
 (defn slider [key1 key2 value min max]
   [:input {:type "range" :value value :min min :max max
+           :on-mouseDown  (fn [] (swap! state/date-atom assoc-in [key1 :play-mode] false))
+           :on-mouseUp  (fn [] (swap! state/date-atom assoc-in [key1 :play-mode] (:play-mode-before-sliding (key1 @state/date-atom))))
            :on-change (fn [event] (swap! state/date-atom assoc-in [key1 key2 :value]
                                          (int (.-target.value event))))}])
 
