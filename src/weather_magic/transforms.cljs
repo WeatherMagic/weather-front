@@ -9,9 +9,11 @@
    [thi.ng.math.core       :as m   :refer [PI HALF_PI TWO_PI]]))
 
 (defn lat-lon-to-uv
-  [lat lon]
-  (let [u (+ (/ lon 360) 0.5)
-        v (+ (/ lat 180) 0.5)]
+  [coord]
+  (let [lat (aget (.-buf coord) 0)
+        lon (aget (.-buf coord) 1)
+        u (+ (/ lon 360) 0.5)
+        v (- 1 (+ (/ lat 180) 0.5))]
     (vec2 u v)))
 
 (defn lat-lon-to-model-coords
@@ -29,19 +31,20 @@
   (let [ε 0.001
         xn (aget (.-buf coord) 2)
         yn (aget (.-buf coord) 1)
-        zn (* (aget (.-buf coord) 0) -1)]
-    {:lat (if (> yn (- 1 ε))
-            90
-            (if (< yn (- ε 1))
-              -90
-              (* (/ 180 PI) (Math/asin yn))))
-     :lon (if (> (Math/abs zn) ε)
-            (* (/ 180 PI) (Math/atan2 xn zn))
-            (if (> (Math/abs yn) (- 1 ε))
-              0
-              (if (pos? xn)
+        zn (* (aget (.-buf coord) 0) -1)
+        lat (if (> yn (- 1 ε))
                 90
-                -90)))}))
+                (if (< yn (- ε 1))
+                  -90
+                  (* (/ 180 PI) (Math/asin yn))))
+        lon (if (> (Math/abs zn) ε)
+               (* (/ 180 PI) (Math/atan2 xn zn))
+               (if (> (Math/abs yn) (- 1 ε))
+                 0
+                 (if (pos? xn)
+                   90
+                   -90)))]
+    (vec2 lat lon)))
 
 (defn model-coords-from-corner
   "Updating how much the globe should be rotated around the z axis to align northpole"
@@ -76,3 +79,11 @@
          :upper-right (model-coords-to-lat-lon (:upper-right @state/model-coords))
          :lower-left (model-coords-to-lat-lon (:lower-left @state/model-coords))
          :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))))
+
+(defn update-uv-coords
+  []
+  (update-lat-lon)
+  (swap! state/uv-coords assoc :upper-left (lat-lon-to-uv (:upper-left @state/lat-lon-coords))
+         :upper-right (lat-lon-to-uv (:upper-right @state/lat-lon-coords))
+         :lower-left (lat-lon-to-uv (:lower-left @state/lat-lon-coords))
+         :lower-right (lat-lon-to-uv (:lower-right @state/lat-lon-coords))))
