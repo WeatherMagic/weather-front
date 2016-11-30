@@ -3,6 +3,7 @@
    [weather-magic.ui               :as ui]
    [weather-magic.state            :as state]
    [weather-magic.shaders          :as shaders]
+   [weather-magic.transforms       :as transforms]
    [weather-magic.textures         :as textures]
    [weather-magic.event-handlers   :as event-handlers]
    [thi.ng.math.core               :as m   :refer [PI HALF_PI TWO_PI]]
@@ -47,7 +48,7 @@
                                        glc/one-minus-src-alpha]}))
 
 (defn draw-frame! [t]
-  (event-handlers/update-model-coords)
+  (transforms/update-lat-lon)
   (when (and @(:loaded @state/base-texture-left) @(:loaded (:trump @state/textures-left)))
     (let [range (- (:max (:year @state/date-atom)) (:min (:year @state/date-atom)))
           time (rem (int (* 5 t)) range)]
