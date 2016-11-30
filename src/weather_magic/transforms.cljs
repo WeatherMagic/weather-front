@@ -25,11 +25,11 @@
 
 (defn model-coords-to-lat-lon
   "Converting latitude and longitude to model cordinates"
-  [x y z]
+  [coord]
   (let [ε 0.001
-        xn z
-        yn y
-        zn (* x -1)]
+        xn (aget (.-buf coord) 2)
+        yn (aget (.-buf coord) 1)
+        zn (* (aget (.-buf coord) 0) -1)]
     {:lat (if (> yn (- 1 ε))
             90
             (if (< yn (- ε 1))
@@ -72,11 +72,7 @@
   "Get model-coords and transform to latitude and longitude"
   []
   (update-model-coords)
-  (let [upper-left (:upper-left @state/model-coords)
-        x (aget (.-buf upper-left) 0)
-        y (aget (.-buf upper-left) 1)
-        z (aget (.-buf upper-left) 2)
-        upper-left-lon-lat (model-coords-to-lat-lon x y z)]
-        (println upper-left-lon-lat)
-        (println upper-left)
-        (println (lat-lon-to-model-coords (:lat upper-left-lon-lat) (:lon upper-left-lon-lat)))))
+  (swap! state/lat-lon-coords assoc :upper-left (model-coords-to-lat-lon (:upper-left @state/model-coords))
+         :upper-right (model-coords-to-lat-lon (:upper-right @state/model-coords))
+         :lower-left (model-coords-to-lat-lon (:lower-left @state/model-coords))
+         :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))))
