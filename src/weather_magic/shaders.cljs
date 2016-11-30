@@ -45,12 +45,27 @@
 
     vec4 outColor;
 
-    if(temperature > 0.5) {
+    float threshold = fov/1000.0;
+    if (fov > 45.0) {
+      threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.005;
+    } 
+
+    float alphaValue = clamp(15.0 / fov, 0.0, 1.0);
+
+    if (mod(temperature, 0.1) < threshold && fov < 50.0) {
+      if (temperature > 0.5 && temperature < 0.75) {
+        outColor = vec4(0.5, 0.5, 0.5, alphaValue);
+      } else if (temperature > 0.75) {
+        outColor = vec4(0.0, 0.0, 0.0, alphaValue);
+      } else if (temperature < 0.5) {
+        outColor = vec4(1.0, 1.0, 1.0, alphaValue);
+      }
+    } else if(temperature > 0.5) {
       outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
     } else {
       outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
     }
-     gl_FragColor = outColor;
+    gl_FragColor = outColor;
   }")
 
 (def standard-shader-spec
@@ -68,7 +83,9 @@
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
               :year       :float
-              :range      :float}
+              :range      :float
+              :fov        :float}
+
    :attribs  {:position :vec3
               :normal   :vec3
               :uv       :vec2}
