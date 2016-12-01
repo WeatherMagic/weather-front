@@ -78,6 +78,7 @@
          :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))))
 
 (defn update-from-to-lat-lon
+  "Get the lat and lon on the format from lat/lon to lat/lon"
   []
   (update-lat-lon)
   (swap! state/from-to-lat-lon assoc
