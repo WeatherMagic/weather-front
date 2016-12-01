@@ -79,7 +79,6 @@
 
 (defn draw-frame! [t]
   (transforms/update-lat-lon)
-  (println state/lat-lon-coords)
   (if (:play-mode (:left @state/date-atom))
     (update-year-month-info t :left)
     (swap! state/year-update assoc-in [:left :time-of-last-update] (* 5 t)))
