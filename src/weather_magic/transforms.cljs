@@ -76,3 +76,15 @@
          :upper-right (model-coords-to-lat-lon (:upper-right @state/model-coords))
          :lower-left (model-coords-to-lat-lon (:lower-left @state/model-coords))
          :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))))
+
+(defn convert-to-readable
+  []
+  (swap! state/from-to-lat-lon assoc
+         :from-lat (min (:lat (:upper-left @state/lat-lon-coords)) (:lat (:upper-right @state/lat-lon-coords))
+                        (:lat (:lower-left @state/lat-lon-coords)) (:lat (:lower-right @state/lat-lon-coords)))
+         :from-lon (min (:lon (:upper-left @state/lat-lon-coords)) (:lon (:upper-right @state/lat-lon-coords))
+                        (:lon (:lower-left @state/lat-lon-coords)) (:lon (:lower-right @state/lat-lon-coords)))
+         :to-lat (max (:lat (:upper-left @state/lat-lon-coords)) (:lat (:upper-right @state/lat-lon-coords))
+                      (:lat (:lower-left @state/lat-lon-coords)) (:lat (:lower-right @state/lat-lon-coords)))
+         :to-lon (max (:lon (:upper-left @state/lat-lon-coords)) (:lon (:upper-right @state/lat-lon-coords))
+                      (:lon (:lower-left @state/lat-lon-coords)) (:lon (:lower-right @state/lat-lon-coords)))))
