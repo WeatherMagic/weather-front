@@ -10,8 +10,6 @@
   "void main() {
      vUV         = uv;
      vNormal     = normal;
-     vDataScale  = dataScale;
-     vDataPos    = dataPos;
      gl_Position = proj * view * model * vec4(position, 1.0);
    }")
 
@@ -19,7 +17,7 @@
   "void main() {
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
-     vec4 diffuse = texture2D(base, vUV) + texture2D(trump, (vUV - vDataPos) / vDataScale);
+     vec4 diffuse = texture2D(base, vUV) + texture2D(trump, (vUV - dataPos) / dataScale);
      vec4 col = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
      gl_FragColor = col;
    }")
@@ -94,9 +92,7 @@
               :normal     :vec3
               :uv         :vec2}
    :varying  {:vUV        :vec2
-              :vNormal    :vec3
-              :vDataPos   :vec2
-              :vDataScale :vec2}
+              :vNormal    :vec3}
    :state    {:depth-test true}})
 
 (def blend-shader-spec
