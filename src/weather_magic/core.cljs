@@ -30,13 +30,6 @@
   (@state/earth-animation-fn delta-time)
   (m/* M44 @state/earth-orientation))
 
-(defn combine-model-and-camera
-  [model camera gl-ctx t]
-  (-> model
-      (gl/as-gl-buffer-spec {})
-      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
-      (cam/apply camera)))
-
 (defn enable-shader-alpha-blending []
   (gl/prepare-render-state state/gl-ctx-left
                            {:blend true
@@ -48,7 +41,6 @@
                                        glc/one-minus-src-alpha]}))
 
 (defn update-year-month-info
-  ""
   [t key]
   (let [min  (:min (:year (key @state/date-atom)))
         range (- (:max (:year (key @state/date-atom))) min)
@@ -60,17 +52,18 @@
       (swap! state/year-update assoc-in [key :time-of-last-update] (* 5 t)))))
 
 (defn draw-in-context
-  ""
-  [gl-ctx camera base-texture textures shaders key t]
-  (let [range (- (:max (:year (key @state/date-atom))) (:min (:year (key @state/date-atom))))
-        time (- (:value (:year (key @state/date-atom))) (:min (:year (key @state/date-atom))))]
+  [gl-ctx camera base-texture textures shaders left-right-key t]
+  (let [range (- (:max  (:year (left-right-key @state/date-atom)))
+                 (:min  (:year (left-right-key @state/date-atom))))
+        time (- (:value (:year (left-right-key @state/date-atom)))
+                (:min   (:year (left-right-key @state/date-atom))))]
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture base-texture) 0)
       (gl/bind (:texture (:trump textures)) 1)
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
-         (-> (combine-model-and-camera @state/model camera gl-ctx t)
+         (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
@@ -81,7 +74,6 @@
 
 (defn draw-frame! [t]
   (transforms/update-lat-lon)
-  (println state/lat-lon-coords)
   (if (:play-mode (:left @state/date-atom))
     (update-year-month-info t :left)
     (swap! state/year-update assoc-in [:left :time-of-last-update] (* 5 t)))

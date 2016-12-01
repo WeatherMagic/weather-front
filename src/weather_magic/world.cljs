@@ -12,7 +12,7 @@
 (defn show-europe!
   "Rotates the sphere so that Europe is shown."
   [t]
-  (reset! state/model models/sphere)
+  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-x (m/radians 45))
@@ -22,7 +22,7 @@
 (defn northpole-up!
   "Rotates the sphere so that the northpole is up after panning."
   []
-  (reset! state/model models/sphere)
+  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation M44))
 
@@ -32,7 +32,7 @@
   [t]
   (swap!  state/textures-left merge
           (textures/load-texture-if-needed state/gl-ctx-left @state/textures-left "img/turkey.jpg"))
-  (reset! state/model models/plane)
+  (reset! state/current-model-key :plane)
   (reset! state/base-texture-left (:turkey @state/textures-left))
   (reset! state/earth-orientation (-> M44
                                       (g/translate (vec3 2 1.5 0))
@@ -43,7 +43,7 @@
 (defn spin-earth!
   "Rotates the sphere indefinitely."
   [delta-time]
-  (reset! state/model models/sphere)
+  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-y (m/radians delta-time))
@@ -52,7 +52,7 @@
 (defn reset-spin!
   "Rotates the sphere so that the northpole is up after panning."
   [delta-time]
-  (reset! state/model models/sphere)
+  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation M44)
   (reset! state/earth-animation-fn spin-earth!))
