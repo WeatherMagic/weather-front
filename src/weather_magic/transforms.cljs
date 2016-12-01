@@ -77,8 +77,9 @@
          :lower-left (model-coords-to-lat-lon (:lower-left @state/model-coords))
          :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))))
 
-(defn convert-to-readable
+(defn update-from-to-lat-lon
   []
+  (update-lat-lon)
   (swap! state/from-to-lat-lon assoc
          :from-lat (min (:lat (:upper-left @state/lat-lon-coords)) (:lat (:upper-right @state/lat-lon-coords))
                         (:lat (:lower-left @state/lat-lon-coords)) (:lat (:lower-right @state/lat-lon-coords)))
