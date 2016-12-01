@@ -30,8 +30,14 @@
 (defonce data-layer-atom (atom #{}))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:year  {:value 1950 :min 1950 :max 2100}
-                          :month {:value 1 :min 1 :max 12}}))
+(defonce date-atom (atom {:left  {:play-mode false
+                                  :play-mode-before-sliding false
+                                  :year  {:value 1950 :min 1950 :max 2100}
+                                  :month {:value 1 :min 1 :max 12}}
+                          :right {:play-mode false
+                                  :play-mode-before-sliding false
+                                  :year  {:value 1950 :min 1950 :max 2100}
+                                  :month {:value 1 :min 1 :max 12}}}))
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
@@ -43,10 +49,10 @@
 (defonce intro-visible (atom :visible))
 
 ;; The models with buffers prepared and ready for use by the program.
-(def models-left  {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-left  glc/static-draw)
-                   :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)})
-(def models-right {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-right glc/static-draw)
-                   :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-right glc/static-draw)})
+(def models {:left  {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-left  glc/static-draw)
+                     :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
+             :right {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-right glc/static-draw)
+                     :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-right glc/static-draw)}})
 (defonce current-model-key (atom :sphere))
 
 (defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
@@ -68,4 +74,9 @@
 (defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0)
                              :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
 
+(defonce lat-lon-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0) :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
+
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0}))
+
+(defonce year-update (atom {:left {:time-of-last-update 0}
+                            :right {:time-of-last-update 0}}))

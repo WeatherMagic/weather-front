@@ -26,35 +26,3 @@
   ;; name), possibly followed by a '.' and some characters not '/' (the
   ;; filename extension), always ended with a line ending.
   (second (re-find #"([^/^\.]+)\.?[^/]*$" path)))
-
-(defn lat-lon-to-cart
-  "Converting latitude and longitude to model cordinates"
-  [lat lon]
-  (let [rlat (m/radians lat)
-        rlon (m/radians lon)]
-    {:x (* (Math/sin rlon) (Math/cos rlat))
-     :y (Math/sin rlat)
-     :z (* (Math/cos rlon) (Math/cos rlat))}))
-
-(defn cart-to-lat-lon
-  "Converting latitude and longitude to model cordinates"
-  [x y z]
-  (let [ε 0.001]
-    {:lat (if (> y (- 1 ε))
-            90
-            (if (< y (- ε 1))
-              -90
-              (* (/ 180 PI) (Math/asin y))))
-     :lon (if (> (Math/abs z) ε)
-            (* (/ 180 PI) (Math/atan2 x z))
-            (if (> (Math/abs y) (- 1 ε))
-              0
-              (if (pos? x)
-                90
-                -90)))}))
-
-(defn lat-lon-to-uv
-  [lat lon]
-  (let [u (+ (/ lon 360) 0.5)
-        v (+ (/ lat 180) 0.5)]
-    (vec2 u v)))
