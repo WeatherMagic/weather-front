@@ -3,6 +3,7 @@
    [weather-magic.ui               :as ui]
    [weather-magic.state            :as state]
    [weather-magic.shaders          :as shaders]
+   [weather-magic.transforms       :as transforms]
    [weather-magic.textures         :as textures]
    [weather-magic.event-handlers   :as event-handlers]
    [thi.ng.math.core               :as m   :refer [PI HALF_PI TWO_PI]]
@@ -79,6 +80,8 @@
              (assoc-in [:uniforms :dataPos] (vec2 0.51 0.2))))))))
 
 (defn draw-frame! [t]
+  (transforms/update-lat-lon)
+  (println state/lat-lon-coords)
   (if (:play-mode (:left @state/date-atom))
     (update-year-month-info t :left)
     (swap! state/year-update assoc-in [:left :time-of-last-update] (* 5 t)))
