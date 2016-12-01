@@ -5,6 +5,7 @@
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [weather-magic.event-handlers   :as event-handlers]
+   [weather-magic.models           :as models]
    [thi.ng.math.core               :as m   :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core            :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
@@ -31,8 +32,7 @@
 
 (defn combine-model-and-camera
   [model camera gl-ctx t]
-  (-> model
-      (gl/as-gl-buffer-spec {})
+  (-> models/sphere
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
