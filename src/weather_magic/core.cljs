@@ -30,12 +30,6 @@
   (@state/earth-animation-fn delta-time)
   (m/* M44 @state/earth-orientation))
 
-(defn combine-model-and-camera
-  [model camera gl-ctx t]
-  (-> models/sphere
-      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
-      (cam/apply camera)))
-
 (defn enable-shader-alpha-blending []
   (gl/prepare-render-state state/gl-ctx-left
                            {:blend true
@@ -57,8 +51,11 @@
       (doto state/gl-ctx-left
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
-         (-> (combine-model-and-camera @state/model @state/camera-left state/gl-ctx-left t)
-             (assoc :shader (@state/current-shader-key state/shaders-left))
+         (-> (cam/apply (@state/current-model-key state/models-left) @state/camera-left)
+             (assoc
+              :shader
+              (@state/current-shader-key
+               state/shaders-left))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
@@ -72,7 +69,7 @@
       (doto state/gl-ctx-right
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
-         (-> (combine-model-and-camera @state/model @state/camera-right state/gl-ctx-right t)
+         (-> (cam/apply (@state/current-model-key state/models-right) @state/camera-right)
              (assoc :shader (@state/current-shader-key state/shaders-right))
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
