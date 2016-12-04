@@ -58,3 +58,9 @@
   (let [u (+ (/ lon 360) 0.5)
         v (+ (/ lat 180) 0.5)]
     (vec2 u v)))
+
+(defn map->query-string
+  "Turns a map into a query string, {:a 2 :b 10} -> '?a=2&b=10'."
+  [map]
+  (str "?" (clojure.string/join "&" (for [[key value] map]
+                                      (str (name key) "=" value)))))

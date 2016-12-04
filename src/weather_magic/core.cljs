@@ -53,7 +53,7 @@
           time (rem (int (* 5 t)) range)]
       (swap! state/date-atom assoc-in [:year :value] (+ (:min (:year @state/date-atom)) time))
       (gl/bind (:texture @state/base-texture-left) 0)
-      (gl/bind (:texture (:trump @state/textures-left)) 1)
+      (gl/bind (:texture ((:current @state/dynamic-texture-keys) @state/textures-left)) 1)
       (doto state/gl-ctx-left
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
