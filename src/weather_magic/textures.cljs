@@ -13,8 +13,9 @@
                  gl-ctx {:callback
                          (fn [tex img]
                            (vreset! loaded true))
-                         :src      path
-                         :filter   [glc/linear glc/linear]})]
+                         :src    path
+                         :filter [glc/linear glc/linear]
+                         :cors   ""})]
     {:texture texture :loaded loaded}))
 
 (defn load-texture-if-needed
