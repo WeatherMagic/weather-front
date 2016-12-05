@@ -64,9 +64,14 @@
                  (:min  (:year (left-right-key @state/date-atom))))
         time (- (:value (:year (left-right-key @state/date-atom)))
                 (:min   (:year (left-right-key @state/date-atom))))]
+    ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture base-texture) 0)
-      (gl/bind (:texture ((:current @state/dynamic-texture-keys) @state/textures-left)) 1)
+      ;; If the data from thor has been loaded, use that instead of trump.
+      (if @(:loaded ((:current @state/dynamic-texture-keys) textures))
+        (gl/bind (:texture ((:current @state/dynamic-texture-keys) textures)) 1)
+        (gl/bind (:texture (:trump textures)) 1))
+      ;; Do the actual drawing.
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
