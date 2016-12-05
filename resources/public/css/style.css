@@ -143,7 +143,7 @@ input[type=range] {
 }
 
 .button:hover {
-  box-shadow: 0 0 2em #000;
+  box-shadow: 0 0 2em #33a;
 }
 
 .button:active {
