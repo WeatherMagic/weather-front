@@ -94,7 +94,8 @@
 (defn update-uv-coords
   ""
   []
+  (update-lat-lon)
   (let [from-uv (lat-lon-to-uv (:from-lat @state/lat-lon-coords) (:from-lon @state/lat-lon-coords))
         to-uv (lat-lon-to-uv (:to-lat @state/lat-lon-coords) (:to-lon @state/lat-lon-coords))
-        scale (- to-uv from-uv)]
-    ))
+        scale (vec2 (- (aget (.-buf to-uv) 0) (aget (.-buf from-uv) 0)) (- (aget (.-buf to-uv) 1) (aget (.-buf from-uv) 1)))]
+    (swap! state/texture-info assoc :dataPos (vec2 (aget (.-buf from-uv) 0) (- 1 (aget (.-buf to-uv) 1))) :dataScale scale)))

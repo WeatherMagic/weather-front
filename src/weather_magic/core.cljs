@@ -69,11 +69,12 @@
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :fov] (:fov camera))
-             (assoc-in [:uniforms :dataScale] (vec2 0.05 0.05))
-             (assoc-in [:uniforms :dataPos] (vec2 0.51 0.2))))))))
+             (assoc-in [:uniforms :dataScale] (:dataScale @state/texture-info))
+             (assoc-in [:uniforms :dataPos]   (:dataPos @state/texture-info))))))))
 
 (defn draw-frame! [t]
-  (transforms/update-lat-lon)
+  (transforms/update-uv-coords)
+  ;(println state/texture-info)
   (if (:play-mode (:left @state/date-atom))
     (update-year-month-info t :left)
     (swap! state/year-update assoc-in [:left :time-of-last-update] (* 5 t)))

@@ -7,7 +7,7 @@
    [thi.ng.geom.gl.core            :as gl]
    [thi.ng.geom.gl.shaders         :as sh]
    [thi.ng.geom.gl.webgl.constants :as glc]
-   [thi.ng.geom.vector             :refer [vec3]]
+   [thi.ng.geom.vector             :refer [vec2 vec3]]
    [thi.ng.geom.matrix             :refer [M44]]
    [reagent.core                   :refer [atom]]))
 
@@ -80,3 +80,6 @@
 
 (defonce year-update (atom {:left {:time-of-last-update 0}
                             :right {:time-of-last-update 0}}))
+
+(defonce texture-info (atom {:dataPos   (vec2 0 0)
+                             :dataScale (vec2 0 0)}))
