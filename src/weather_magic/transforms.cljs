@@ -84,9 +84,9 @@
     (swap! state/lat-lon-coords assoc
            :from-lat (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
                           (:lat (:lower-left coords)) (:lat (:lower-right coords)))
-           :from-lon (min (:lon (:upper-left coords)) (:lon (:upper-right coords))
-                          (:lon (:lower-left coords)) (:lon (:lower-right coords)))
            :to-lat (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
                         (:lat (:lower-left coords)) (:lat (:lower-right coords)))
+           :from-lon (min (:lon (:upper-left coords)) (:lon (:upper-right coords))
+                          (:lon (:lower-left coords)) (:lon (:lower-right coords)))
            :to-lon (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
                         (:lon (:lower-left coords)) (:lon (:lower-right coords))))))
