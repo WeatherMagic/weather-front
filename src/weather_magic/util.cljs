@@ -26,3 +26,9 @@
   ;; name), possibly followed by a '.' and some characters not '/' (the
   ;; filename extension), always ended with a line ending.
   (second (re-find #"([^/^\.]+)\.?[^/]*$" path)))
+
+(defn map->query-string
+  "Turns a map into a query string, {:a 2 :b 10} -> '?a=2&b=10'"
+  [map]
+  (str "?" (clojure.string/join "&" (for [[key value] map]
+                                      (str (name key) "=" value)))))
