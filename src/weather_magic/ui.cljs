@@ -2,6 +2,7 @@
   (:require
    [weather-magic.models   :as models]
    [weather-magic.state    :as state]
+   [weather-magic.event-handlers :as event-handlers]
    [weather-magic.world    :as world]
    [weather-magic.shaders  :as shaders]
    [weather-magic.util     :as util]
@@ -15,27 +16,41 @@
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
+(defn toggle-play-stop
+  [atom key]
+  (if (:play-mode (key @atom))
+    (swap! atom update-in [key] merge {:play-mode false :play-mode-before-sliding false})
+    (swap! atom update-in [key] merge {:play-mode true :play-mode-before-sliding true})))
+
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [id func atom & args]
   [:input {:type "button" :value id :id id :class "button"
            :on-click #(apply func atom args)}])
 
-(defn slider [key value min max]
+(defn slider [key1 key2 value min max]
   [:input {:type "range" :value value :min min :max max
-           :on-change (fn [event] (swap! state/date-atom assoc-in [key :value]
-                                         (.-target.value event)))}])
+           :on-mouseDown  (fn [] (swap! state/date-atom assoc-in [key1 :play-mode] false))
+           :on-mouseUp  (fn [] (swap! state/date-atom assoc-in [key1 :play-mode] (:play-mode-before-sliding (key1 @state/date-atom))))
+           :on-change (fn [event] (swap! state/date-atom assoc-in [key1 key2 :value]
+                                         (int (.-target.value event))))}])
 
-(defn slider-component [key]
-  (let [data (key @state/date-atom)]
+(defn slider-component [key1 key2]
+  (let [data (key2 (key1 @state/date-atom))]
     [:div {:class "time-slider"}
-     [:span (clojure.string/capitalize (name key)) ": " (:value data)]
-     [slider key (:value data) (:min data) (:max data)]]))
+     [:span (clojure.string/capitalize (name key2)) ": " (:value data)]
+     [slider key1 key2 (:value data) (:min data) (:max data)]]))
 
-(defn time-slider []
-  [:div {:id "time-slider-container"}
-   [slider-component :year]
-   [slider-component :month]])
+(defn time-sliders []
+  [:div {:id "time-slider-containers"}
+   [:div {:class "time-sliders-left"}
+    [button "Play/Stop Left" toggle-play-stop state/date-atom :left]
+    [slider-component :left :year]
+    [slider-component :left :month]]
+   [:div {:class "time-sliders-right"}
+    [button "Play/Stop Right" toggle-play-stop state/date-atom :right]
+    [slider-component :right :year]
+    [slider-component :right :month]]])
 
 (defn map-ui-blur []
   "What hides the map UI."
@@ -57,7 +72,8 @@
    [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
    [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "Northpole Up" reset! state/earth-animation-fn world/northpole-up!]])
+   [button "Align" event-handlers/align-handler]
+   [button "Reset!" event-handlers/reset-spin-handler]])
 
 (defn shader-selection-buttons
   "Buttons for choosing shader"
@@ -75,7 +91,7 @@
    [data-layer-buttons]
    [view-selection-buttons]
    [shader-selection-buttons]
-   [time-slider]
+   [time-sliders]
    [map-ui-blur]])
 
 (defn mount-ui!
