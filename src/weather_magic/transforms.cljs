@@ -72,21 +72,21 @@
   "Get model-coords and transform to latitude and longitude"
   []
   (update-model-coords)
-  (swap! state/lat-lon-coords assoc :upper-left (model-coords-to-lat-lon (:upper-left @state/model-coords))
-         :upper-right (model-coords-to-lat-lon (:upper-right @state/model-coords))
-         :lower-left (model-coords-to-lat-lon (:lower-left @state/model-coords))
-         :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))))
+  {:upper-left (model-coords-to-lat-lon (:upper-left @state/model-coords))
+   :upper-right (model-coords-to-lat-lon (:upper-right @state/model-coords))
+   :lower-left (model-coords-to-lat-lon (:lower-left @state/model-coords))
+   :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))})
 
 (defn update-lat-lon
   "Get the lat and lon on the format from lat/lon to lat/lon"
   []
-  (update-lat-lon-helper)
-  (swap! state/from-to-lat-lon assoc
-         :from-lat (min (:lat (:upper-left @state/lat-lon-coords)) (:lat (:upper-right @state/lat-lon-coords))
-                        (:lat (:lower-left @state/lat-lon-coords)) (:lat (:lower-right @state/lat-lon-coords)))
-         :from-lon (min (:lon (:upper-left @state/lat-lon-coords)) (:lon (:upper-right @state/lat-lon-coords))
-                        (:lon (:lower-left @state/lat-lon-coords)) (:lon (:lower-right @state/lat-lon-coords)))
-         :to-lat (max (:lat (:upper-left @state/lat-lon-coords)) (:lat (:upper-right @state/lat-lon-coords))
-                      (:lat (:lower-left @state/lat-lon-coords)) (:lat (:lower-right @state/lat-lon-coords)))
-         :to-lon (max (:lon (:upper-left @state/lat-lon-coords)) (:lon (:upper-right @state/lat-lon-coords))
-                      (:lon (:lower-left @state/lat-lon-coords)) (:lon (:lower-right @state/lat-lon-coords)))))
+  (let [coords (update-lat-lon-helper)]
+    (swap! state/lat-lon-coords assoc
+           :from-lat (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
+                          (:lat (:lower-left coords)) (:lat (:lower-right coords)))
+           :from-lon (min (:lon (:upper-left coords)) (:lon (:upper-right coords))
+                          (:lon (:lower-left coords)) (:lon (:lower-right coords)))
+           :to-lat (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
+                        (:lat (:lower-left coords)) (:lat (:lower-right coords)))
+           :to-lon (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
+                        (:lon (:lower-left coords)) (:lon (:lower-right coords))))))
