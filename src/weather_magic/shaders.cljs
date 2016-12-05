@@ -18,15 +18,16 @@
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
      vec4 diffuse = texture2D(base, vUV) +
-                    texture2D(trump, (vUV - dataPos) / dataScale);
-     vec4 col = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
-     gl_FragColor = col;
+                    texture2D(data, mod((vUV - dataPos), 1.0) / dataScale);
+     gl_FragColor = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
    }")
 
 (def blend-fs
   "void main() {
-     vec4 texture = texture2D(base, vUV);
-     vec4 temperature;
+     float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
+     vec4 mapDiffuse = texture2D(base, vUV);
+     float temp = texture2D(data, vUV).r * 3.0;
+     gl_FragColor = vec4(ambientCol, 1.0) + mapDiffuse * vec4(lightCol, 1.0) * lam * 0.0001 + vec4(temp, temp, temp, 1.0);
 
      if(texture.g > 0.5) {
        temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
@@ -79,7 +80,7 @@
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
               :base       [:sampler2D 0] ; Specify which texture unit
-              :trump      [:sampler2D 1] ; the uniform is bound to.
+              :data       [:sampler2D 1] ; the uniform is bound to.
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
