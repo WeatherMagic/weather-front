@@ -52,7 +52,8 @@
                             :to-longitude     50
                             :from-latitude    30
                             :to-latitude      70
-                            :return-dimension "[1400, 1600]"}
+                            :return-dimension "[1400, 1600]"
+                            :domain "EUR-11i"}
                            request-params)
         url (str "http://thor.hfelo.se/api/" variable
                  (util/map->query-string request-map))

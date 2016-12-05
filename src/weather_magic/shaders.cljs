@@ -17,8 +17,35 @@
   "void main() {
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
-     vec4 diffuse = texture2D(base, vUV) +
-                    texture2D(data, mod((vUV - dataPos), 1.0) / dataScale);
+
+     float temperature = texture2D(data, mod((vUV - dataPos), 1.0) / dataScale).r;
+     vec4 baseTexture = texture2D(base, vUV);
+                    
+     vec4 outColor;
+
+     float threshold = fov/1000.0;
+     if (fov > 45.0) {
+       threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.005;
+     }
+
+     float alphaValue = clamp(15.0 / fov, 0.0, 1.0);
+
+     if (mod(temperature, 0.1) < threshold && fov < 50.0 && temperature > 0.15) {
+       if (temperature > 0.5 && temperature < 0.75) {
+         outColor = vec4(0.5, 0.5, 0.5, alphaValue);
+       } else if (temperature > 0.75) {
+         outColor = vec4(0.0, 0.0, 0.0, alphaValue);
+       } else if (temperature < 0.5) {
+         outColor = vec4(1.0, 1.0, 1.0, alphaValue);
+       }
+     } else if(temperature > 0.5) {
+       outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
+     } else {
+       outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
+     }
+
+     vec4 diffuse = 0.3 * baseTexture + 0.7 * outColor;
+
      gl_FragColor = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
    }")
 
@@ -61,7 +88,8 @@
     } else {
       outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
     }
-    gl_FragColor = outColor;
+    vec3 outcolor = outColor.rgb;
+    gl_FragColor = vec4(outcolor, alphaValue);
   }")
 
 (def standard-shader-spec
