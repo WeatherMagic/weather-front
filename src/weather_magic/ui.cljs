@@ -79,7 +79,7 @@
    [button "About"  swap!  state/intro-visible hide-unhide]])
 
 (defn compass []
-  [:input {:type "button" :id "Compass"
+  [:input {:type "button" :id "Compass" :class (hide-unhide @state/intro-visible)
            :on-click event-handlers/align-handler
            :style {:transform (str "rotate(" (util/north-pole-rotation-around-z @state/earth-orientation) "rad)")}}])
 
@@ -87,9 +87,10 @@
   "What the user sees when she arrives at the page."
   []
   [:div {:id "landing-page" :class @state/intro-visible}
-   [:h1 "Welcome to WeatherMagic!"]
-   [:p "An interactive visualization of climate projections"]
-   [:p "or How fucked art thou?"]
+   [:div
+    [:h1 "Welcome to WeatherMagic!"]
+    [:p "An interactive visualization of climate projections"]
+    [:p "or How fucked art thou?"]]
    [button "To map" swap! state/intro-visible hide-unhide]])
 
 (defn map-ui
