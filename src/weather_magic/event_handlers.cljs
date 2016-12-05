@@ -110,7 +110,6 @@
         total-steps (:total-steps @state/pointer-zoom-info)]
     (update-alignment-angle x-diff y-diff)
     (swap! state/pointer-zoom-info assoc
-           ;:delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps)
            :delta-x (/ x-diff total-steps)
            :delta-y (/ y-diff total-steps)
            :current-step 0
