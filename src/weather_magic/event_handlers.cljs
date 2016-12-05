@@ -47,7 +47,7 @@
   [x-diff y-diff]
   (let [future-earth-orientation (-> M44
                                      (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @world/zoom-level) 1.0E-3)))
+                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) (:fov @state/camera-left)) 1.0E-3)))
                                      (g/rotate-z (Math/atan2 y-diff x-diff))
                                      (m/* @state/earth-orientation))
         northpole-x (.-m10 future-earth-orientation)
@@ -62,7 +62,7 @@
   [rel-x rel-y]
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) @world/zoom-level) 1.0E-3)))
+                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) (:fov @state/camera-left)) 1.0E-3)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (m/* @state/earth-orientation))))
 

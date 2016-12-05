@@ -70,14 +70,11 @@
                       :zAngle 180
                       :translation (vec3 2 1.5 0)}))
 
-(defonce zoom-level (atom 110))
-
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."
   [camera-map scroll-distance]
-  (reset! zoom-level (:fov camera-map))
   (cam/perspective-camera
-   (assoc camera-map :fov (min 140 (+ @zoom-level (* @zoom-level scroll-distance 5.0E-4))))))
+   (assoc camera-map :fov (min 140 (+ (:fov camera-map) (* (:fov camera-map) scroll-distance 5.0E-4))))))
 
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
@@ -87,7 +84,7 @@
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* delta-angle step))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) @zoom-level) 1.0E-3)))
+                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) (:fov @state/camera-left)) 1.0E-3)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
                                       (g/rotate-z (* (* delta-angle (dec step)) -1))
                                       (m/* @state/earth-orientation))))
