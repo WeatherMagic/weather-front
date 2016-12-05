@@ -90,3 +90,11 @@
                           (:lon (:lower-left coords)) (:lon (:lower-right coords)))
            :to-lon (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
                         (:lon (:lower-left coords)) (:lon (:lower-right coords))))))
+
+(defn update-uv-coords
+  ""
+  []
+  (let [from-uv (lat-lon-to-uv (:from-lat @state/lat-lon-coords) (:from-lon @state/lat-lon-coords))
+        to-uv (lat-lon-to-uv (:to-lat @state/lat-lon-coords) (:to-lon @state/lat-lon-coords))
+        scale (- to-uv from-uv)]
+    ))
