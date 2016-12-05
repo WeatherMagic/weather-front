@@ -30,6 +30,13 @@
   (@state/earth-animation-fn delta-time)
   (m/* M44 @state/earth-orientation))
 
+(defn combine-model-and-camera
+  [model camera gl-ctx t]
+  (-> model
+      (gl/as-gl-buffer-spec {})
+      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
+      (cam/apply camera)))
+
 (defn enable-shader-alpha-blending []
   (gl/prepare-render-state state/gl-ctx-left
                            {:blend true
@@ -57,9 +64,14 @@
                  (:min  (:year (left-right-key @state/date-atom))))
         time (- (:value (:year (left-right-key @state/date-atom)))
                 (:min   (:year (left-right-key @state/date-atom))))]
+    ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture base-texture) 0)
-      (gl/bind (:texture (:trump textures)) 1)
+      ;; If the data from thor has been loaded, use that instead of trump.
+      (if @(:loaded ((:current @state/dynamic-texture-keys) textures))
+        (gl/bind (:texture ((:current @state/dynamic-texture-keys) textures)) 1)
+        (gl/bind (:texture (:trump textures)) 1))
+      ;; Do the actual drawing.
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
@@ -68,7 +80,9 @@
              (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
-             (assoc-in [:uniforms :fov] (:fov camera))))))))
+             (assoc-in [:uniforms :fov] (:fov camera))
+             (assoc-in [:uniforms :dataScale] (vec2 0.05 0.05))
+             (assoc-in [:uniforms :dataPos] (vec2 0.51 0.2))))))))
 
 (defn draw-frame! [t]
   (transforms/update-lat-lon)
