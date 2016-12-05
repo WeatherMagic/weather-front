@@ -76,7 +76,7 @@
 (defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0)
                              :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
 
-(defonce lat-lon-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0) :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
+(defonce lat-lon-coords (atom {:from-lat 0 :to-lat 0 :from-lon 0 :to-lon 0}))
 
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0}))
 
