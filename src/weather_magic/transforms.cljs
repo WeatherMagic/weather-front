@@ -68,7 +68,7 @@
            :lower-left (model-coords-from-corner (* half-width -1) half-height)
            :lower-right (model-coords-from-corner half-width half-height))))
 
-(defn update-lat-lon
+(defn update-lat-lon-helper
   "Get model-coords and transform to latitude and longitude"
   []
   (update-model-coords)
@@ -77,10 +77,10 @@
          :lower-left (model-coords-to-lat-lon (:lower-left @state/model-coords))
          :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))))
 
-(defn update-from-to-lat-lon
+(defn update-lat-lon
   "Get the lat and lon on the format from lat/lon to lat/lon"
   []
-  (update-lat-lon)
+  (update-lat-lon-helper)
   (swap! state/from-to-lat-lon assoc
          :from-lat (min (:lat (:upper-left @state/lat-lon-coords)) (:lat (:upper-right @state/lat-lon-coords))
                         (:lat (:lower-left @state/lat-lon-coords)) (:lat (:lower-right @state/lat-lon-coords)))
