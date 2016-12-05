@@ -21,7 +21,7 @@
 (defn load-texture-if-needed
   [textures gl-ctx & paths]
   "Load a texture from the given path into the given WebGL context and
-  a reference to it along with an inticator as to whether the texture
+  a reference to it along with an indicator as to whether the texture
   has loaded or not into the given map.
 
   If the given path is '/img/earth.jpg' the texture will be entered
@@ -63,11 +63,10 @@
   "Load a texture if needed and mutate the given atom to contain
   it. Return the key of the newly loaded texture."
   [texture-map-atom gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
-  (let [retval (load-data @texture-map-atom gl-ctx :variable variable :request-params request-params)]
-    (swap! texture-map-atom merge (:map retval))
-    (:key retval)))
+  (let [ret-val (load-data @texture-map-atom gl-ctx :variable variable :request-params request-params)]
+    (swap! texture-map-atom merge (:map ret-val))
+    (:key ret-val)))
 
 (defn load-base-textures
   [gl-ctx]
-  (def gl-ctx gl-ctx)
   (load-texture-if-needed {} gl-ctx "img/earth.jpg" "img/trump.png"))
