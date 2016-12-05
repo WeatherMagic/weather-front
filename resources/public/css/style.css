@@ -48,6 +48,12 @@ table {
 
 /* Our CSS */
 
+h1{
+	font-size: 2em;
+}
+p{
+	font-family: Sans-serif;
+}
 
 body, html {
  overflow:hidden;
@@ -55,7 +61,7 @@ body, html {
  width: 100%;
 }
 
-#time-slider-container {
+#time-slider-containers {
   position: absolute;
   left: 0;
   bottom: 0;
@@ -63,14 +69,34 @@ body, html {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+.time-sliders-left {
+  float: left;
+  width: 50%;
+}
+
+.time-sliders-right {
+  float: right;
+  width: 50%;
+}
+
 input[type=range] {
   width: 100%;
 }
 
 .time-slider {
-  margin: 0 2% 0 2%;
   color: white;
+  float: right;
+  width: calc(100% - 70px);
 }
+
+input[type="button"].play-pause {
+	width:  40px;
+	height: 40px;
+	margin: 5px 0 5px 15px;
+	background-image: url('../img/play-pause.png');
+	background-color: rgba(230, 230, 230, 1);
+}
+
 
 .hidden {
   visibility: hidden;
@@ -82,7 +108,7 @@ input[type=range] {
   top: 0;
   left: 0;
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 #left-canvas, #right-canvas {
@@ -100,72 +126,61 @@ input[type=range] {
   boarder:0;
 }
 
+#landing-page {
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  height: 10%;
+  left: 25%;
+  top: 5%;
+	color: white;
+}
+
 #data-layer-container {
   z-index: 1;
   position: absolute;
   width: 10%;
   height: 100%;
-  top: 5%;
-  left: 5%;
+  top: 25%;
+  left: 1%;
 }
-
-#shader-selection-container {
-  z-index: 1;
-  position: absolute;
-  width: 100%;
-  height: 10%;
-  left: 30%;
-  top: 5%;
-}
-
 
 #view-selection-container {
   position: absolute;
-  width: 10%;
+  width: 100px;
   height: 100%;
-  right: 5%;
-  top: 30%;
+  right: 1%;
+  top: 25%;
 }
 
-.button {
+input[type="button"] {
 	background-image: url('../img/raindrops.jpg');
 	width: 100px;
 	height: 100px;
-  margin: 1em;
+  margin: 1em 0;
 	font-size: 1.2em;
-  border-radius: 100%;
-  border-width: 0;
-  text-shadow: 0 0 0.3em white;
-  color: black;
 	font-weight: bold;
+  text-shadow: 0 0 0.3em white;
+	border-radius: 50%;
+  border-width: 0;
+  color: black;
 	outline: 0;
   box-shadow: 0 0 0.5em #000;
 }
 
-.button:hover {
-  box-shadow: 0 0 2em #33a;
+input[type="button"]:hover {
+  box-shadow: 0 0 0.5em #fff;
 }
 
-.button:active {
-  background-color: #7f8896;
+input[type="button"]:active {
+  box-shadow: 0 0 1em #fff;
 }
 
-.button-clicked {
-  width: 250px;
-  height: 100px;
-  margin: 25px;
-  background-color: #7f8896;
-  border-radius: 25px;
-  border-width: 3px;
-  border-color: #255aaa;
-  text-shadow: 0px 0px #255aaa;
-  color: black;
-  font-size: 100%;
-  font-family: sans-serif;
-  font-weight: bold;
-  font-style: normal;
-}
-
-.button-clicked:hover {
-  box-shadow: 0 0 50px #255aaa;
+#Compass {
+  position: absolute;
+  width: 100px;
+  right: 1%;
+  top: 1%;
+	background-image: url('../img/compass.png');
+	background-color: rgba(255, 255, 255, 0.3);
 }

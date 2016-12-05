@@ -1,16 +1,17 @@
 (ns weather-magic.event-handlers
   (:require
-   [weather-magic.state :as state]
+   [weather-magic.state   :as state]
+   [weather-magic.world   :as world]
+   [weather-magic.util    :as util]
    [thi.ng.geom.gl.camera :as cam]
-   [thi.ng.geom.rect  :as rect]
-   [weather-magic.world :as world]
-   [thi.ng.geom.gl.core  :as gl]
-   [thi.ng.geom.core :as g]
-   [thi.ng.geom.matrix :as mat :refer [M44]]
-   [thi.ng.geom.vector :as v :refer [vec2 vec3]]
-   [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
-   [thi.ng.geom.core :as g]
-   [reagent.core :as reagent :refer [atom]]))
+   [thi.ng.geom.rect      :as rect]
+   [thi.ng.geom.gl.core   :as gl]
+   [thi.ng.geom.core      :as g]
+   [thi.ng.geom.matrix    :as mat :refer [M44]]
+   [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
+   [thi.ng.math.core      :as m :refer [PI HALF_PI TWO_PI]]
+   [thi.ng.geom.core      :as g]
+   [reagent.core          :as reagent :refer [atom]]))
 
 (enable-console-print!)
 
@@ -50,11 +51,7 @@
                                      (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @world/zoom-level) 1.0E-3)))
                                      (g/rotate-z (Math/atan2 y-diff x-diff))
                                      (m/* @state/earth-orientation))
-        northpole-x (.-m10 future-earth-orientation)
-        northpole-y (.-m11 future-earth-orientation)
-        northpole-z (.-m12 future-earth-orientation)
-        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
-        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
+        delta-angle (/ (util/north-pole-rotation-around-z future-earth-orientation) 100)]
     (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
 
 (defn update-pan

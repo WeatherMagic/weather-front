@@ -90,3 +90,11 @@
                           (:lon (:lower-left coords)) (:lon (:lower-right coords)))
            :to-lon (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
                         (:lon (:lower-left coords)) (:lon (:lower-right coords))))))
+
+(defn north-pole-rotation-around-z
+  [earth-transform]
+  (let [northpole-x (.-m10 earth-transform)
+        northpole-y (.-m11 earth-transform)
+        northpole-z (.-m12 earth-transform)
+        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))]
+    (* (Math/acos northpole-y-norm) (Math/sign northpole-x))))
