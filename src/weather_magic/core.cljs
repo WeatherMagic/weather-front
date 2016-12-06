@@ -73,7 +73,7 @@
         (gl/draw-with-shader
          (-> (cam/apply (:plane (left-right-key state/models)) background-camera)
              (assoc :shader (:space shaders))
-             (assoc-in [:uniforms :model] (-> M44 (g/rotate-z PI) (g/scale 4.15) (g/translate (vec3 -5 -4 -1))))
+             (assoc-in [:uniforms :model] (-> M44 (g/rotate-z PI) (g/scale 4.109) (g/translate (vec3 -5 -4 -1))))
              (assoc-in [:uniforms :uvLeftRightOffset] (if (= left-right-key :left) (* 0 1.0) (* 0.5 1.0)))
              (assoc-in [:uniforms :uvOffset]   @state/space-offset))))
       (gl/bind (:texture base-texture) 0)
@@ -84,7 +84,7 @@
         (gl/draw-with-shader
          (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
-             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
+             (assoc-in [:uniforms :model] (set-model-matrix (- (* 5 t) @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :fov] (:fov camera))
@@ -101,7 +101,7 @@
     (swap! state/year-update assoc-in [:right :time-of-last-update] (* 5 t)))
   (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left t)
   (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right t)
-  (vreset! state/time-of-last-frame t))
+  (vreset! state/time-of-last-frame (* 5 t)))
 
 ;; Start the demo only once.
 (defonce running
