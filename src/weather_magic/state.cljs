@@ -7,7 +7,7 @@
    [thi.ng.geom.gl.core            :as gl]
    [thi.ng.geom.gl.shaders         :as sh]
    [thi.ng.geom.gl.webgl.constants :as glc]
-   [thi.ng.geom.vector             :refer [vec3]]
+   [thi.ng.geom.vector             :refer [vec2 vec3]]
    [thi.ng.geom.matrix             :refer [M44]]
    [reagent.core                   :refer [atom]]))
 
@@ -69,14 +69,9 @@
 
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
-<<<<<<< Updated upstream
+
 (defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left gl-ctx-left)
                                                   (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
-=======
-
-(defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left @lat-lon-coords gl-ctx-left)
-                                                  (textures/load-data-into-atom-and-return-key! textures-right @lat-lon-coords gl-ctx-right))}))
->>>>>>> Stashed changes
 
 (def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
                     :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
@@ -100,11 +95,8 @@
 
 (defonce year-update (atom {:left {:time-of-last-update 0}
                             :right {:time-of-last-update 0}}))
-<<<<<<< Updated upstream
-=======
 
 (defonce texture-info (atom {:dataPos   (vec2 0 0)
                              :dataScale (vec2 0 0)}))
 
 (defonce space-offset (atom (vec2 0 0)))
->>>>>>> Stashed changes

@@ -15,10 +15,7 @@
 
 (def space-fs
   "void main() {
-     float lam = lambert(surfaceNormal(vNormal, normalMat),
-                         normalize(lightDir));
-     vec4 diffuse = texture2D(data, vec2(mod(dataScale.x + (dataPos.x + vUV.x) / 2.0, 1.0), mod((dataPos.y + vUV.y) / 2.0, 1.0)));
-     gl_FragColor = diffuse;
+     gl_FragColor = texture2D(data, vec2(mod(uvLeftRightOffset + (uvOffset.x + vUV.x) / 2.0, 1.0), mod((uvOffset.y + vUV.y) / 2.0, 1.0)));
    }")
 
 (def standard-vs
@@ -119,7 +116,22 @@
                   (glsl/assemble))))
 
 (def space-shader-spec
-  (assoc standard-shader-spec :vs space-vs
-         :fs (->> space-fs
-                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                  (glsl/assemble))))
+  {:vs space-vs
+   :fs (->> space-fs
+            (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+            (glsl/assemble))
+   :uniforms {:model              [:mat4 M44]
+              :view               :mat4
+              :proj               :mat4
+              :normalMat          [:mat4 (gl/auto-normal-matrix :model :view)]
+              :base               [:sampler2D 0] ; Specify which texture unit
+              :data               [:sampler2D 1] ; the uniform is bound to.
+              :uvLeftRightOffset  :float
+              :uvOffset           :vec2}
+
+   :attribs  {:position   :vec3
+              :normal     :vec3
+              :uv         :vec2}
+   :varying  {:vUV        :vec2
+              :vNormal    :vec3}
+   :state    {:depth-test true}})
