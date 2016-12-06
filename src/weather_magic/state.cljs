@@ -20,11 +20,19 @@
 (defonce view-rect-right (gl/get-viewport-rect gl-ctx-right))
 
 (defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                    :fov    110
+                                                    :fov    140
                                                     :aspect (gl/get-viewport-rect gl-ctx-left)})))
 (defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                     :fov    110
+                                                     :fov    140
                                                      :aspect (gl/get-viewport-rect gl-ctx-right)})))
+
+(defonce background-camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                                               :fov    140
+                                                               :aspect (gl/get-viewport-rect gl-ctx-left)})))
+
+(defonce background-camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
+                                                                :fov    140
+                                                                :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
 (defonce data-layer-atom (atom #{}))
@@ -53,19 +61,29 @@
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
              :right {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-right glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-right glc/static-draw)}})
+
 (defonce current-model-key (atom :sphere))
 
 (defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
+
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
+<<<<<<< Updated upstream
 (defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left gl-ctx-left)
                                                   (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
+=======
 
-(def shaders-left  {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
+(defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left @lat-lon-coords gl-ctx-left)
+                                                  (textures/load-data-into-atom-and-return-key! textures-right @lat-lon-coords gl-ctx-right))}))
+>>>>>>> Stashed changes
+
+(def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
+                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
                     :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
                     :temp     (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)})
-(def shaders-right {:standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
+(def shaders-right {:space    (sh/make-shader-from-spec gl-ctx-right shaders/space-shader-spec)
+                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
                     :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec)
                     :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)})
 (defonce current-shader-key (atom :standard))
@@ -82,3 +100,11 @@
 
 (defonce year-update (atom {:left {:time-of-last-update 0}
                             :right {:time-of-last-update 0}}))
+<<<<<<< Updated upstream
+=======
+
+(defonce texture-info (atom {:dataPos   (vec2 0 0)
+                             :dataScale (vec2 0 0)}))
+
+(defonce space-offset (atom (vec2 0 0)))
+>>>>>>> Stashed changes

@@ -21,7 +21,7 @@
       (gl/as-gl-buffer-spec {})))
 
 (def plane
-  (-> (rect/rect 4 3)
+  (-> (rect/rect 10 8)
       (g/as-mesh
        {:mesh    (glm/gl-mesh 4096 (set '(:uv :vnorm)))
         :res     32

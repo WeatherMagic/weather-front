@@ -59,7 +59,7 @@
       (swap! state/year-update assoc-in [key :time-of-last-update] (* 5 t)))))
 
 (defn draw-in-context
-  [gl-ctx camera base-texture textures shaders left-right-key t]
+  [gl-ctx camera background-camera base-texture textures shaders left-right-key t]
   (let [range (- (:max  (:year (left-right-key @state/date-atom)))
                  (:min  (:year (left-right-key @state/date-atom))))
         time (- (:value (:year (left-right-key @state/date-atom)))
@@ -67,13 +67,23 @@
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture base-texture) 0)
-      ;; If the data from thor has been loaded, use that instead of trump.
-      (if @(:loaded ((:current @state/dynamic-texture-keys) textures))
-        (gl/bind (:texture ((:current @state/dynamic-texture-keys) textures)) 1)
-        (gl/bind (:texture (:trump textures)) 1))
+      (gl/bind (:texture (:space5 textures)) 1)
       ;; Do the actual drawing.
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
+        (gl/draw-with-shader
+         (-> (cam/apply (:plane (left-right-key state/models)) background-camera)
+             (assoc :shader (:space shaders))
+             (assoc-in [:uniforms :model] (-> M44 (g/rotate-z PI) (g/scale 4.15) (g/translate (vec3 -5 -4 -1))))
+             (assoc-in [:uniforms :year]  time)
+             (assoc-in [:uniforms :range] range)
+             (assoc-in [:uniforms :fov] (:fov background-camera))
+             (assoc-in [:uniforms :dataScale] (if (= left-right-key :left) (vec2 0 0) (vec2 0.5 0)))
+             (assoc-in [:uniforms :dataPos]   @state/space-offset))))
+     (if @(:loaded ((:current @state/dynamic-texture-keys) textures))
+       (gl/bind (:texture ((:current @state/dynamic-texture-keys) textures)) 1)
+       (gl/bind (:texture (:trump textures)) 1))
+      (doto gl-ctx
         (gl/draw-with-shader
          (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
@@ -92,8 +102,8 @@
   (if (:play-mode (:right @state/date-atom))
     (update-year-month-info t :right)
     (swap! state/year-update assoc-in [:right :time-of-last-update] (* 5 t)))
-  (draw-in-context state/gl-ctx-left @state/camera-left @state/base-texture-left @state/textures-left state/shaders-left :left t)
-  (draw-in-context state/gl-ctx-right @state/camera-right @state/base-texture-right @state/textures-right state/shaders-right :right t)
+  (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left t)
+  (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right t)
   (vreset! state/time-of-last-frame t))
 
 ;; Start the demo only once.

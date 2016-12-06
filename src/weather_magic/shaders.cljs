@@ -6,6 +6,21 @@
    [thi.ng.glsl.lighting :as light]
    [thi.ng.geom.matrix   :as mat :refer [M44]]))
 
+(def space-vs
+  "void main() {
+     vUV         = uv;
+     vNormal     = normal;
+     gl_Position = proj * view * model * vec4(position, 1.0);
+   }")
+
+(def space-fs
+  "void main() {
+     float lam = lambert(surfaceNormal(vNormal, normalMat),
+                         normalize(lightDir));
+     vec4 diffuse = texture2D(data, vec2(mod(dataScale.x + (dataPos.x + vUV.x) / 2.0, 1.0), mod((dataPos.y + vUV.y) / 2.0, 1.0)));
+     gl_FragColor = diffuse;
+   }")
+
 (def standard-vs
   "void main() {
      vUV         = uv;
@@ -100,5 +115,11 @@
 (def temperature-shader-spec
   (assoc standard-shader-spec
          :fs (->> temperature-fs
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
+
+(def space-shader-spec
+  (assoc standard-shader-spec :vs space-vs
+         :fs (->> space-fs
                   (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
                   (glsl/assemble))))

@@ -6,8 +6,8 @@
    [thi.ng.geom.gl.camera  :as cam]
    [thi.ng.geom.core       :as g]
    [thi.ng.geom.matrix     :as mat :refer [M44]]
-   [thi.ng.math.core       :as m]
-   [thi.ng.geom.vector     :as v   :refer [vec3]]))
+   [thi.ng.math.core       :as m   :refer [PI HALF_PI TWO_PI]]
+   [thi.ng.geom.vector     :as v   :refer [vec2 vec3]]))
 
 (defn show-europe!
   "Rotates the sphere so that Europe is shown."
@@ -45,6 +45,7 @@
   [delta-time]
   (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
+  (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (/ (m/radians delta-time) TWO_PI)) (aget (.-buf atom) 1))))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-y (m/radians delta-time))
                                       (m/* @state/earth-orientation))))
@@ -84,6 +85,7 @@
   [rel-x rel-y delta-angle step]
   (swap! state/camera-left zoom-camera (:delta-zoom @state/pointer-zoom-info))
   (swap! state/camera-right zoom-camera (:delta-zoom @state/pointer-zoom-info))
+  (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (/ rel-x 1000)) (+ (aget (.-buf atom) 1) (/ rel-y 1000)))))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* delta-angle step))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
