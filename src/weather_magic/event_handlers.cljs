@@ -64,8 +64,8 @@
                                       (m/* @state/earth-orientation))))
 
 (defn align-handler []
-  (update-alignment-angle 0 0) ;mitten på jorden
-  (swap! state/pointer-zoom-info assoc :current-step 0 :delta-zoom 0)
+  (update-alignment-angle 0 0)
+  (swap! state/pointer-zoom-info assoc :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
   (reset! state/earth-animation-fn world/align-animation!))
 
 (defn reset-spin-handler
@@ -106,8 +106,7 @@
         y-diff (- (/ window-height 2) y-pos)
         total-steps (:total-steps @state/pointer-zoom-info)]
     (update-alignment-angle x-diff y-diff)
-    (swap! state/pointer-zoom-info assoc :state true
-           :delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps)
+    (swap! state/pointer-zoom-info assoc
            :delta-x (/ x-diff total-steps)
            :delta-y (/ y-diff total-steps)
            :current-step 0
@@ -122,7 +121,8 @@
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
     (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
-    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
+    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)
+    (.addEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false)))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
