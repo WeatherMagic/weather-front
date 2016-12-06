@@ -84,10 +84,7 @@
         current-x (.-clientX event)
         current-y (.-clientY event)
         rel-x (- current-x (:x-val last-pos))
-        rel-y (- current-y (:y-val last-pos))
-        window-element (.getElementById js/document "canvases")
-        window-width (.-clientWidth window-element)
-        window-height (.-clientHeight window-element)]
+        rel-y (- current-y (:y-val last-pos))]
     (update-pan rel-x rel-y))
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)}))
 
@@ -105,6 +102,9 @@
         canvas-element (.getElementById js/document canvas)
         canvas-width (.-clientWidth canvas-element)
         canvas-height (.-clientHeight canvas-element)
+        window-element (.getElementById js/document "canvases")
+        window-width (.-clientWidth window-element)
+        window-height (.-clientHeight window-element)
         x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
         y-diff (- (/ window-height 2) y-pos)
         total-steps (:total-steps @state/pointer-zoom-info)]
