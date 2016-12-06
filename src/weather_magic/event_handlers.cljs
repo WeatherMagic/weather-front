@@ -1,47 +1,23 @@
 (ns weather-magic.event-handlers
   (:require
-   [weather-magic.state :as state]
+   [weather-magic.state   :as state]
+   [weather-magic.world   :as world]
+   [weather-magic.util    :as util]
    [thi.ng.geom.gl.camera :as cam]
-   [thi.ng.geom.rect  :as rect]
-   [weather-magic.world :as world]
-   [thi.ng.geom.gl.core  :as gl]
-   [thi.ng.geom.core :as g]
-   [thi.ng.geom.matrix :as mat :refer [M44]]
-   [thi.ng.geom.vector :as v :refer [vec2 vec3]]
-   [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
-   [thi.ng.geom.core :as g]
-   [reagent.core :as reagent :refer [atom]]))
+   [thi.ng.geom.rect      :as rect]
+   [thi.ng.geom.gl.core   :as gl]
+   [thi.ng.geom.core      :as g]
+   [thi.ng.geom.matrix    :as mat :refer [M44]]
+   [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
+   [thi.ng.math.core      :as m :refer [PI HALF_PI TWO_PI]]
+   [thi.ng.geom.core      :as g]
+   [reagent.core          :as reagent :refer [atom]]))
 
 (enable-console-print!)
 
 (defonce mouse-pressed (atom false))
 (defonce last-xy-pos (atom {:x-val 0 :y-val 0}))
 (defonce relative-mousemovement (atom {:x-val 0 :y-val 0}))
-
-(defn model-coords-from-corner
-  "Updating how much the globe should be rotated around the z axis to align northpole"
-  [x-coord y-coord]
-  (let [matrix (-> (m/invert @state/earth-orientation)
-                   (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
-                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @world/zoom-level) 1.0E-3)))
-                   (g/rotate-z (Math/atan2 y-coord x-coord)))
-        model-x (.-m20 matrix)
-        model-y (.-m21 matrix)
-        model-z (.-m22 matrix)]
-    (vec3 model-x model-y model-z)))
-
-(defn update-model-coords
-  "Updates the model-coords-boundaries"
-  []
-  (let [canvas-element (.getElementById js/document "left-canvas")
-        canvas-width (.-clientWidth canvas-element)
-        canvas-height (.-clientHeight canvas-element)
-        half-width (/ canvas-width 2)
-        half-height (/ canvas-height 2)]
-    (swap! state/model-coords assoc :upper-left (model-coords-from-corner (* half-width -1) (* half-height -1))
-           :upper-right (model-coords-from-corner half-width (* half-height -1))
-           :lower-left (model-coords-from-corner (* half-width -1) half-height)
-           :lower-right (model-coords-from-corner half-width half-height))))
 
 (defn reset-zoom
   [camera-map]
@@ -75,11 +51,7 @@
                                      (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @world/zoom-level) 1.0E-3)))
                                      (g/rotate-z (Math/atan2 y-diff x-diff))
                                      (m/* @state/earth-orientation))
-        northpole-x (.-m10 future-earth-orientation)
-        northpole-y (.-m11 future-earth-orientation)
-        northpole-z (.-m12 future-earth-orientation)
-        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
-        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
+        delta-angle (/ (util/north-pole-rotation-around-z future-earth-orientation) 100)]
     (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
 
 (defn update-pan
@@ -92,8 +64,8 @@
                                       (m/* @state/earth-orientation))))
 
 (defn align-handler []
-  (update-alignment-angle 0 0) ;mitten på jorden
-  (swap! state/pointer-zoom-info assoc :current-step 0 :delta-zoom 0)
+  (update-alignment-angle 0 0)
+  (swap! state/pointer-zoom-info assoc :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
   (reset! state/earth-animation-fn world/align-animation!))
 
 (defn reset-spin-handler
@@ -134,8 +106,7 @@
         y-diff (- (/ window-height 2) y-pos)
         total-steps (:total-steps @state/pointer-zoom-info)]
     (update-alignment-angle x-diff y-diff)
-    (swap! state/pointer-zoom-info assoc :state true
-           :delta-fov (/ (- 120 (:fov @state/camera-left)) total-steps)
+    (swap! state/pointer-zoom-info assoc
            :delta-x (/ x-diff total-steps)
            :delta-y (/ y-diff total-steps)
            :current-step 0
@@ -150,7 +121,8 @@
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
     (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
-    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
+    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)
+    (.addEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false)))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."

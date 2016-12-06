@@ -16,27 +16,49 @@
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
+(defn toggle-play-stop
+  [atom key]
+  (if (:play-mode (key @atom))
+    (swap! atom update-in [key] merge {:play-mode false :play-mode-before-sliding false})
+    (swap! atom update-in [key] merge {:play-mode true :play-mode-before-sliding true})))
+
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [id func atom & args]
-  [:input {:type "button" :value id :id id :class "button"
+  [:input {:type "button" :value id :id id
            :on-click #(apply func atom args)}])
 
-(defn slider [key value min max]
+(defn play-pause-button
+  "A button without text"
+  [id func atom & args]
+  [:input.play-pause {:type "button" :id id
+                      :on-click #(apply func atom args)}])
+
+(defn slider [key1 key2 value min max]
   [:input {:type "range" :value value :min min :max max
-           :on-change (fn [event] (swap! state/date-atom assoc-in [key :value]
-                                         (.-target.value event)))}])
+           :on-mouseDown  (fn [] (swap! state/date-atom assoc-in [key1 :play-mode] false))
+           :on-mouseUp  (fn [] (swap! state/date-atom assoc-in [key1 :play-mode] (:play-mode-before-sliding (key1 @state/date-atom))))
+           :on-change (fn [event] (swap! state/date-atom assoc-in [key1 key2 :value]
+                                         (int (.-target.value event))))}])
 
-(defn slider-component [key]
-  (let [data (key @state/date-atom)]
+(defn slider-component [key1 key2]
+  (let [data (key2 (key1 @state/date-atom))]
     [:div {:class "time-slider"}
-     [:span (clojure.string/capitalize (name key)) ": " (:value data)]
-     [slider key (:value data) (:min data) (:max data)]]))
+     [:span (clojure.string/capitalize (name key2)) ": " (:value data)]
+     [slider key1 key2 (:value data) (:min data) (:max data)]]))
 
-(defn time-slider []
-  [:div {:id "time-slider-container"}
-   [slider-component :year]
-   [slider-component :month]])
+(defn time-sliders []
+  [:div {:id "time-slider-containers"}
+   [:div {:class "time-sliders-left"}
+    [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left]
+    [slider-component :left :year]
+    [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :right]
+    [slider-component :left :month]]
+   [:div {:class "time-sliders-right"}
+    [play-pause-button "RightYear" toggle-play-stop state/date-atom :right]
+    [slider-component :right :year]
+    [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right]
+    [slider-component :right :month]]])
 
 (defn map-ui-blur []
   "What hides the map UI."
@@ -46,38 +68,40 @@
   "Buttons for choosing which data layer to display"
   []
   [:div {:id "data-layer-container" :class (hide-unhide @state/intro-visible)}
-   [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
-   [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
-   [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
-   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]])
+   [button "Temp"    swap! state/data-layer-atom util/toggle :Temperature]
+   [button "Drought" swap! state/data-layer-atom util/toggle :Drought]])
 
 (defn view-selection-buttons
   "Buttons for choosing view"
   []
   [:div {:id "view-selection-container" :class (hide-unhide @state/intro-visible)}
-   [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
-   [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "Align" event-handlers/align-handler]
-   [button "Reset!" event-handlers/reset-spin-handler]])
+   [button "About"  swap!  state/intro-visible hide-unhide]])
 
-(defn shader-selection-buttons
-  "Buttons for choosing shader"
+(defn compass []
+  [:input {:type "button" :id "Compass" :class (hide-unhide @state/intro-visible)
+           :on-click event-handlers/align-handler
+           :style {:transform (str "rotate(" (util/north-pole-rotation-around-z @state/earth-orientation) "rad)")}}])
+
+(defn landing-page
+  "What the user sees when she arrives at the page."
   []
-  [:div {:id "shader-selection-container"}
-   [button "Go to map"          swap!  state/intro-visible  hide-unhide]
-   [button "Standard shader"    reset! state/current-shader-key :standard]
-   [button "Blend shader"       reset! state/current-shader-key :blend]
-   [button "Temperature shader" reset! state/current-shader-key :temp]])
+  [:div {:id "landing-page" :class @state/intro-visible}
+   [:div
+    [:h1 "Welcome to WeatherMagic!"]
+    [:p "An interactive visualization of climate projections"]
+    [:p "or How fucked art thou?"]]
+   [button "To map" swap! state/intro-visible hide-unhide]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
-  [:span
+  [:div
    [data-layer-buttons]
    [view-selection-buttons]
-   [shader-selection-buttons]
-   [time-slider]
+   [compass]
+   [landing-page]
+   [time-sliders]
    [map-ui-blur]])
 
 (defn mount-ui!

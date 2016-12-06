@@ -8,8 +8,8 @@
 
 (def standard-vs
   "void main() {
-     vUV = uv;
-     vNormal = normal;
+     vUV         = uv;
+     vNormal     = normal;
      gl_Position = proj * view * model * vec4(position, 1.0);
    }")
 
@@ -17,29 +17,25 @@
   "void main() {
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
-     vec4 diffuse = texture2D(base, vUV) + texture2D(trump, vUV);
-     vec4 col = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
-     gl_FragColor = col;
+     vec4 diffuse = texture2D(base, vUV) +
+                    texture2D(data, mod((vUV - dataPos), 1.0) / dataScale);
+     gl_FragColor = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
    }")
 
 (def blend-fs
   "void main() {
-     vec4 texture = texture2D(base, vUV);
-     vec4 temperature;
+     float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
+     vec4 mapDiffuse = texture2D(base, vUV);
+     float temp = texture2D(data, vUV).r * 3.0;
+     gl_FragColor = vec4(ambientCol, 1.0) + mapDiffuse * vec4(lightCol, 1.0) * lam * 0.0001 + vec4(temp, temp, temp, 1.0);
 
-     if(texture.g > 0.5) {
-       temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
-     } else {
-       temperature = vec4(texture.g, texture.g, 1.0, 1.0);
-     }
-     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump, vUV);
   }")
 
 (def temperature-fs
   "void main() {
 
-    float temperatureTex1 = texture2D(base, vUV).r;
-    float temperatureTex2 = texture2D(base, vUV).b;
+    float temperatureTex1 = texture2D(base, vUV).b;
+    float temperatureTex2 = texture2D(base, vUV).r;
 
     float temperature = mix(temperatureTex1, temperatureTex2, year/range);
 
@@ -48,11 +44,11 @@
     float threshold = fov/1000.0;
     if (fov > 45.0) {
       threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.005;
-    } 
+    }
 
     float alphaValue = clamp(15.0 / fov, 0.0, 1.0);
 
-    if (mod(temperature, 0.1) < threshold && fov < 50.0) {
+    if (mod(temperature, 0.1) < threshold && fov < 50.0 && temperature > 0.15) {
       if (temperature > 0.5 && temperature < 0.75) {
         outColor = vec4(0.5, 0.5, 0.5, alphaValue);
       } else if (temperature > 0.75) {
@@ -78,19 +74,21 @@
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
               :base       [:sampler2D 0] ; Specify which texture unit
-              :trump      [:sampler2D 1] ; the uniform is bound to.
+              :data       [:sampler2D 1] ; the uniform is bound to.
               :lightDir   [:vec3 [1 0 1]]
               :lightCol   [:vec3 [1 1 1]]
               :ambientCol [:vec3 [0 0 0.1]]
               :year       :float
               :range      :float
-              :fov        :float}
+              :fov        :float
+              :dataScale  :vec2
+              :dataPos    :vec2}
 
-   :attribs  {:position :vec3
-              :normal   :vec3
-              :uv       :vec2}
-   :varying  {:vUV      :vec2
-              :vNormal  :vec3}
+   :attribs  {:position   :vec3
+              :normal     :vec3
+              :uv         :vec2}
+   :varying  {:vUV        :vec2
+              :vNormal    :vec3}
    :state    {:depth-test true}})
 
 (def blend-shader-spec

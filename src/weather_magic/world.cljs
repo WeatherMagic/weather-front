@@ -12,7 +12,7 @@
 (defn show-europe!
   "Rotates the sphere so that Europe is shown."
   [t]
-  (reset! state/model models/sphere)
+  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-x (m/radians 45))
@@ -22,7 +22,7 @@
 (defn northpole-up!
   "Rotates the sphere so that the northpole is up after panning."
   []
-  (reset! state/model models/sphere)
+  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation M44))
 
@@ -32,7 +32,7 @@
   [t]
   (swap!  state/textures-left merge
           (textures/load-texture-if-needed state/gl-ctx-left @state/textures-left "img/turkey.jpg"))
-  (reset! state/model models/plane)
+  (reset! state/current-model-key :plane)
   (reset! state/base-texture-left (:turkey @state/textures-left))
   (reset! state/earth-orientation (-> M44
                                       (g/translate (vec3 2 1.5 0))
@@ -43,7 +43,7 @@
 (defn spin-earth!
   "Rotates the sphere indefinitely."
   [delta-time]
-  (reset! state/model models/sphere)
+  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-y (m/radians delta-time))
@@ -52,7 +52,7 @@
 (defn reset-spin!
   "Rotates the sphere so that the northpole is up after panning."
   [delta-time]
-  (reset! state/model models/sphere)
+  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation M44)
   (reset! state/earth-animation-fn spin-earth!))
@@ -81,7 +81,7 @@
 
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
-  [rel-x rel-y delta-angle step delta-fov]
+  [rel-x rel-y delta-angle step]
   (swap! state/camera-left zoom-camera (:delta-zoom @state/pointer-zoom-info))
   (swap! state/camera-right zoom-camera (:delta-zoom @state/pointer-zoom-info))
   (reset! state/earth-orientation (-> M44
@@ -96,14 +96,13 @@
   []
   (let [delta-x (:delta-x @state/pointer-zoom-info)
         delta-y (:delta-y @state/pointer-zoom-info)
-        delta-fov (:delta-fov @state/pointer-zoom-info)
         total-steps (:total-steps @state/pointer-zoom-info)
         current-step (:current-step @state/pointer-zoom-info)
         delta-z-angle (:delta-z-angle @state/pointer-zoom-info)]
     (swap! state/pointer-zoom-info assoc-in [:current-step] (inc current-step))
     (when (= current-step total-steps)
       (reset! state/earth-animation-fn stop-spin!))
-    (update-zoom-point-alignment delta-x delta-y delta-z-angle current-step delta-fov)))
+    (update-zoom-point-alignment delta-x delta-y delta-z-angle current-step)))
 
 ;; THIS IS BAD AND I SHOULD FEEL BAD.
 (reset! state/earth-animation-fn spin-earth!)
