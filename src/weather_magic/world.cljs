@@ -79,8 +79,8 @@
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y delta-angle step]
-  (swap! state/camera-left zoom-camera (:delta-zoom @state/pointer-zoom-info))
-  (swap! state/camera-right zoom-camera (:delta-zoom @state/pointer-zoom-info))
+  (swap! state/camera-left zoom-camera (:delta-zoom @state/double-click-zoom-info))
+  (swap! state/camera-right zoom-camera (:delta-zoom @state/double-click-zoom-info))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* delta-angle step))
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
@@ -91,12 +91,12 @@
 (defn align-animation!
   "Function that handles alignment or zoom-alignment"
   []
-  (let [delta-x (:delta-x @state/pointer-zoom-info)
-        delta-y (:delta-y @state/pointer-zoom-info)
-        total-steps (:total-steps @state/pointer-zoom-info)
-        current-step (:current-step @state/pointer-zoom-info)
-        delta-z-angle (:delta-z-angle @state/pointer-zoom-info)]
-    (swap! state/pointer-zoom-info assoc-in [:current-step] (inc current-step))
+  (let [delta-x (:delta-x @state/double-click-zoom-info)
+        delta-y (:delta-y @state/double-click-zoom-info)
+        total-steps (:total-steps @state/double-click-zoom-info)
+        current-step (:current-step @state/double-click-zoom-info)
+        delta-z-angle (:delta-z-angle @state/double-click-zoom-info)]
+    (swap! state/double-click-zoom-info assoc-in [:current-step] (inc current-step))
     (when (= current-step total-steps)
       (reset! state/earth-animation-fn stop-spin!))
     (update-zoom-point-alignment delta-x delta-y delta-z-angle current-step)))
