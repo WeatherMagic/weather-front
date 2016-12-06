@@ -15,7 +15,8 @@
                            (vreset! loaded true))
                          :src    path
                          :filter [glc/linear glc/linear]
-                         :cors   ""})]
+                         :cors   ""
+                         :format glc/rgba})]
     {:texture texture :loaded loaded}))
 
 (defn load-texture-if-needed
@@ -44,16 +45,15 @@
   str :map texture-map} where :key holds how to find the newly loaded
   texture in texture-map."
   [texture-map gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
-  (let [request-map (merge {:from-year        2083
-                            :to-year          2083
-                            :from-month       2
-                            :to-month         2
-                            :from-longitude  -14
-                            :to-longitude     50
-                            :from-latitude    30
-                            :to-latitude      70
-                            :return-dimension "[1400, 1600]"
-                            :domain "EUR-11i"}
+  (let [request-map (merge {:year        2083
+                            :month        1
+                            :from-longitude  -180
+                            :to-longitude     180
+                            :from-latitude    -80
+                            :to-latitude      80
+                            :exhaust-level    "rcp45"
+                            :climate-model    "CNRM-CERFACS-CNRM-CM5"
+                            :height-resolution 1024}
                            request-params)
         url (str "http://thor.hfelo.se/api/" variable
                  (util/map->query-string request-map))

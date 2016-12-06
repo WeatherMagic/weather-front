@@ -4,6 +4,7 @@
    [thi.ng.glsl.core     :as glsl :include-macros true]
    [thi.ng.glsl.vertex   :as vertex]
    [thi.ng.glsl.lighting :as light]
+   [thi.ng.geom.gl.webgl.constants :as glc]
    [thi.ng.geom.matrix   :as mat :refer [M44]]))
 
 (def standard-vs
@@ -25,28 +26,35 @@
 
      float threshold = fov/1000.0;
      if (fov > 45.0) {
-       threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.005;
+       threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.05;
      }
 
      float alphaValue = clamp(15.0 / fov, 0.0, 1.0);
+     float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
-     if (mod(temperature, 0.1) < threshold && fov < 50.0 && temperature > 0.15) {
-       if (temperature > 0.5 && temperature < 0.75) {
-         outColor = vec4(0.5, 0.5, 0.5, alphaValue);
-       } else if (temperature > 0.75) {
-         outColor = vec4(0.0, 0.0, 0.0, alphaValue);
+     if (mod(temperature, 0.1) < threshold && fov < 50.0 && temperature > 0.4) {
+       if (temperature > 0.5 && temperature < 0.55) {
+         outColor = vec4(0.5, 0.5, 0.5, 1.0);
+       } else if (temperature > 0.55) {
+         outColor = vec4(0.0, 0.0, 0.0, 1.0);
        } else if (temperature < 0.5) {
-         outColor = vec4(1.0, 1.0, 1.0, alphaValue);
+         outColor = vec4(1.0, 1.0, 1.0, 1.0);
        }
      } else if(temperature > 0.5) {
-       outColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
+       outColor = vec4(1.0, 1.0 - (2.0 * (clamp(temperature, 0.3, 0.6) - 0.1)), 0, 1.0);
      } else {
        outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
      }
 
-     vec4 diffuse = 0.3 * baseTexture + 0.7 * outColor;
+     if (textureAlpha < 1.0) {
+      outColor = vec4(0.0, 0.0, 0.0, 0.0);
+     }
 
-     gl_FragColor = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
+     vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam; 
+
+    vec4 mixColor = baseColor * 0.6 + outColor * textureAlpha * 0.4;
+
+     gl_FragColor = mixColor; 
    }")
 
 (def blend-fs
@@ -89,6 +97,7 @@
       outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
     }
     vec3 outcolor = outColor.rgb;
+
     gl_FragColor = vec4(outcolor, alphaValue);
   }")
 
@@ -117,7 +126,10 @@
               :uv         :vec2}
    :varying  {:vUV        :vec2
               :vNormal    :vec3}
-   :state    {:depth-test true}})
+   :state    {:depth-test true
+              :blend      false
+              :blend-fn [glc/src-alpha
+                         glc/one-minus-src-alpha]}})
 
 (def blend-shader-spec
   (assoc standard-shader-spec

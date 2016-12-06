@@ -37,20 +37,6 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
-(defn enable-shader-alpha-blending []
-  (gl/prepare-render-state state/gl-ctx-left
-                           {:blend true
-                            :depth-test false
-                            :blend-fn [glc/src-alpha
-                                       glc/one-minus-src-alpha]})
-  (gl/prepare-render-state state/gl-ctx-right
-                           {:blend true
-                            :depth-test false
-                            :blend-fn [glc/src-alpha
-                                       glc/one-minus-src-alpha]}))
-
-;(enable-shader-alpha-blending)
-
 (defn update-year-month-info
   [t key]
   (let [min  (:min (:year (key @state/date-atom)))
