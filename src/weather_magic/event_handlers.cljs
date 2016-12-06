@@ -144,9 +144,11 @@
         delta-zoom (.-deltaY event)]
     (swap! state/camera-left world/zoom-camera delta-zoom)
     (swap! state/camera-right world/zoom-camera delta-zoom)
-    (if (neg? delta-zoom)
-      (update-pan delta-x delta-y)
-      (update-pan (* delta-x -1) (* delta-y -1)))))
+    (when (> (:fov @state/camera-left) 10)
+      (if (neg? delta-zoom)
+        (update-pan delta-x delta-y)
+        (when (< (:fov @state/camera-left) 140)
+          (update-pan (* delta-x -1) (* delta-y -1)))))))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
