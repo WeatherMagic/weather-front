@@ -11,6 +11,12 @@
 
 (enable-console-print!)
 
+(defn update-climate-model-info
+  [key input]
+  (println key)
+  (println input)
+  (swap! state/climate-model-info assoc-in [key] input))
+
 (defn hide-unhide
   "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
   [hidden-or-not]
@@ -63,7 +69,14 @@
    [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
    [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
    [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
-   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]])
+   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]
+   [:select {:name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event))) :class "button"}
+    [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
+    [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CERFACS-CNRM-CM5"]
+    [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
+   [:select {:name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event))) :class "button"}
+    [:option {:value "rcp45"} "rcp45"]
+    [:option {:value "rcp85"} "rcp85"]]])
 
 (defn view-selection-buttons
   "Buttons for choosing view"

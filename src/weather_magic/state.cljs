@@ -48,6 +48,8 @@
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
+(defonce climate-model-info (atom {:climate-model "ICHEC-EC-EARTH" :exhaust-level "rcp45"}))
+
 ;; The models with buffers prepared and ready for use by the program.
 (def models {:left  {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-left  glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
