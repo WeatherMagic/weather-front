@@ -53,6 +53,11 @@
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
+(defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0)
+                             :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
+
+(defonce lat-lon-coords (atom {:from-lat 30 :to-lat 70 :from-lon -14 :to-lon 50}))
+
 ;; The models with buffers prepared and ready for use by the program.
 (def models {:left  {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-left  glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
@@ -78,7 +83,7 @@
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
 
-(defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0}))
+(defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
 
 (defonce year-update (atom {:left {:time-of-last-update 0}
                             :right {:time-of-last-update 0}}))

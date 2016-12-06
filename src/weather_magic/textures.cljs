@@ -4,6 +4,8 @@
    [thi.ng.geom.gl.buffers         :as buf]
    [thi.ng.geom.gl.webgl.constants :as glc]))
 
+(enable-console-print!)
+
 (defn load-texture [gl-ctx path]
   "Loads a texture from path and places it in a map along with a
   volatile indicating whether or not the texture has been loaded
