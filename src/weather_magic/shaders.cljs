@@ -17,25 +17,17 @@
   "void main() {
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
-     vec4 diffuse = texture2D(base, vUV) +
-                    texture2D(data, mod((vUV - dataPos), 1.0) / dataScale);
+     vec4 diffuse = texture2D(base, vUV) + 3.0 * texture2D(data, (vUV - dataPos) / dataScale);
      gl_FragColor = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
    }")
 
-(def blend-fs
-  "void main() {
-     float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
-     vec4 mapDiffuse = texture2D(base, vUV);
-     float temp = texture2D(data, vUV).r * 3.0;
-     gl_FragColor = vec4(ambientCol, 1.0) + mapDiffuse * vec4(lightCol, 1.0) * lam * 0.0001 + vec4(temp, temp, temp, 1.0);
-
-     if(texture.g > 0.5) {
-       temperature = vec4(1.0, 1.0 - texture.g, 0, 1.0);
-     } else {
-       temperature = vec4(texture.g, texture.g, 1.0, 1.0);
-     }
-     gl_FragColor = mix(temperature, texture, 0.5) + texture2D(trump, vUV);
-  }")
+ (def blend-fs
+   "void main() {
+      float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
+      vec4 mapDiffuse = texture2D(base, vUV);
+      float temp = texture2D(data, vUV).r * 3.0;
+      gl_FragColor = vec4(ambientCol, 1.0) + mapDiffuse * vec4(lightCol, 1.0) * lam * 0.5 + vec4(temp, temp, temp, 1.0);
+   }")
 
 (def temperature-fs
   "void main() {

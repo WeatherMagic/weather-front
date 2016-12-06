@@ -39,6 +39,11 @@
                                   :year  {:value 1950 :min 1950 :max 2100}
                                   :month {:value 1 :min 1 :max 12}}}))
 
+(defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0)
+                             :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
+
+(defonce lat-lon-coords (atom {:from-lat 0 :to-lat 0 :from-lon 0 :to-lon 0}))
+
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
 
@@ -59,8 +64,8 @@
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
-(defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left gl-ctx-left)
-                                                  (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
+(defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left @lat-lon-coords gl-ctx-left)
+                                                  (textures/load-data-into-atom-and-return-key! textures-right @lat-lon-coords gl-ctx-right))}))
 
 (def shaders-left  {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
                     :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
@@ -72,11 +77,6 @@
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
-
-(defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0)
-                             :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
-
-(defonce lat-lon-coords (atom {:from-lat 0 :to-lat 0 :from-lon 0 :to-lon 0}))
 
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0}))
 
