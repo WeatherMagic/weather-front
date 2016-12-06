@@ -13,6 +13,10 @@
                  gl-ctx {:callback
                          (fn [tex img]
                            (vreset! loaded true))
+                         :error-callback
+                         (fn [event]
+                           (.error js/console "Failed to load image."
+                                   (aget (.-path event) 0)))
                          :src    path
                          :filter [glc/linear glc/linear]
                          :cors   ""})]
