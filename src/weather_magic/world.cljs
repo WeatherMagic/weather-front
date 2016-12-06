@@ -81,7 +81,7 @@
 
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
-  [rel-x rel-y delta-angle step delta-fov]
+  [rel-x rel-y delta-angle step]
   (swap! state/camera-left zoom-camera (:delta-zoom @state/pointer-zoom-info))
   (swap! state/camera-right zoom-camera (:delta-zoom @state/pointer-zoom-info))
   (reset! state/earth-orientation (-> M44
@@ -96,14 +96,13 @@
   []
   (let [delta-x (:delta-x @state/pointer-zoom-info)
         delta-y (:delta-y @state/pointer-zoom-info)
-        delta-fov (:delta-fov @state/pointer-zoom-info)
         total-steps (:total-steps @state/pointer-zoom-info)
         current-step (:current-step @state/pointer-zoom-info)
         delta-z-angle (:delta-z-angle @state/pointer-zoom-info)]
     (swap! state/pointer-zoom-info assoc-in [:current-step] (inc current-step))
     (when (= current-step total-steps)
       (reset! state/earth-animation-fn stop-spin!))
-    (update-zoom-point-alignment delta-x delta-y delta-z-angle current-step delta-fov)))
+    (update-zoom-point-alignment delta-x delta-y delta-z-angle current-step)))
 
 ;; THIS IS BAD AND I SHOULD FEEL BAD.
 (reset! state/earth-animation-fn spin-earth!)
