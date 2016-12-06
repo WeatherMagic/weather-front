@@ -66,8 +66,7 @@
                 (:min   (:year (left-right-key @state/date-atom))))]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
-      (gl/bind (:texture base-texture) 0)
-      (gl/bind (:texture (:space5 textures)) 1)
+      (gl/bind (:texture (:space5 textures)) 0)
       ;; Do the actual drawing.
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
@@ -77,9 +76,10 @@
              (assoc-in [:uniforms :model] (-> M44 (g/rotate-z PI) (g/scale 4.15) (g/translate (vec3 -5 -4 -1))))
              (assoc-in [:uniforms :uvLeftRightOffset] (if (= left-right-key :left) (* 0 1.0) (* 0.5 1.0)))
              (assoc-in [:uniforms :uvOffset]   @state/space-offset))))
-     (if @(:loaded ((:current @state/dynamic-texture-keys) textures))
-       (gl/bind (:texture ((:current @state/dynamic-texture-keys) textures)) 1)
-       (gl/bind (:texture (:trump textures)) 1))
+      (gl/bind (:texture base-texture) 0)
+      (if @(:loaded ((:current @state/dynamic-texture-keys) textures))
+        (gl/bind (:texture ((:current @state/dynamic-texture-keys) textures)) 1)
+        (gl/bind (:texture (:trump textures)) 1))
       (doto gl-ctx
         (gl/draw-with-shader
          (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)

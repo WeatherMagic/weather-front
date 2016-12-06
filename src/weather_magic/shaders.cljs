@@ -15,7 +15,7 @@
 
 (def space-fs
   "void main() {
-     gl_FragColor = texture2D(data, vec2(mod(uvLeftRightOffset + (uvOffset.x + vUV.x) / 2.0, 1.0), mod((uvOffset.y + vUV.y) / 2.0, 1.0)));
+     gl_FragColor = texture2D(starsTex, vec2(mod(uvLeftRightOffset + (uvOffset.x + vUV.x) / 2.0, 1.0), mod((uvOffset.y + vUV.y) / 2.0, 1.0)));
    }")
 
 (def standard-vs
@@ -124,8 +124,7 @@
               :view               :mat4
               :proj               :mat4
               :normalMat          [:mat4 (gl/auto-normal-matrix :model :view)]
-              :base               [:sampler2D 0] ; Specify which texture unit
-              :data               [:sampler2D 1] ; the uniform is bound to.
+              :starsTex           [:sampler2D 0] ; Specify which texture unit
               :uvLeftRightOffset  :float
               :uvOffset           :vec2}
 
