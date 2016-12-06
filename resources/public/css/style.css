@@ -116,14 +116,17 @@ input[type="button"].play-pause {
 }
 
 #left-canvas, #right-canvas {
-  cursor: -moz-grab;
-  cursor: -webkit-grab;
-  cursor: grab;
   height: 100vh;
   width:  50vw;
 }
 
-#left-canvas:active, #right-canvas:active {
+#canvases {
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+#canvases:active {
   cursor: -moz-grab;
   cursor: -webkit-grabbing;
   cursor: grabbing;
@@ -141,6 +144,7 @@ input[type="button"].play-pause {
 
 #landing-page {
   color:    white;
+	cursor:   default;
   position: absolute;
   top:      0;
   width:    100%;
@@ -192,11 +196,11 @@ input[type="button"]::-moz-focus-inner {
 }
 
 input[type="button"]:hover {
-  box-shadow: 0 0 0.5em #fff;
+  box-shadow: 0 0 0.7em #fff;
 }
 
 input[type="button"]:active {
-  box-shadow: 0 0 1em #fff;
+  box-shadow: 0 0 1.5em #fff;
 }
 
 #Compass {
