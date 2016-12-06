@@ -124,7 +124,8 @@
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
     (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
-    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
+    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)
+    (.addEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false)))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
