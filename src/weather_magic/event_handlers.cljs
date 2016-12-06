@@ -85,12 +85,14 @@
         current-y (.-clientY event)
         rel-x (- current-x (:x-val last-pos))
         rel-y (- current-y (:y-val last-pos))]
-    (update-pan rel-x rel-y))
-  (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)}))
+    (update-pan rel-x rel-y)
+    (swap! state/pan-speed assoc :speed (Math/hypot rel-x rel-y) :rel-y rel-y :rel-x rel-x)
+    (reset! last-xy-pos {:x-val current-x :y-val current-y})))
 
 (defn mouse-up
   "If the mouse is released during panning"
   [_]
+  (reset! state/earth-animation-fn world/after-pan-spin!)
   (reset! mouse-pressed false)
   (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fn false))
 
@@ -119,6 +121,7 @@
 (defn pan-handler
   "Handles the mouse events for panning"
   [event]
+  (swap! state/pan-speed assoc :speed 0)
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
   (reset! mouse-pressed true)
   (reset! state/earth-animation-fn world/stop-spin!)
