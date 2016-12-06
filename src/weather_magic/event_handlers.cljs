@@ -84,7 +84,10 @@
         current-x (.-clientX event)
         current-y (.-clientY event)
         rel-x (- current-x (:x-val last-pos))
-        rel-y (- current-y (:y-val last-pos))]
+        rel-y (- current-y (:y-val last-pos))
+        window-element (.getElementById js/document "canvases")
+        window-width (.-clientWidth window-element)
+        window-height (.-clientHeight window-element)]
     (update-pan rel-x rel-y))
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)}))
 
@@ -124,7 +127,8 @@
   (reset! state/earth-animation-fn world/stop-spin!)
   (when (= @mouse-pressed true)
     (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
-    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)))
+    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)
+    (.addEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false)))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
