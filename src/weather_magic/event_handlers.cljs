@@ -144,7 +144,7 @@
         delta-zoom (.-deltaY event)]
     (swap! state/camera-left world/zoom-camera delta-zoom)
     (swap! state/camera-right world/zoom-camera delta-zoom)
-    (if (< delta-zoom 0)
+    (if (neg? delta-zoom)
       (update-pan delta-x delta-y)
       (update-pan (* delta-x -1) (* delta-y -1)))))
 
