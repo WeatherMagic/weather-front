@@ -26,13 +26,13 @@
 
      float threshold = fov/1000.0;
      if (fov > 45.0) {
-       threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.05;
+       threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.5;
      }
 
      float alphaValue = clamp(15.0 / fov, 0.0, 1.0);
      float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
-     if (mod(temperature, 0.1) < threshold && fov < 50.0 && temperature > 0.4) {
+     if (mod(temperature, 0.078125) < threshold && fov < 50.0 && temperature > 0.4) {
        if (temperature > 0.5) {
          outColor = vec4(0.5, 0.5, 0.5, 1.0);
        } else if (temperature < 0.5) {
