@@ -82,3 +82,5 @@
 
 (defonce year-update (atom {:left {:time-of-last-update 0}
                             :right {:time-of-last-update 0}}))
+
+(defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0}))
