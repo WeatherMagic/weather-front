@@ -49,22 +49,6 @@
                                       (g/rotate-y (m/radians delta-time))
                                       (m/* @state/earth-orientation))))
 
-(defn after-pan-spin!
-  "Rotates the sphere indefinitely."
-  [delta-time]
-  (let [rel-y (:rel-y @state/pan-speed)
-        rel-x (:rel-x @state/pan-speed)
-        current-speed (:speed @state/pan-speed)
-        new-speed (- current-speed 0.5)]
-    (reset! state/earth-orientation (-> M44
-                                        (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                        (g/rotate-y (m/radians (* (* current-speed (:fov @state/camera-left)) 1.0E-3)))
-                                        (g/rotate-z (Math/atan2 rel-y rel-x))
-                                        (m/* @state/earth-orientation)))
-    (if (neg? new-speed)
-      (reset! state/earth-animation-fn stop-spin!)
-      (swap! state/pan-speed assoc :speed new-speed))))
-
 (defn reset-spin!
   "Rotates the sphere so that the northpole is up after panning."
   [delta-time]
@@ -77,6 +61,22 @@
   "Makes the earth stop spinning"
   [_]
   (reset! state/earth-orientation @state/earth-orientation))
+
+(defn after-pan-spin!
+  "Rotates the sphere indefinitely."
+  [delta-time]
+  (let [rel-y (:rel-y @state/pan-speed)
+        rel-x (:rel-x @state/pan-speed)
+        current-speed (:speed @state/pan-speed)
+        new-speed (- current-speed 0.2)]
+    (reset! state/earth-orientation (-> M44
+                                        (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
+                                        (g/rotate-y (m/radians (* (* current-speed (:fov @state/camera-left)) 1.0E-3)))
+                                        (g/rotate-z (Math/atan2 rel-y rel-x))
+                                        (m/* @state/earth-orientation)))
+    (if (neg? new-speed)
+      (reset! state/earth-animation-fn stop-spin!)
+      (swap! state/pan-speed assoc :speed new-speed))))
 
 (defn show-turkey
   "Shows Turkey on a flat surface."
