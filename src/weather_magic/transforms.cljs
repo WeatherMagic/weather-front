@@ -80,24 +80,24 @@
   "Get the lat and lon on the format from lat/lon to lat/lon"
   [earth-orientation camera]
   (let [coords (lat-lon-helper earth-orientation camera)]
-    {:from-lat (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
-                    (:lat (:lower-left coords)) (:lat (:lower-right coords)))
-     :to-lat   (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
-                    (:lat (:lower-left coords)) (:lat (:lower-right coords)))
-     :from-lon (min (:lon (:upper-left coords)) (:lon (:upper-right coords))
-                    (:lon (:lower-left coords)) (:lon (:lower-right coords)))
-     :to-lon   (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
-                    (:lon (:lower-left coords)) (:lon (:lower-right coords)))}))
+    {:from-latitude  (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
+                          (:lat (:lower-left coords)) (:lat (:lower-right coords)))
+     :to-latitude    (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
+                          (:lat (:lower-left coords)) (:lat (:lower-right coords)))
+     :from-longitude (min (:lon (:upper-left coords)) (:lon (:upper-right coords))
+                          (:lon (:lower-left coords)) (:lon (:lower-right coords)))
+     :to-longitude   (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
+                          (:lon (:lower-left coords)) (:lon (:lower-right coords)))}))
 
 (defn get-texture-info
   "Get the positioning and scale information of the area the camera is
   looking at at this moment."
   [earth-orientation camera]
   (let [lat-lon (get-lat-lon-map earth-orientation camera)]
-    (let [from-uv (lat-lon-to-uv (:from-lat lat-lon)
-                                 (:from-lon lat-lon))
-          to-uv   (lat-lon-to-uv (:to-lat   lat-lon)
-                                 (:to-lon   lat-lon))
+    (let [from-uv (lat-lon-to-uv (:from-latitude  lat-lon)
+                                 (:from-longitude lat-lon))
+          to-uv   (lat-lon-to-uv (:to-latitude    lat-lon)
+                                 (:to-longitude   lat-lon))
           scale   (vec2 (- (aget (.-buf to-uv) 0) (aget (.-buf from-uv) 0))
                         (- (aget (.-buf to-uv) 1) (aget (.-buf from-uv) 1)))]
       {:dataPos   (vec2 (aget (.-buf from-uv) 0)
