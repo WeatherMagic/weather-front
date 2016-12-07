@@ -85,6 +85,7 @@
         current-y (.-clientY event)
         rel-x (- current-x (:x-val last-pos))
         rel-y (- current-y (:y-val last-pos))]
+    (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (/ rel-x 1000)) (+ (aget (.-buf atom) 1) (/ rel-y 1000)))))
     (update-pan rel-x rel-y)
     (swap! state/pan-speed assoc :speed (min (Math/hypot rel-x rel-y) 40) :rel-y rel-y :rel-x rel-x)
     (reset! last-xy-pos {:x-val current-x :y-val current-y})))
