@@ -143,8 +143,9 @@
         window-height (.-clientHeight window-element)
         x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
         y-diff (- (/ window-height 2) y-pos)
-        delta-x (/ x-diff 10)
-        delta-y (/ y-diff 10)
+        zoom-level (/ (:fov @state/camera-left) 140)
+        delta-x (* zoom-level (/ x-diff 200))
+        delta-y (* zoom-level (/ y-diff 200))
         delta-zoom (.-deltaY event)]
     (swap! state/camera-left world/zoom-camera delta-zoom)
     (swap! state/camera-right world/zoom-camera delta-zoom)
