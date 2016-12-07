@@ -20,18 +20,19 @@
 (defonce view-rect-right (gl/get-viewport-rect gl-ctx-right))
 
 (defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                    :fov    140
+                                                    :fov    70
                                                     :aspect (gl/get-viewport-rect gl-ctx-left)})))
+
 (defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                     :fov    140
+                                                     :fov    70
                                                      :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
-(defonce background-camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                               :fov    140
+(defonce background-camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 5.0)
+                                                               :fov    70
                                                                :aspect (gl/get-viewport-rect gl-ctx-left)})))
 
-(defonce background-camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                                :fov    140
+(defonce background-camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 5.0)
+                                                                :fov    70
                                                                 :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
@@ -91,7 +92,7 @@
 
 (defonce lat-lon-coords (atom {:from-lat 0 :to-lat 0 :from-lon 0 :to-lon 0}))
 
-(defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
+(defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 200 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
 
 (defonce year-update (atom {:left {:time-of-last-update 0}
                             :right {:time-of-last-update 0}}))

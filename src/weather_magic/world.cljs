@@ -90,23 +90,28 @@
 
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."
-  [camera-map scroll-distance]
-  (cam/perspective-camera
-   (assoc camera-map :fov (min 140 (+ (:fov camera-map) (* (:fov camera-map) scroll-distance 5.0E-4))))))
+  [camera-map delta-z]
+  (let [current-camera-pos (:eye camera-map)
+        current-z-camera-pos (aget (.-buf current-camera-pos) 2)
+        new-camera-pos (vec3 0 0 (max (min (+ current-z-camera-pos delta-z) 5.0) 1.1))]
+    (cam/perspective-camera
+      (assoc camera-map :eye new-camera-pos))))
 
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y delta-angle step]
-  (swap! state/camera-left zoom-camera (:delta-zoom @state/pointer-zoom-info))
-  (swap! state/camera-right zoom-camera (:delta-zoom @state/pointer-zoom-info))
-  (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (/ rel-x 1000)) (+ (aget (.-buf atom) 1) (/ rel-y 1000)))))
-  (reset! state/earth-orientation (-> M44
-                                      (g/rotate-z (* delta-angle step))
-                                      (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) (:fov @state/camera-left)) 1.0E-3)))
-                                      (g/rotate-z (Math/atan2 rel-y rel-x))
-                                      (g/rotate-z (* (* delta-angle (dec step)) -1))
-                                      (m/* @state/earth-orientation))))
+  (let [camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))]
+    (swap! state/camera-left zoom-camera (:delta-zoom @state/pointer-zoom-info))
+    (swap! state/camera-right zoom-camera (:delta-zoom @state/pointer-zoom-info))
+    (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (/ rel-x 1000)) (+ (aget (.-buf atom) 1) (/ rel-y 1000)))))
+    (reset! state/earth-orientation (-> M44
+                                        (g/rotate-z (* delta-angle step))
+                                        (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
+                                        (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) zoom-level 0.1))))
+                                        (g/rotate-z (Math/atan2 rel-y rel-x))
+                                        (g/rotate-z (* (* delta-angle (dec step)) -1))
+                                        (m/* @state/earth-orientation)))))
 (defn align-animation!
   "Function that handles alignment or zoom-alignment"
   []

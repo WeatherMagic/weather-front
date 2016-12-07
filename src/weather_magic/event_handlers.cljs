@@ -54,7 +54,7 @@
         northpole-y (.-m11 future-earth-orientation)
         northpole-z (.-m12 future-earth-orientation)
         northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
-        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
+        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) (:total-steps @state/pointer-zoom-info))]
     (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
 
 (defn update-pan
@@ -110,13 +110,15 @@
         window-height (.-clientHeight window-element)
         x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
         y-diff (- (/ window-height 2) y-pos)
-        total-steps (:total-steps @state/pointer-zoom-info)]
+        total-steps (:total-steps @state/pointer-zoom-info)
+        camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-distance (* (* (- camera-z-pos 1.1) (/ 4 5)) -1)]
     (update-alignment-angle x-diff y-diff)
     (swap! state/pointer-zoom-info assoc
            :delta-x (/ x-diff total-steps)
            :delta-y (/ y-diff total-steps)
            :current-step 0
-           :delta-zoom -15))
+           :delta-zoom (/ zoom-distance total-steps)))
   (reset! state/earth-animation-fn world/align-animation!))
 
 (defn pan-handler
@@ -137,8 +139,12 @@
   (.addEventListener
    (.getElementById js/document "canvases") "wheel"
    (fn [event]
-     (swap! state/camera-left world/zoom-camera (.-deltaY event))
-     (swap! state/camera-right world/zoom-camera (.-deltaY event))) false)
+     (let [camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+           zoom-level (* (- camera-z-pos 1.1) (/ 4 5))
+           delta-zoom (* (.-deltaY event) 1.0E-3)
+           zoom-distance (* zoom-level delta-zoom)]
+     (swap! state/camera-left world/zoom-camera zoom-distance)
+     (swap! state/camera-right world/zoom-camera zoom-distance))) false)
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
