@@ -81,4 +81,4 @@
 
 (defn load-base-textures
   [gl-ctx]
-  (load-texture-if-needed {} gl-ctx "img/earth.jpg" "img/trump.png"))
+  (load-texture-if-needed {} gl-ctx "img/earth.jpg" "img/trump.png" "img/space5.jpg"))
