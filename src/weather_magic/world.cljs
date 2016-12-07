@@ -69,11 +69,13 @@
   (let [rel-y (:rel-y @state/pan-speed)
         rel-x (:rel-x @state/pan-speed)
         current-speed (:speed @state/pan-speed)
-        new-speed (- current-speed 0.2)]
+        new-speed (- current-speed 0.2)
+        camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))]
     (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (* current-speed (/ rel-x 100000))) (+ (aget (.-buf atom) 1) (* current-speed (/ rel-y 100000))))))
     (reset! state/earth-orientation (-> M44
                                         (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                        (g/rotate-y (m/radians (* (* current-speed (:fov @state/camera-left)) 1.0E-3)))
+                                        (g/rotate-y (m/radians (* (* (Math/hypot current-speed) zoom-level) 0.15)))
                                         (g/rotate-z (Math/atan2 rel-y rel-x))
                                         (m/* @state/earth-orientation)))
     (if (neg? new-speed)
@@ -95,7 +97,7 @@
         current-z-camera-pos (aget (.-buf current-camera-pos) 2)
         new-camera-pos (vec3 0 0 (max (min (+ current-z-camera-pos delta-z) 5.0) 1.1))]
     (cam/perspective-camera
-      (assoc camera-map :eye new-camera-pos))))
+     (assoc camera-map :eye new-camera-pos))))
 
 (defn update-zoom-point-alignment
   "Updates the atom holding the rotation of the world"
