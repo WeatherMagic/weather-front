@@ -63,7 +63,8 @@
   (let [range (- (:max  (:year (left-right-key @state/date-atom)))
                  (:min  (:year (left-right-key @state/date-atom))))
         time (- (:value (:year (left-right-key @state/date-atom)))
-                (:min   (:year (left-right-key @state/date-atom))))]
+                (:min   (:year (left-right-key @state/date-atom))))
+        texture-info (transforms/get-texture-info @state/earth-orientation @state/camera-left)]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture base-texture) 0)
@@ -81,11 +82,10 @@
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :fov] (:fov camera))
-             (assoc-in [:uniforms :dataScale] (:dataScale @state/texture-info))
-             (assoc-in [:uniforms :dataPos]   (:dataPos @state/texture-info))))))))
+             (assoc-in [:uniforms :dataScale] (:dataScale texture-info))
+             (assoc-in [:uniforms :dataPos]   (:dataPos   texture-info))))))))
 
 (defn draw-frame! [t]
-  (transforms/update-uv-coords)
   (if (:play-mode (:left @state/date-atom))
     (update-year-month-info t :left)
     (swap! state/year-update assoc-in [:left :time-of-last-update] (* 5 t)))

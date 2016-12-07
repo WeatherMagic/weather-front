@@ -21,8 +21,8 @@
      gl_FragColor = vec4(ambientCol, 1.0) + diffuse * vec4(lightCol, 1.0) * lam;
    }")
 
- (def blend-fs
-   "void main() {
+(def blend-fs
+  "void main() {
       float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
       vec4 mapDiffuse = texture2D(base, vUV);
       float temp = texture2D(data, vUV).r * 3.0;

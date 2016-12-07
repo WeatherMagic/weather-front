@@ -1,6 +1,5 @@
 (ns weather-magic.transforms
   (:require
-   [weather-magic.state    :as state]
    [weather-magic.world    :as world]
    [thi.ng.geom.core       :as g]
    [thi.ng.geom.matrix     :as mat :refer [M44]]
@@ -45,10 +44,11 @@
 
 (defn model-coords-from-corner
   ""
-  [x-coord y-coord]
-  (let [matrix (-> (m/invert @state/earth-orientation)
+  [x-coord y-coord earth-orientation camera]
+  (let [matrix (-> (m/invert earth-orientation)
                    (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
-                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) (:fov @state/camera-left)) 1.0E-3)))
+                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord)
+                                                (:fov camera)) 1.0E-3)))
                    (g/rotate-z (Math/atan2 y-coord x-coord)))
         model-x (.-m20 matrix)
         model-y (.-m21 matrix)
@@ -56,46 +56,51 @@
     (vec3 model-x model-y model-z)))
 
 (defn update-model-coords
-  "Updates the model-coords-boundaries"
-  []
+  "Updates the model-coords-boundaries."
+  [earth-orientation camera]
   (let [canvas-element (.getElementById js/document "left-canvas")
         canvas-width (.-clientWidth canvas-element)
         canvas-height (.-clientHeight canvas-element)
         half-width (/ canvas-width 2)
         half-height (/ canvas-height 2)]
-    (swap! state/model-coords assoc :upper-left (model-coords-from-corner (* half-width -1) (* half-height -1))
-           :upper-right (model-coords-from-corner half-width (* half-height -1))
-           :lower-left (model-coords-from-corner (* half-width -1) half-height)
-           :lower-right (model-coords-from-corner half-width half-height))))
+    {:upper-left (model-coords-from-corner (* half-width -1) (* half-height -1) earth-orientation camera)
+     :upper-right (model-coords-from-corner half-width (* half-height -1) earth-orientation camera)
+     :lower-left (model-coords-from-corner (* half-width -1) half-height earth-orientation camera)
+     :lower-right (model-coords-from-corner half-width half-height earth-orientation camera)}))
 
 (defn update-lat-lon-helper
   "Get model-coords and transform to latitude and longitude"
-  []
-  (update-model-coords)
-  {:upper-left (model-coords-to-lat-lon (:upper-left @state/model-coords))
-   :upper-right (model-coords-to-lat-lon (:upper-right @state/model-coords))
-   :lower-left (model-coords-to-lat-lon (:lower-left @state/model-coords))
-   :lower-right (model-coords-to-lat-lon (:lower-right @state/model-coords))})
+  [earth-orientation camera]
+  (let [model-coords (update-model-coords earth-orientation camera)]
+    {:upper-left  (model-coords-to-lat-lon (:upper-left  model-coords))
+     :upper-right (model-coords-to-lat-lon (:upper-right model-coords))
+     :lower-left  (model-coords-to-lat-lon (:lower-left  model-coords))
+     :lower-right (model-coords-to-lat-lon (:lower-right model-coords))}))
 
-(defn update-lat-lon
+(defn get-lat-lon-map
   "Get the lat and lon on the format from lat/lon to lat/lon"
-  []
-  (let [coords (update-lat-lon-helper)]
-    (swap! state/lat-lon-coords assoc
-           :from-lat (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
-                          (:lat (:lower-left coords)) (:lat (:lower-right coords)))
-           :to-lat (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
-                        (:lat (:lower-left coords)) (:lat (:lower-right coords)))
-           :from-lon (min (:lon (:upper-left coords)) (:lon (:upper-right coords))
-                          (:lon (:lower-left coords)) (:lon (:lower-right coords)))
-           :to-lon (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
-                        (:lon (:lower-left coords)) (:lon (:lower-right coords))))))
+  [earth-orientation camera]
+  (let [coords (update-lat-lon-helper earth-orientation camera)]
+    {:from-lat (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
+                    (:lat (:lower-left coords)) (:lat (:lower-right coords)))
+     :to-lat   (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
+                    (:lat (:lower-left coords)) (:lat (:lower-right coords)))
+     :from-lon (min (:lon (:upper-left coords)) (:lon (:upper-right coords))
+                    (:lon (:lower-left coords)) (:lon (:lower-right coords)))
+     :to-lon   (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
+                    (:lon (:lower-left coords)) (:lon (:lower-right coords)))}))
 
-(defn update-uv-coords
-  ""
-  []
-  (update-lat-lon)
-  (let [from-uv (lat-lon-to-uv (:from-lat @state/lat-lon-coords) (:from-lon @state/lat-lon-coords))
-        to-uv (lat-lon-to-uv (:to-lat @state/lat-lon-coords) (:to-lon @state/lat-lon-coords))
-        scale (vec2 (- (aget (.-buf to-uv) 0) (aget (.-buf from-uv) 0)) (- (aget (.-buf to-uv) 1) (aget (.-buf from-uv) 1)))]
-    (swap! state/texture-info assoc :dataPos (vec2 (aget (.-buf from-uv) 0) (- 1 (aget (.-buf to-uv) 1))) :dataScale scale)))
+(defn get-texture-info
+  "Get the positioning and scale information of the area the camera is
+  looking at at this moment."
+  [earth-orientation camera]
+  (let [lat-lon (get-lat-lon-map earth-orientation camera)]
+    (let [from-uv (lat-lon-to-uv (:from-lat lat-lon)
+                                 (:from-lon lat-lon))
+          to-uv   (lat-lon-to-uv (:to-lat   lat-lon)
+                                 (:to-lon   lat-lon))
+          scale   (vec2 (- (aget (.-buf to-uv) 0) (aget (.-buf from-uv) 0))
+                        (- (aget (.-buf to-uv) 1) (aget (.-buf from-uv) 1)))]
+      {:dataPos   (vec2 (aget (.-buf from-uv) 0)
+                        (- 1 (aget (.-buf to-uv) 1)))
+       :dataScale scale})))
