@@ -60,11 +60,13 @@
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
+  (let [camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))]
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) (:fov @state/camera-left)) 1.0E-3)))
+                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) zoom-level) 0.15)))
                                       (g/rotate-z (Math/atan2 rel-y rel-x))
-                                      (m/* @state/earth-orientation))))
+                                      (m/* @state/earth-orientation)))))
 
 (defn align-handler []
   (update-alignment-angle 0 0)

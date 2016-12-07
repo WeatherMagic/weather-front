@@ -70,7 +70,7 @@
         rel-x (:rel-x @state/pan-speed)
         current-speed (:speed @state/pan-speed)
         new-speed (- current-speed 0.2)]
-    (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (* current-speed (/ rel-x 10000))) (+ (aget (.-buf atom) 1) (* current-speed (/ rel-y 10000))))))
+    (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (* current-speed (/ rel-x 100000))) (+ (aget (.-buf atom) 1) (* current-speed (/ rel-y 100000))))))
     (reset! state/earth-orientation (-> M44
                                         (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
                                         (g/rotate-y (m/radians (* (* current-speed (:fov @state/camera-left)) 1.0E-3)))
@@ -108,7 +108,7 @@
     (reset! state/earth-orientation (-> M44
                                         (g/rotate-z (* delta-angle step))
                                         (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                        (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) zoom-level 0.1))))
+                                        (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) zoom-level 0.15))))
                                         (g/rotate-z (Math/atan2 rel-y rel-x))
                                         (g/rotate-z (* (* delta-angle (dec step)) -1))
                                         (m/* @state/earth-orientation)))))
