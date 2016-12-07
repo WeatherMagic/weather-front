@@ -33,10 +33,8 @@
      float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
      if (mod(temperature, 0.1) < threshold && fov < 50.0 && temperature > 0.4) {
-       if (temperature > 0.5 && temperature < 0.55) {
+       if (temperature > 0.5) {
          outColor = vec4(0.5, 0.5, 0.5, 1.0);
-       } else if (temperature > 0.55) {
-         outColor = vec4(0.0, 0.0, 0.0, 1.0);
        } else if (temperature < 0.5) {
          outColor = vec4(1.0, 1.0, 1.0, 1.0);
        }
