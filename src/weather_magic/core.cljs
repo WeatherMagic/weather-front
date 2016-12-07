@@ -47,23 +47,34 @@
                             :blend-fn [glc/src-alpha
                                        glc/one-minus-src-alpha]}))
 
-(defn update-year-month-info
-  [t key]
-  (let [min  (:min (:year (key @state/date-atom)))
-        range (- (:max (:year (key @state/date-atom))) min)
-        current-year (:value (:year (key @state/date-atom)))
-        last-year-update (:time-of-last-update (key @state/year-update))
+(defn update-year-info
+  [t left-right-key]
+  (let [min  (:min (:year (left-right-key @state/date-atom)))
+        range (- (:max (:year (left-right-key @state/date-atom))) min)
+        current-year (:value (:year (left-right-key @state/date-atom)))
+        last-year-update (:time-of-last-update (:year (left-right-key @state/year-update)))
         delta-year (int (- (* 5 t) last-year-update))]
     (when (> delta-year 0.5)
-      (swap! state/date-atom assoc-in [key :year :value] (+ min (rem (- (+ current-year delta-year) min) range)))
-      (swap! state/year-update assoc-in [key :time-of-last-update] (* 5 t)))))
+      (swap! state/date-atom assoc-in [left-right-key :year :value] (+ min (rem (- (+ current-year delta-year) min) range)))
+      (swap! state/year-update assoc-in [left-right-key :year :time-of-last-update] (* 5 t)))))
+
+(defn update-month-info
+  [t left-right-key]
+  (let [min  (:min (:month (left-right-key @state/date-atom)))
+        range (- (:max (:month (left-right-key @state/date-atom))) min)
+        current-year (:value (:month (left-right-key @state/date-atom)))
+        last-year-update (:time-of-last-update (:month (left-right-key @state/year-update)))
+        delta-month (int (- (* 1 t) last-year-update))]
+    (when (> delta-month 0.5)
+      (swap! state/date-atom assoc-in [left-right-key :month :value] (+ min (rem (- (+ current-year delta-month) min) range)))
+      (swap! state/year-update assoc-in [left-right-key :month :time-of-last-update] (* 1 t)))))
 
 (defn draw-in-context
-  [gl-ctx camera background-camera base-texture textures shaders left-right-key t]
-  (let [range (- (:max  (:year (left-right-key @state/date-atom)))
-                 (:min  (:year (left-right-key @state/date-atom))))
-        time (- (:value (:year (left-right-key @state/date-atom)))
-                (:min   (:year (left-right-key @state/date-atom))))]
+  [gl-ctx camera background-camera base-texture textures shaders left-right-key year-month-key t]
+  (let [range (- (:max  (year-month-key (left-right-key @state/date-atom)))
+                 (:min  (year-month-key (left-right-key @state/date-atom))))
+        time (- (:value (year-month-key (left-right-key @state/date-atom)))
+                (:min   (year-month-key (left-right-key @state/date-atom))))]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture (:space5 textures)) 0)
@@ -84,7 +95,7 @@
         (gl/draw-with-shader
          (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
-             (assoc-in [:uniforms :model] (set-model-matrix (- (* 5 t) @state/time-of-last-frame)))
+             (assoc-in [:uniforms :model] (set-model-matrix (-  (* 5 t) @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :fov] (:fov camera))
@@ -93,14 +104,20 @@
 
 (defn draw-frame! [t]
   (transforms/update-lat-lon)
-  (if (:play-mode (:left @state/date-atom))
-    (update-year-month-info t :left)
-    (swap! state/year-update assoc-in [:left :time-of-last-update] (* 5 t)))
-  (if (:play-mode (:right @state/date-atom))
-    (update-year-month-info t :right)
-    (swap! state/year-update assoc-in [:right :time-of-last-update] (* 5 t)))
-  (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left t)
-  (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right t)
+  (if (:play-mode (:year (:left @state/date-atom)))
+    (update-year-info t :left)
+    (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
+  (if (:play-mode (:month (:left @state/date-atom)))
+    (update-month-info t :left)
+    (swap! state/year-update assoc-in [:left :month :time-of-last-update] (* 1 t)))
+  (if (:play-mode (:year (:right @state/date-atom)))
+    (update-year-info t :right)
+    (swap! state/year-update assoc-in [:right :year :time-of-last-update] (* 5 t)))
+  (if (:play-mode (:month (:right @state/date-atom)))
+    (update-month-info t :right)
+    (swap! state/year-update assoc-in [:right :month :time-of-last-update] (* 1 t)))
+  (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :year t)
+  (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right :year t)
   (vreset! state/time-of-last-frame (* 5 t)))
 
 ;; Start the demo only once.

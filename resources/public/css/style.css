@@ -1,5 +1,16 @@
 /* CSS reset */
 
+
+input[type="button"].play-pause {
+  background-color: rgba(230, 230, 230, 1);
+  background-image: url('../img/play-pause.png');
+  height: 40px;
+  margin: 5px 0 5px 15px;
+  width:  40px;
+}
+
+
+
 * {
   margin:0;
   padding:0;
