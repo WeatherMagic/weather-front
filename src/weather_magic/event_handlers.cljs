@@ -55,7 +55,7 @@
         northpole-z (.-m12 future-earth-orientation)
         northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
         delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
-    (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
+    (swap! state/double-click-zoom-info assoc :delta-z-angle delta-angle)))
 
 (defn update-pan
   "Updates the atom holding the rotation of the world"
@@ -68,7 +68,7 @@
 
 (defn align-handler []
   (update-alignment-angle 0 0)
-  (swap! state/pointer-zoom-info assoc :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
+  (swap! state/double-click-zoom-info assoc :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
   (reset! state/earth-animation-fn world/align-animation!))
 
 (defn reset-spin-handler
@@ -110,9 +110,9 @@
         window-height (.-clientHeight window-element)
         x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
         y-diff (- (/ window-height 2) y-pos)
-        total-steps (:total-steps @state/pointer-zoom-info)]
+        total-steps (:total-steps @state/double-click-zoom-info)]
     (update-alignment-angle x-diff y-diff)
-    (swap! state/pointer-zoom-info assoc
+    (swap! state/double-click-zoom-info assoc
            :delta-x (/ x-diff total-steps)
            :delta-y (/ y-diff total-steps)
            :current-step 0
@@ -131,14 +131,35 @@
     (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)
     (.addEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false)))
 
+(defn zoom-to-mouse
+  [event canvas]
+  (let [x-pos (.-clientX event)
+        y-pos (.-clientY event)
+        canvas-element (.getElementById js/document canvas)
+        canvas-width (.-clientWidth canvas-element)
+        canvas-height (.-clientHeight canvas-element)
+        window-element (.getElementById js/document "canvases")
+        window-width (.-clientWidth window-element)
+        window-height (.-clientHeight window-element)
+        x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
+        y-diff (- (/ window-height 2) y-pos)
+        zoom-level (/ (:fov @state/camera-left) 140)
+        delta-x (* zoom-level (/ x-diff 200))
+        delta-y (* zoom-level (/ y-diff 200))
+        delta-zoom (.-deltaY event)]
+    (swap! state/camera-left world/zoom-camera delta-zoom)
+    (swap! state/camera-right world/zoom-camera delta-zoom)
+    (when (> (:fov @state/camera-left) 10)
+      (if (neg? delta-zoom)
+        (update-pan delta-x delta-y)
+        (when (< (:fov @state/camera-left) 140)
+          (update-pan (* delta-x -1) (* delta-y -1)))))))
+
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
-  (.addEventListener
-   (.getElementById js/document "canvases") "wheel"
-   (fn [event]
-     (swap! state/camera-left world/zoom-camera (.-deltaY event))
-     (swap! state/camera-right world/zoom-camera (.-deltaY event))) false)
+  (.addEventListener (.getElementById js/document "left-canvas") "wheel" (fn [event] (zoom-to-mouse event "left-canvas")))
+  (.addEventListener (.getElementById js/document "right-canvas") "wheel" (fn [event] (zoom-to-mouse event "right-canvas")))
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
