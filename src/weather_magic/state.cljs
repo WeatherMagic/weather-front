@@ -1,6 +1,7 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models           :as models]
+   [weather-magic.transforms       :as transforms]
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [thi.ng.geom.gl.camera          :as cam]
@@ -59,8 +60,10 @@
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
-(defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left gl-ctx-left)
-                                                  (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
+(def dynamic-texture-keys
+  (atom {:current (let [lat-lon-corners (transforms/get-lat-lon-map @earth-orientation @camera-left)]
+                    (textures/load-data-into-atom-and-return-key! textures-left gl-ctx-left :request-params lat-lon-corners)
+                    (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right :request-params lat-lon-corners))}))
 
 (def shaders-left  {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
                     :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)

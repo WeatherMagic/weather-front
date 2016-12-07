@@ -1,6 +1,5 @@
 (ns weather-magic.transforms
   (:require
-   [weather-magic.world    :as world]
    [thi.ng.geom.core       :as g]
    [thi.ng.geom.matrix     :as mat :refer [M44]]
    [thi.ng.math.core       :as m]
@@ -55,8 +54,8 @@
         model-z (.-m22 matrix)]
     (vec3 model-x model-y model-z)))
 
-(defn update-model-coords
-  "Updates the model-coords-boundaries."
+(defn get-model-coords
+  "Returns the model-coords-boundaries."
   [earth-orientation camera]
   (let [canvas-element (.getElementById js/document "left-canvas")
         canvas-width (.-clientWidth canvas-element)
@@ -68,10 +67,10 @@
      :lower-left (model-coords-from-corner (* half-width -1) half-height earth-orientation camera)
      :lower-right (model-coords-from-corner half-width half-height earth-orientation camera)}))
 
-(defn update-lat-lon-helper
+(defn lat-lon-helper
   "Get model-coords and transform to latitude and longitude"
   [earth-orientation camera]
-  (let [model-coords (update-model-coords earth-orientation camera)]
+  (let [model-coords (get-model-coords earth-orientation camera)]
     {:upper-left  (model-coords-to-lat-lon (:upper-left  model-coords))
      :upper-right (model-coords-to-lat-lon (:upper-right model-coords))
      :lower-left  (model-coords-to-lat-lon (:lower-left  model-coords))
@@ -80,7 +79,7 @@
 (defn get-lat-lon-map
   "Get the lat and lon on the format from lat/lon to lat/lon"
   [earth-orientation camera]
-  (let [coords (update-lat-lon-helper earth-orientation camera)]
+  (let [coords (lat-lon-helper earth-orientation camera)]
     {:from-lat (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
                     (:lat (:lower-left coords)) (:lat (:lower-right coords)))
      :to-lat   (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
