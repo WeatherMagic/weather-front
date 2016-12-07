@@ -44,11 +44,11 @@
                 -90)))}))
 
 (defn model-coords-from-corner
-  "Updating how much the globe should be rotated around the z axis to align northpole"
+  ""
   [x-coord y-coord]
   (let [matrix (-> (m/invert @state/earth-orientation)
                    (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
-                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) @world/zoom-level) 1.0E-3)))
+                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord) (:fov @state/camera-left)) 1.0E-3)))
                    (g/rotate-z (Math/atan2 y-coord x-coord)))
         model-x (.-m20 matrix)
         model-y (.-m21 matrix)
