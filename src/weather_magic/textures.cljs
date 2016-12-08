@@ -16,7 +16,7 @@
                          :error-callback
                          (fn [event]
                            (.error js/console "Failed to load image."
-                                   (aget (.-path event) 0)))
+                                   (aget (.-path event) 0) event))
                          :src    path
                          :filter [glc/linear glc/linear]
                          :cors   ""
@@ -45,18 +45,26 @@
               {(keyword name) (load-texture gl-ctx path)})))))
 
 (defn load-data
-  "Loads data from thor into a texture. Returs a map with {:key
-  str :map texture-map} where :key holds how to find the newly loaded
-  texture in texture-map."
+  "Loads data from thor into a texture.
+
+  There are two optional associative arguments:
+
+  :variable       - The type of data to request from the backend,
+                    normally 'temperature' or 'precipitation'.
+  :request-params - A map of arguments to be passed on to thor in the
+                    HTTP GET request in the form of a query string.
+
+  Returs a map with {:key str :map texture-map} where :key holds how
+  to find the newly loaded texture in texture-map."
   [texture-map gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
-  (let [request-map (merge {:year        2083
-                            :month        1
-                            :from-longitude  -180
-                            :to-longitude     180
-                            :from-latitude    -80
-                            :to-latitude      80
-                            :exhaust-level    "rcp45"
-                            :climate-model    "CNRM-CERFACS-CNRM-CM5"
+  (let [request-map (merge {:year              2083
+                            :month             1
+                            :from-longitude   -17
+                            :to-longitude      50
+                            :from-latitude     40
+                            :to-latitude       80
+                            :climate-model     "CNRM-CERFACS-CNRM-CM5"
+                            :exhaust-level     "rcp45"
                             :height-resolution 1024}
                            request-params)
         url (str "http://thor.hfelo.se/api/" variable
@@ -74,4 +82,4 @@
 
 (defn load-base-textures
   [gl-ctx]
-  (load-texture-if-needed {} gl-ctx "img/earth.jpg" "img/trump.png"))
+  (load-texture-if-needed {} gl-ctx "img/earth.jpg" "img/trump.png" "img/space5.jpg"))
