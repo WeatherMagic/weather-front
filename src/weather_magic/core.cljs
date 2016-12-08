@@ -77,7 +77,7 @@
              (assoc-in [:uniforms :model] (set-model-matrix (- (* 5 t) @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
-             (assoc-in [:uniforms :fov] (:fov camera))
+             (assoc-in [:uniforms :eye] (:eye camera))
              (assoc-in [:uniforms :dataScale] (vec2 0.05 0.05))
              (assoc-in [:uniforms :dataPos] (vec2 0.51 0.2))))))))
 

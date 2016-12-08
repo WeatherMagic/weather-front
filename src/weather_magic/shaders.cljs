@@ -33,31 +33,24 @@
 
      float temperature = texture2D(data, mod((vUV - dataPos), 1.0) / dataScale).r;
      vec4 baseTexture = texture2D(base, vUV);
-                    
-
-     float threshold = fov/1000.0;
-     if (fov > 45.0) {
-       threshold = pow((90.0 - fov)/90.0, 3.0)/10.0 - 0.05;
-     }
-
-
-     float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
      vec4 outColor;
 
-     if (mod(temperature, 0.078125) < threshold && fov < 50.0) {
+     if (mod(temperature, 0.078125) < 0.003 && eye.z < 1.2) {
        if (temperature > 0.5) {
          outColor = vec4(0.5, 0.5, 0.5, 1.0);
        } else if (temperature < 0.5) {
          outColor = vec4(1.0, 1.0, 1.0, 1.0);
        }
      } else if(temperature > 0.5) {
-       temperature = clamp(temperature, 0.45, 0.8);
-       outColor = vec4(1.0, 0.8 - (1.6 * (temperature - 0.4)), 0, 1.0);
+       temperature = clamp(temperature, 0.5, 0.8);
+       outColor = vec4(1.0,-3.333 * temperature + 1.998, 0.0, 1.0);
      } else {
-       temperature = clamp(temperature, 0.45, 0.8);
-       outColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
+       temperature = clamp(temperature, 0.2, 0.5);
+       outColor = vec4(6.41 * (temperature-0.34), 6.41 * (temperature-0.34), (-6.41 * temperature + 3.205), 1.0);
      }
+
+     float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
      if (textureAlpha < 1.0) {
       outColor = vec4(0.0, 0.0, 0.0, 0.0);
@@ -89,14 +82,14 @@
 
     vec4 outColor;
 
-    float threshold = fov/1000.0;
-    if (fov > 45.0) {
-      threshold = pow((90.0 - fov)/90.0, 3.0)/5.0 - 0.005;
+    float threshold = eye.z/10.0;
+    if (eye.z > 45.0) {
+      threshold = pow((90.0 - eye.z)/90.0, 3.0)/5.0 - 0.005;
     }
 
     float alphaValue = 1.0;
 
-    if (mod(temperature, 0.1) < threshold && fov < 50.0 && temperature > 0.15) {
+    if (mod(temperature, 0.1) < threshold && eye.z < 50.0 && temperature > 0.15) {
       if (temperature > 0.5 && temperature < 0.75) {
         outColor = vec4(0.5, 0.5, 0.5, alphaValue);
       } else if (temperature > 0.75) {
@@ -130,7 +123,7 @@
               :ambientCol [:vec3 [0 0 0.1]]
               :year       :float
               :range      :float
-              :fov        :float
+              :eye        :vec3
               :dataScale  :vec2
               :dataPos    :vec2}
 
