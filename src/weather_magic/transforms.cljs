@@ -89,17 +89,16 @@
      :to-longitude   (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
                           (:lon (:lower-left coords)) (:lon (:lower-right coords)))}))
 
-(defn get-texture-info
+(defn get-texture-position-map
   "Get the positioning and scale information of the area the camera is
   looking at at this moment."
-  [earth-orientation camera]
-  (let [lat-lon (get-lat-lon-map earth-orientation camera)]
-    (let [from-uv (lat-lon-to-uv (:from-latitude  lat-lon)
-                                 (:from-longitude lat-lon))
-          to-uv   (lat-lon-to-uv (:to-latitude    lat-lon)
-                                 (:to-longitude   lat-lon))
-          scale   (vec2 (- (aget (.-buf to-uv) 0) (aget (.-buf from-uv) 0))
-                        (- (aget (.-buf to-uv) 1) (aget (.-buf from-uv) 1)))]
-      {:dataPos   (vec2 (aget (.-buf from-uv) 0)
-                        (- 1 (aget (.-buf to-uv) 1)))
-       :dataScale scale})))
+  [lat-lon-map]
+  (let [from-uv (lat-lon-to-uv (:from-latitude  lat-lon-map)
+                               (:from-longitude lat-lon-map))
+        to-uv   (lat-lon-to-uv (:to-latitude    lat-lon-map)
+                               (:to-longitude   lat-lon-map))
+        scale   (vec2 (- (aget (.-buf to-uv) 0) (aget (.-buf from-uv) 0))
+                      (- (aget (.-buf to-uv) 1) (aget (.-buf from-uv) 1)))]
+    {:dataPos   (vec2 (aget (.-buf from-uv) 0)
+                      (- 1 (aget (.-buf to-uv) 1)))
+     :dataScale scale}))

@@ -23,7 +23,7 @@
     {:texture texture :loaded loaded}))
 
 (defn load-texture-if-needed
-  [textures gl-ctx & paths]
+  [textures gl-ctx path & {:keys [key-fn] :or {key-fn #(keyword (util/get-filename %))}}]
   "Load a texture from the given path into the given WebGL context and
   a reference to it along with an indicator as to whether the texture
   has loaded or not into the given map.
@@ -38,24 +38,25 @@
     {:earth {:texture T :loaded (volatile! false)}}
   where :loaded will turn true once the load is complete."
   (into textures
-        (for [path paths]
-          (let [name (util/get-filename path)]
-            (when-not (contains? textures name)
-              {(keyword name) (load-texture gl-ctx path)})))))
+        (let [name (key-fn path)]
+          (when-not (contains? textures name)
+            {name (load-texture gl-ctx path)}))))
 
 (defn load-data
   "Loads data from thor into a texture.
 
-  There are two optional associative arguments:
+  There are three optional associative arguments:
 
   :variable       - The type of data to request from the backend,
                     normally 'temperature' or 'percipitation'.
   :request-params - A map of arguments to be passed on to thor in the
                     HTTP GET request in the form of a query string.
+  :placement      - Positioning data to be associated with the loaded data.
 
   Returs a map with {:key str :map texture-map} where :key holds how
   to find the newly loaded texture in texture-map."
-  [texture-map gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
+  [texture-map gl-ctx & {:keys [variable placement request-params]
+                         :or {variable "temperature"}}]
   (let [request-map (merge {:year              2083
                             :month             1
                             :from-longitude   -17
@@ -66,19 +67,30 @@
                             :exhaust-level     "rcp45"
                             :height-resolution 1024}
                            request-params)
-        url (str "http://thor.hfelo.se/api/" variable
-                 (util/map->query-string request-map))
-        key (keyword (util/get-filename url))]
-    {:key key :map (load-texture-if-needed texture-map gl-ctx url)}))
+        query-string (util/map->query-string request-map)
+        url (str "http://thor.hfelo.se/api/" variable query-string)
+        key (keyword query-string)
+        texture-map (load-texture-if-needed texture-map gl-ctx url :key-fn (fn [_] key))]
+    {:key key
+     :map (assoc-in texture-map [key :placement] placement)}))
 
 (defn load-data-into-atom-and-return-key!
   "Load a texture if needed and mutate the given atom to contain
   it. Return the key of the newly loaded texture."
-  [texture-map-atom gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
-  (let [ret-val (load-data @texture-map-atom gl-ctx :variable variable :request-params request-params)]
+  [texture-map-atom gl-ctx & {:keys [variable request-params placement]
+                              :or {variable "temperature"}}]
+  (let [ret-val (load-data @texture-map-atom gl-ctx :variable variable
+                           :request-params request-params :placement placement)]
     (swap! texture-map-atom merge (:map ret-val))
     (:key ret-val)))
 
 (defn load-base-textures
   [gl-ctx]
-  (load-texture-if-needed {} gl-ctx "img/earth.jpg" "img/trump.png"))
+  (-> {}
+      (load-texture-if-needed gl-ctx "img/earth.jpg")
+      (load-texture-if-needed gl-ctx "img/trump.png")))
+
+(defn load-next-texture
+  [dynamic-texture-keys path])
+
+(defn rotate-in-next-texture-if-loaded [])

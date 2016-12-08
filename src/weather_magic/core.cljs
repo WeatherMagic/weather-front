@@ -64,7 +64,7 @@
                  (:min  (:year (left-right-key @state/date-atom))))
         time (- (:value (:year (left-right-key @state/date-atom)))
                 (:min   (:year (left-right-key @state/date-atom))))
-        texture-info (transforms/get-texture-info @state/earth-orientation @state/camera-left)]
+        texture-info (:placement ((:current @state/dynamic-texture-keys) textures))]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture base-texture) 0)
@@ -92,6 +92,7 @@
   (if (:play-mode (:right @state/date-atom))
     (update-year-month-info t :right)
     (swap! state/year-update assoc-in [:right :time-of-last-update] (* 5 t)))
+
   (draw-in-context state/gl-ctx-left @state/camera-left @state/base-texture-left @state/textures-left state/shaders-left :left t)
   (draw-in-context state/gl-ctx-right @state/camera-right @state/base-texture-right @state/textures-right state/shaders-right :right t)
   (vreset! state/time-of-last-frame t))
