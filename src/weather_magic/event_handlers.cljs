@@ -1,16 +1,17 @@
 (ns weather-magic.event-handlers
   (:require
-   [weather-magic.state :as state]
+   [weather-magic.state   :as state]
+   [weather-magic.world   :as world]
+   [weather-magic.util    :as util]
    [thi.ng.geom.gl.camera :as cam]
-   [thi.ng.geom.rect  :as rect]
-   [weather-magic.world :as world]
-   [thi.ng.geom.gl.core  :as gl]
-   [thi.ng.geom.core :as g]
-   [thi.ng.geom.matrix :as mat :refer [M44]]
-   [thi.ng.geom.vector :as v :refer [vec2 vec3]]
-   [thi.ng.math.core :as m :refer [PI HALF_PI TWO_PI]]
-   [thi.ng.geom.core :as g]
-   [reagent.core :as reagent :refer [atom]]))
+   [thi.ng.geom.rect      :as rect]
+   [thi.ng.geom.gl.core   :as gl]
+   [thi.ng.geom.core      :as g]
+   [thi.ng.geom.matrix    :as mat :refer [M44]]
+   [thi.ng.geom.vector    :as v :refer [vec2 vec3]]
+   [thi.ng.math.core      :as m :refer [PI HALF_PI TWO_PI]]
+   [thi.ng.geom.core      :as g]
+   [reagent.core          :as reagent :refer [atom]]))
 
 (enable-console-print!)
 
@@ -45,16 +46,14 @@
 (defn update-alignment-angle
   "Updating how much the globe should be rotated around the z axis to align northpole"
   [x-diff y-diff]
-  (let [future-earth-orientation (-> M44
+  (let [camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))
+        future-earth-orientation (-> M44
                                      (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) (:fov @state/camera-left)) 1.0E-3)))
+                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) zoom-level) 0.1)))
                                      (g/rotate-z (Math/atan2 y-diff x-diff))
                                      (m/* @state/earth-orientation))
-        northpole-x (.-m10 future-earth-orientation)
-        northpole-y (.-m11 future-earth-orientation)
-        northpole-z (.-m12 future-earth-orientation)
-        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
-        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) (:total-steps @state/pointer-zoom-info))]
+        delta-angle (/ (util/north-pole-rotation-around-z future-earth-orientation) (:total-steps @state/pointer-zoom-info))]
     (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
 
 (defn update-pan
