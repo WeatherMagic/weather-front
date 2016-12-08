@@ -73,7 +73,7 @@
         (gl/draw-with-shader
          (-> (cam/apply (:plane (left-right-key state/models)) background-camera)
              (assoc :shader (:space shaders))
-             (assoc-in [:uniforms :model] (-> M44 (g/rotate-z PI) (g/scale 4.109) (g/translate (vec3 -5 -4 -1))))
+             (assoc-in [:uniforms :model] (-> M44 (g/rotate-z PI) (g/scale 1.148) (g/translate (vec3 -5 -4 -1))))
              (assoc-in [:uniforms :uvLeftRightOffset] (if (= left-right-key :left) (* 0 1.0) (* 0.5 1.0)))
              (assoc-in [:uniforms :uvOffset]   @state/space-offset))))
       (gl/bind (:texture base-texture) 0)
