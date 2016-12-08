@@ -59,7 +59,8 @@
     (when (> delta-year 0.5)
       (swap! state/date-atom assoc-in [key :year :value]
              (+ min (rem (- (+ current-year delta-year) min) range)))
-      (swap! state/year-update assoc-in [key :time-of-last-update] (* 5 t)))))
+      (swap! state/year-update assoc-in [key :time-of-last-update] (* 5 t))
+      (trigger-data-load!))))
 
 (defn draw-in-context
   [gl-ctx camera base-texture textures shaders left-right-key t]

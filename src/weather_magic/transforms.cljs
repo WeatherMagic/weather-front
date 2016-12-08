@@ -1,5 +1,6 @@
 (ns weather-magic.transforms
   (:require
+   [clojure.walk                   :refer [postwalk]]
    [thi.ng.geom.core       :as g]
    [thi.ng.geom.matrix     :as mat :refer [M44]]
    [thi.ng.math.core       :as m]
@@ -77,9 +78,11 @@
      :lower-right (model-coords-to-lat-lon (:lower-right model-coords))}))
 
 (defn get-lat-lon-map
-  "Get the lat and lon on the format from lat/lon to lat/lon"
+  "Get the lat and lon on the format from lat/lon to lat/lon."
   [earth-orientation camera]
-  (let [coords (lat-lon-helper earth-orientation camera)]
+  ;; Truncate all numbers into whole integers.
+  (let [coords (postwalk #(if (number? %) (int %) %)
+                         (lat-lon-helper earth-orientation camera))]
     {:from-latitude  (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
                           (:lat (:lower-left coords)) (:lat (:lower-right coords)))
      :to-latitude    (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
