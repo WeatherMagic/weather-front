@@ -75,13 +75,9 @@
                                                   (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
 
 (def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
-                    :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
-                    :temp     (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)})
+                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)})
 (def shaders-right {:space    (sh/make-shader-from-spec gl-ctx-right shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
-                    :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec)
-                    :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)})
+                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)})
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.

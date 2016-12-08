@@ -79,10 +79,7 @@
   "Buttons for choosing shader"
   []
   [:div {:id "shader-selection-container"}
-   [button "Go to map"          swap!  state/intro-visible  hide-unhide]
-   [button "Standard shader"    reset! state/current-shader-key :standard]
-   [button "Blend shader"       reset! state/current-shader-key :blend]
-   [button "Temperature shader" reset! state/current-shader-key :temp]])
+   [button "Go to map"          swap!  state/intro-visible  hide-unhide]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."

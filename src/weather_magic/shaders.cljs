@@ -44,17 +44,18 @@
        }
      } else if(temperature > 0.5) {
        temperature = clamp(temperature, 0.5, 0.8);
-       temperatureColor = vec4(1.0,-3.333 * temperature + 2.67, 0.0, 1.0);
+       temperatureColor = vec4(1.0,
+                               clamp(-3.333 * temperature + 2.67, 0.0, 1.0),
+                               0.0, 1.0);
      } else {
        temperature = clamp(temperature, 0.2, 0.5);
-       temperatureColor = vec4(6.41 * (temperature-0.34), 6.41 * (temperature-0.34), (-6.41 * temperature + 3.205), 1.0);
+       temperatureColor = vec4(clamp(6.41 * (temperature-0.34), 0.0, 1.0),
+                               clamp(6.41 * (temperature-0.34), 0.0, 1.0),
+                               clamp((-6.41 * temperature + 3.205), 0.0, 1.0), 
+                               1.0);
      }
 
      float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
-
-     if (textureAlpha < 1.0) {
-      temperatureColor = vec4(0.0, 0.0, 0.0, 0.0);
-     }    
 
      vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam; 
 
@@ -62,50 +63,6 @@
 
      gl_FragColor = mixColor; 
    }")
-
-(def blend-fs
-  "void main() {
-     float lam = lambert(surfaceNormal(vNormal, normalMat), normalize(lightDir));
-     vec4 mapDiffuse = texture2D(base, vUV);
-     float temp = texture2D(data, vUV).r * 3.0;
-     gl_FragColor = vec4(ambientCol, 1.0) + mapDiffuse * vec4(lightCol, 1.0) * lam * 0.0001 + vec4(temp, temp, temp, 1.0);
-
-  }")
-
-(def temperature-fs
-  "void main() {
-
-    float temperatureTex1 = texture2D(base, vUV).b;
-    float temperatureTex2 = texture2D(base, vUV).r;
-
-    float temperature = mix(temperatureTex1, temperatureTex2, year/range);
-
-    vec4 temperatureColor;
-
-    float threshold = eye.z/10.0;
-    if (eye.z > 45.0) {
-      threshold = pow((90.0 - eye.z)/90.0, 3.0)/5.0 - 0.005;
-    }
-
-    float alphaValue = 1.0;
-
-    if (mod(temperature, 0.1) < threshold && eye.z < 50.0 && temperature > 0.15) {
-      if (temperature > 0.5 && temperature < 0.75) {
-        temperatureColor = vec4(0.5, 0.5, 0.5, alphaValue);
-      } else if (temperature > 0.75) {
-        temperatureColor = vec4(0.0, 0.0, 0.0, alphaValue);
-      } else if (temperature < 0.5) {
-        temperatureColor = vec4(1.0, 1.0, 1.0, alphaValue);
-      }
-    } else if(temperature > 0.5) {
-      temperatureColor = vec4(1.0, 1.0 - (2.0 * (temperature - 0.5)), 0, 1.0);
-    } else {
-      temperatureColor = vec4(2.0 * temperature, 2.0 * temperature, 2.0 * (0.5 - temperature), 1.0);
-    }
-    vec3 tempColor = temperatureColor.rgb;
-
-    gl_FragColor = vec4(tempColor, alphaValue);
-  }")
 
 (def standard-shader-spec
   {:vs standard-vs
@@ -133,18 +90,6 @@
    :varying  {:vUV        :vec2
               :vNormal    :vec3}
    :state    {:depth-test true}})
-
-(def blend-shader-spec
-  (assoc standard-shader-spec
-         :fs (->> blend-fs
-                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                  (glsl/assemble))))
-
-(def temperature-shader-spec
-  (assoc standard-shader-spec
-         :fs (->> temperature-fs
-                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                  (glsl/assemble))))
 
 (def space-shader-spec
   {:vs space-vs
