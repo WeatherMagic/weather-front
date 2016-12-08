@@ -55,7 +55,9 @@
 (defonce earth-orientation (atom M44))
 
 ;; Whether or not the landing page is visible.
-(defonce intro-visible (atom :visible))
+(defonce landing-page-visible (atom :visible))
+
+(defonce blur-visible (atom :visible))
 
 (defonce data-menu-visible (atom :visible))
 
