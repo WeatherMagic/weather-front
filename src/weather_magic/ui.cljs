@@ -17,9 +17,9 @@
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
 (defn toggle-side-menu-visibility
-  []
+  [atom]
   (swap! state/intro-visible hide-unhide)
-  (swap! state/side-menu-visible hide-unhide))
+  (swap! atom hide-unhide))
 
 (defn update-climate-model-info
   [key input]
@@ -72,9 +72,9 @@
   []
   [:div
     [:div {:id "data-layer-container"}
-      [button "Data" toggle-side-menu-visibility]]
-    [:div {:id "side-menu-container" :class (hide-unhide @state/side-menu-visible)}
-      [:a {:class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility)}]
+      [button "Data" toggle-side-menu-visibility state/data-menu-visible]]
+    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
+      [:a {:href "#" :class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility state/data-menu-visible)}]
       [:div {:class "side-menu-button-group"}
        [:select {:name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event))) :class "button"}
         [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
@@ -85,6 +85,25 @@
         [:option {:value "rcp85"} "rcp85"]]
        [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
        [button "Precipitation"   swap! state/data-layer-atom util/toggle :Precipitation]]]])
+
+(defn navigation-selection
+  "Buttons for choosing which data layer to display"
+  []
+  [:div
+   [:div {:id "navigation-layer-container"}
+    [button "Navigation" toggle-side-menu-visibility state/navigation-menu-visible]]
+   [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
+    [:a {:href "#" :class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility state/navigation-menu-visible)}]
+    [:div {:class "side-menu-button-group"}
+     [:select {:name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event))) :class "button"}
+      [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
+      [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CERFACS-CNRM-CM5"]
+      [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
+     [:select {:name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event))) :class "button"}
+      [:option {:value "rcp45"} "rcp45"]
+      [:option {:value "rcp85"} "rcp85"]]
+     [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
+     [button "Precipitation"   swap! state/data-layer-atom util/toggle :Precipitation]]]])
 
 (defn view-selection-buttons
   "Buttons for choosing view"
@@ -110,7 +129,7 @@
   []
   [:span
    [data-selection]
-   [view-selection-buttons]
+   [navigation-selection]
    [shader-selection-buttons]
    [time-sliders]
    [map-ui-blur]])

@@ -57,7 +57,9 @@
 ;; Whether or not the landing page is visible.
 (defonce intro-visible (atom :visible))
 
-(defonce side-menu-visible (atom :visible))
+(defonce data-menu-visible (atom :visible))
+
+(defonce navigation-menu-visible (atom :visible))
 
 (defonce climate-model-info (atom {:climate-model "ICHEC-EC-EARTH" :exhaust-level "rcp45"}))
 
