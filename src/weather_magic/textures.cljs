@@ -56,8 +56,8 @@
 
   Returs a map with {:key str :map texture-map} where :key holds how
   to find the newly loaded texture in texture-map."
-  [texture-map gl-ctx & {:keys [variable placement request-params]
-                         :or {variable "temperature"}}]
+  [texture-map gl-ctx {variable :variable request-params :request-params placement :placement
+                       :or {variable "temperature"}}]
   (let [request-map (merge {:year              2083
                             :month             1
                             :from-longitude   -17
@@ -78,10 +78,8 @@
 (defn load-data-into-atom-and-return-key!
   "Load a texture if needed and mutate the given atom to contain
   it. Return the key of the newly loaded texture."
-  [texture-map-atom gl-ctx & {:keys [variable request-params placement]
-                              :or {variable "temperature"}}]
-  (let [ret-val (load-data @texture-map-atom gl-ctx :variable variable
-                           :request-params request-params :placement placement)]
+  [texture-map-atom gl-ctx options]
+  (let [ret-val (load-data @texture-map-atom gl-ctx options)]
     (swap! texture-map-atom merge (:map ret-val))
     (:key ret-val)))
 
@@ -99,8 +97,8 @@
   (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera-left)
         placement       (transforms/get-texture-position-map lat-lon-corners)]
     (load-data-into-atom-and-return-key! textures-left-atom gl-ctx-left
-                                         :request-params lat-lon-corners
-                                         :placement placement)
+                                         {:request-params lat-lon-corners
+                                          :placement placement})
     (load-data-into-atom-and-return-key! textures-right-atom gl-ctx-right
-                                         :request-params lat-lon-corners
-                                         :placement placement)))
+                                         {:request-params lat-lon-corners
+                                          :placement placement})))

@@ -39,11 +39,15 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
-(defn trigger-data-load! []
-  (swap! state/dynamic-texture-keys assoc :next
-         (textures/load-data-for-current-viewport-and-return-key!
-          state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
-          @state/earth-orientation @state/camera-left)))
+(defn trigger-data-load!
+  "Get climate data for the area currently in view on the screen."
+  []
+  ;; Don't load a new texture if we're already loading one.
+  (when-not (contains? @state/dynamic-texture-keys :next)
+    (swap! state/dynamic-texture-keys assoc :next
+           (textures/load-data-for-current-viewport-and-return-key!
+            state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
+            @state/earth-orientation @state/camera-left))))
 
 (defn update-year-month-info
   [t key]
@@ -53,7 +57,8 @@
         last-year-update (:time-of-last-update (key @state/year-update))
         delta-year (int (- (* 5 t) last-year-update))]
     (when (> delta-year 0.5)
-      (swap! state/date-atom assoc-in [key :year :value] (+ min (rem (- (+ current-year delta-year) min) range)))
+      (swap! state/date-atom assoc-in [key :year :value]
+             (+ min (rem (- (+ current-year delta-year) min) range)))
       (swap! state/year-update assoc-in [key :time-of-last-update] (* 5 t)))))
 
 (defn draw-in-context
