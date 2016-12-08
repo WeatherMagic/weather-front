@@ -150,14 +150,15 @@
         total-steps (:total-steps @state/pointer-zoom-info)
         camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
         zoom-level (* (- camera-z-pos 1.1) (/ 4 5))
-        delta-x (* zoom-level (/ x-diff 100))
-        delta-y (* zoom-level (/ y-diff 100))
+        delta-x (* zoom-level (/ x-diff 80))
+        delta-y (* zoom-level (/ y-diff 80))
         zoom-distance (* (* (.-deltaY event) zoom-level) 1.0E-3)]
     (swap! state/camera-left world/zoom-camera zoom-distance)
     (swap! state/camera-right world/zoom-camera zoom-distance)
     (if (neg? zoom-distance)
       (update-pan delta-x delta-y)
-      (update-pan (* delta-x -1) (* delta-y -1)))))
+      (when (< camera-z-pos 3.0)
+        (update-pan (* delta-x -1) (* delta-y -1))))))
 
 (defn hook-up-events!
   "Hook up all the application event handlers."
