@@ -46,7 +46,7 @@
 (defn load-data
   "Loads data from thor into a texture.
 
-  There are three optional associative arguments:
+  The third argument is a map in which we use the following keys:
 
   :variable       - The type of data to request from the backend,
                     normally 'temperature' or 'percipitation'.
@@ -87,7 +87,8 @@
   [gl-ctx]
   (-> {}
       (load-texture-if-needed gl-ctx "img/earth.jpg")
-      (load-texture-if-needed gl-ctx "img/trump.png")))
+      (load-texture-if-needed gl-ctx "img/trump.png")
+      (load-texture-if-needed gl-ctx "img/space5.jpg")))
 
 (defn load-data-for-current-viewport-and-return-key!
   "AKA the tightly coupled monster function of doom with an argument

@@ -54,17 +54,19 @@
         northpole-y (.-m11 future-earth-orientation)
         northpole-z (.-m12 future-earth-orientation)
         northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))
-        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) 100)]
+        delta-angle (/ (* (Math/acos northpole-y-norm) (Math/sign northpole-x)) (:total-steps @state/pointer-zoom-info))]
     (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
 
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
-  (reset! state/earth-orientation (-> M44
-                                      (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                      (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x 2) (:fov @state/camera-left)) 1.0E-3)))
-                                      (g/rotate-z (Math/atan2 rel-y rel-x))
-                                      (m/* @state/earth-orientation))))
+  (let [camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))]
+    (reset! state/earth-orientation (-> M44
+                                        (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
+                                        (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) zoom-level) 0.2)))
+                                        (g/rotate-z (Math/atan2 rel-y rel-x))
+                                        (m/* @state/earth-orientation)))))
 
 (defn align-handler []
   (update-alignment-angle 0 0)
@@ -85,6 +87,7 @@
         current-y (.-clientY event)
         rel-x (- current-x (:x-val last-pos))
         rel-y (- current-y (:y-val last-pos))]
+    (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (/ rel-x 1000)) (+ (aget (.-buf atom) 1) (/ rel-y 1000)))))
     (update-pan rel-x rel-y)
     (swap! state/pan-speed assoc :speed (min (Math/hypot rel-x rel-y) 40) :rel-y rel-y :rel-x rel-x)
     (reset! last-xy-pos {:x-val current-x :y-val current-y})))
@@ -109,13 +112,15 @@
         window-height (.-clientHeight window-element)
         x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
         y-diff (- (/ window-height 2) y-pos)
-        total-steps (:total-steps @state/pointer-zoom-info)]
+        total-steps (:total-steps @state/pointer-zoom-info)
+        camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-distance (* (* (- camera-z-pos 1.1) (/ 4 5)) -1)]
     (update-alignment-angle x-diff y-diff)
     (swap! state/pointer-zoom-info assoc
            :delta-x (/ x-diff total-steps)
            :delta-y (/ y-diff total-steps)
            :current-step 0
-           :delta-zoom -15))
+           :delta-zoom (/ zoom-distance total-steps)))
   (reset! state/earth-animation-fn world/align-animation!))
 
 (defn pan-handler
@@ -130,14 +135,36 @@
     (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)
     (.addEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false)))
 
+(defn zoom-to-mouse
+  [event canvas]
+  (let [x-pos (.-clientX event)
+        y-pos (.-clientY event)
+        canvas-element (.getElementById js/document canvas)
+        canvas-width (.-clientWidth canvas-element)
+        canvas-height (.-clientHeight canvas-element)
+        window-element (.getElementById js/document "canvases")
+        window-width (.-clientWidth window-element)
+        window-height (.-clientHeight window-element)
+        x-diff (if (= canvas "right-canvas") (- (+ (/ window-width 2) (/ canvas-width 2)) x-pos) (- (/ canvas-width 2) x-pos))
+        y-diff (- (/ window-height 2) y-pos)
+        total-steps (:total-steps @state/pointer-zoom-info)
+        camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))
+        delta-x (* zoom-level (/ x-diff 70))
+        delta-y (* zoom-level (/ y-diff 70))
+        zoom-distance (* (* (.-deltaY event) zoom-level) 1.0E-3)]
+    (swap! state/camera-left world/zoom-camera zoom-distance)
+    (swap! state/camera-right world/zoom-camera zoom-distance)
+    (if (neg? zoom-distance)
+      (update-pan delta-x delta-y)
+      (when (< camera-z-pos 3.0)
+        (update-pan (* delta-x -1) (* delta-y -1))))))
+
 (defn hook-up-events!
   "Hook up all the application event handlers."
   []
-  (.addEventListener
-   (.getElementById js/document "canvases") "wheel"
-   (fn [event]
-     (swap! state/camera-left world/zoom-camera (.-deltaY event))
-     (swap! state/camera-right world/zoom-camera (.-deltaY event))) false)
+  (.addEventListener (.getElementById js/document "left-canvas") "wheel" (fn [event] (zoom-to-mouse event "left-canvas")))
+  (.addEventListener (.getElementById js/document "right-canvas") "wheel" (fn [event] (zoom-to-mouse event "right-canvas")))
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
   (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
