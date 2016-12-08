@@ -60,16 +60,10 @@
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
-(def dynamic-texture-keys
-  (atom {:current
-         (let [lat-lon-corners (transforms/get-lat-lon-map @earth-orientation @camera-left)
-               placement       (transforms/get-texture-position-map lat-lon-corners)]
-           (textures/load-data-into-atom-and-return-key! textures-left gl-ctx-left
-                                                         :request-params lat-lon-corners
-                                                         :placement placement)
-           (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right
-                                                         :request-params lat-lon-corners
-                                                         :placement placement))}))
+(defonce dynamic-texture-keys
+  (atom {:current (textures/load-data-for-current-viewport-and-return-key!
+                   textures-left textures-right gl-ctx-left gl-ctx-right
+                   @earth-orientation @camera-left)}))
 
 (def shaders-left  {:standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
                     :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)

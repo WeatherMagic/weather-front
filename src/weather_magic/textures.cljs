@@ -2,7 +2,8 @@
   (:require
    [weather-magic.util             :as util]
    [thi.ng.geom.gl.buffers         :as buf]
-   [thi.ng.geom.gl.webgl.constants :as glc]))
+   [thi.ng.geom.gl.webgl.constants :as glc]
+   [weather-magic.transforms       :as transforms]))
 
 (defn load-texture [gl-ctx path]
   "Loads a texture from path and places it in a map along with a
@@ -90,7 +91,16 @@
       (load-texture-if-needed gl-ctx "img/earth.jpg")
       (load-texture-if-needed gl-ctx "img/trump.png")))
 
-(defn load-next-texture
-  [dynamic-texture-keys path])
-
-(defn rotate-in-next-texture-if-loaded [])
+(defn load-data-for-current-viewport-and-return-key!
+  "AKA the tightly coupled monster function of doom with an argument
+  list so large it eclipses the sun."
+  [textures-left-atom textures-right-atom
+   gl-ctx-left gl-ctx-right earth-orientation camera-left]
+  (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera-left)
+        placement       (transforms/get-texture-position-map lat-lon-corners)]
+    (load-data-into-atom-and-return-key! textures-left-atom gl-ctx-left
+                                         :request-params lat-lon-corners
+                                         :placement placement)
+    (load-data-into-atom-and-return-key! textures-right-atom gl-ctx-right
+                                         :request-params lat-lon-corners
+                                         :placement placement)))
