@@ -23,8 +23,8 @@
 (defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 3.0)
                                                     :fov    70
                                                     :aspect (gl/get-viewport-rect gl-ctx-left)})))
-(defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                     :fov    110
+(defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 3.0)
+                                                     :fov    70
                                                      :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 (defonce background-camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 5.0)

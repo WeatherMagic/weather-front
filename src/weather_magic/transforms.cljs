@@ -105,3 +105,11 @@
     {:dataPos   (vec2 (aget (.-buf from-uv) 0)
                       (- 1 (aget (.-buf to-uv) 1)))
      :dataScale scale}))
+
+(defn north-pole-rotation-around-z
+  [earth-transform]
+  (let [northpole-x (.-m10 earth-transform)
+        northpole-y (.-m11 earth-transform)
+        northpole-z (.-m12 earth-transform)
+        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))]
+    (* (Math/acos northpole-y-norm) (Math/sign northpole-x))))
