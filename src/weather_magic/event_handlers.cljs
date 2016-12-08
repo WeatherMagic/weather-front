@@ -46,9 +46,11 @@
 (defn update-alignment-angle
   "Updating how much the globe should be rotated around the z axis to align northpole"
   [x-diff y-diff]
-  (let [future-earth-orientation (-> M44
+  (let [camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
+        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))
+        future-earth-orientation (-> M44
                                      (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) @world/zoom-level) 1.0E-3)))
+                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) zoom-level) 0.1)))
                                      (g/rotate-z (Math/atan2 y-diff x-diff))
                                      (m/* @state/earth-orientation))
         delta-angle (/ (util/north-pole-rotation-around-z future-earth-orientation) (:total-steps @state/pointer-zoom-info))]
