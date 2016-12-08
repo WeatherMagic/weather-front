@@ -96,6 +96,8 @@
               _       @(:loaded (next-key @state/textures-left))]
              (swap! state/dynamic-texture-keys
                     #(-> % (assoc :current next-key) (dissoc :next)))
+             (gl/release (:texture (old-key @state/textures-left)))
+             (gl/release (:texture (old-key @state/textures-right)))
              (swap! state/textures-left  dissoc old-key)
              (swap! state/textures-right dissoc old-key))
   (draw-in-context state/gl-ctx-left @state/camera-left @state/base-texture-left @state/textures-left state/shaders-left :left t)
