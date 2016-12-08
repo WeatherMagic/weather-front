@@ -16,6 +16,17 @@
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
+(defn toggle-side-menu-visibility
+  []
+  (swap! state/intro-visible hide-unhide)
+  (swap! state/side-menu-visible hide-unhide))
+
+(defn update-climate-model-info
+  [key input]
+  (println key)
+  (println input)
+  (swap! state/climate-model-info assoc-in [key] input))
+
 (defn toggle-play-stop
   [atom key]
   (if (:play-mode (key @atom))
@@ -56,14 +67,24 @@
   "What hides the map UI."
   [:div {:class @state/intro-visible :id "blur"}])
 
-(defn data-layer-buttons
+(defn data-selection
   "Buttons for choosing which data layer to display"
   []
-  [:div {:id "data-layer-container" :class (hide-unhide @state/intro-visible)}
-   [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
-   [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
-   [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
-   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]])
+  [:div
+    [:div {:id "data-layer-container"}
+      [button "Data" toggle-side-menu-visibility]]
+    [:div {:id "side-menu-container" :class (hide-unhide @state/side-menu-visible)}
+      [:a {:class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility)}]
+      [:div {:class "side-menu-button-group"}
+       [:select {:name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event))) :class "button"}
+        [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
+        [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CERFACS-CNRM-CM5"]
+        [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
+       [:select {:name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event))) :class "button"}
+        [:option {:value "rcp45"} "rcp45"]
+        [:option {:value "rcp85"} "rcp85"]]
+       [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
+       [button "Precipitation"   swap! state/data-layer-atom util/toggle :Precipitation]]]])
 
 (defn view-selection-buttons
   "Buttons for choosing view"
@@ -88,7 +109,7 @@
   "The UI displayed while the user interacts with the map."
   []
   [:span
-   [data-layer-buttons]
+   [data-selection]
    [view-selection-buttons]
    [shader-selection-buttons]
    [time-sliders]
