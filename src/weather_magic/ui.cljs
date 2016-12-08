@@ -11,12 +11,14 @@
 
 (enable-console-print!)
 
+(defonce animation-key-holder (atom {:spin-earth world/spin-earth! :europe world/show-europe!}))
+
 (defn hide-unhide
   "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
-(defn go-from-landing-poage
+(defn go-from-landing-page
   []
   (swap! state/blur-visible hide-unhide)
   (swap! state/landing-page-visible hide-unhide))
@@ -40,8 +42,8 @@
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
-  [name id func atom & args]
-  [:input {:type "button" :value name :id id
+  [name id class func atom & args]
+  [:input {:type "button" :value name :id id :class class
            :on-click #(apply func atom args)}])
 
 (defn play-pause-button
@@ -84,45 +86,39 @@
   "Buttons for choosing which data layer to display"
   []
   [:div
-    [:div {:id "data-layer-container" :class (hide-unhide @state/blur-visible)}
-      [button "Data-selection" "Data-selection" toggle-side-menu-visibility state/data-menu-visible]]
+    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
+      [button "Data-selection" "" "selection-button" toggle-side-menu-visibility state/data-menu-visible]]
     [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
+      [:a {:href "#" :class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility state/data-menu-visible)}]
       [:div {:id "side-menu-button-group"}
-       [:select {:id "Data-selection" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event))) :class "button"}
-        [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
-        [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CERFACS-CNRM-CM5"]
-        [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
-       [:select {:id "Data-selection" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event))) :class "button"}
-        [:option {:value "rcp45"} "rcp45"]
-        [:option {:value "rcp85"} "rcp85"]]
-       [button "Temperature" "Data-selection" swap! state/data-layer-atom util/toggle :Temperature]
-       [button "Precipitation" "Data-selection" swap! state/data-layer-atom util/toggle :Precipitation]]]])
+       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
+        [:option {:value "ICHEC-EC-EARTH"} "Climate model 1"]
+        [:option {:value "CNRM-CERFACS-CNRM-CM5"} "Climate model 2"]
+        [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
+       [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
+        [:option {:value "rcp45"} "Exhaust level 1"]
+        [:option {:value "rcp85"} "Exhaust level 2"]]
+       [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
+       [button "Precipitation" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Precipitation]]]])
 
 (defn navigation-selection
   "Buttons for choosing which data layer to display"
   []
   [:div
-   [:div {:id "navigation-layer-container" :class (hide-unhide @state/blur-visible)}
-    [button "Navigation" "Data-selection" toggle-side-menu-visibility state/navigation-menu-visible]]
+   [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
+    [button "Navigation" "" "selection-button" toggle-side-menu-visibility state/navigation-menu-visible]]
    [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
     [:a {:href "#" :class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility state/navigation-menu-visible)}]
-    [:div {:class "side-menu-button-group"}
-     [:select {:id "Data-selection" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
-      [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
-      [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CERFACS-CNRM-CM5"]
-      [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
-     [:select {:name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event))) :class "button"}
-      [:option {:value "rcp45"} "rcp45"]
-      [:option {:value "rcp85"} "rcp85"]]
-     [button "Temperature" "Data-selection" swap! state/data-layer-atom util/toggle :Temperature]
-     [button "Precipitation" "Data-selection"   swap! state/data-layer-atom util/toggle :Precipitation]]]])
-
-(defn view-selection-buttons
-  "Buttons for choosing view"
-  []
-  [:div {:id "view-selection-container" :class (hide-unhide @state/blur-visible)}
-   [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "About"  swap!  state/blur-visible hide-unhide]])
+    [:div {:id "side-menu-button-group"}
+     [:select {:class "side-menu-button" :name "Climate Model"}
+      [:option {:value ":spin-earth"} "Spin earth"]
+      [:option {:value ":europe"} "Europe"]]
+     [button "Europe" "" "side-menu-button" reset! state/earth-animation-fn world/show-europe!]
+     [button "Asia" "" "side-menu-button" reset! state/earth-animation-fn world/show-asia!]
+     [button "Oceania" "" "side-menu-button" reset! state/earth-animation-fn world/show-oceania!]
+     [button "Africa" "" "side-menu-button" reset! state/earth-animation-fn world/show-africa!]
+     [button "South America" "" "side-menu-button" reset! state/earth-animation-fn world/show-south-america!]
+     [button "North America" "" "side-menu-button" reset! state/earth-animation-fn world/show-north-america!]]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)
@@ -137,13 +133,14 @@
     [:h1 "Welcome to WeatherMagic!"]
     [:p "An interactive visualization of climate projections"]
     [:p "or How fucked art thou?"]]
-   [button "To map" "To map" go-from-landing-poage]])
+   [button "To map" "" "intro-button" go-from-landing-page]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
   [:div
    [data-selection]
+   [navigation-selection]
    [compass]
    [landing-page]
    [time-sliders]
