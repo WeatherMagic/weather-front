@@ -7,11 +7,15 @@
    [weather-magic.shaders  :as shaders]
    [weather-magic.util     :as util]
    [reagent.core           :as reagent :refer [atom]]
+   [thi.ng.geom.vector     :as v       :refer [vec2 vec3]]
    [thi.ng.geom.gl.shaders :as sh]))
 
 (enable-console-print!)
 
-(defonce animation-key-holder (atom {:spin-earth world/spin-earth! :europe world/show-europe!}))
+(defn set-static-view
+  [rot-coords]
+  (reset! state/earth-animation-fn world/show-static-view!)
+  (reset! state/static-scene-coordinates rot-coords))
 
 (defn hide-unhide
   "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
@@ -86,20 +90,20 @@
   "Buttons for choosing which data layer to display"
   []
   [:div
-    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
-      [button "Data-selection" "" "selection-button" toggle-side-menu-visibility state/data-menu-visible]]
-    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
-      [:a {:href "#" :class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility state/data-menu-visible)}]
-      [:div {:id "side-menu-button-group"}
-       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
-        [:option {:value "ICHEC-EC-EARTH"} "Climate model 1"]
-        [:option {:value "CNRM-CERFACS-CNRM-CM5"} "Climate model 2"]
-        [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
-       [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
-        [:option {:value "rcp45"} "Exhaust level 1"]
-        [:option {:value "rcp85"} "Exhaust level 2"]]
-       [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
-       [button "Precipitation" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Precipitation]]]])
+   [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
+    [button "Data-selection" "" "selection-button" toggle-side-menu-visibility state/data-menu-visible]]
+   [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
+    [:a {:href "#" :class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility state/data-menu-visible)}]
+    [:div {:id "side-menu-button-group"}
+     [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
+      [:option {:value "ICHEC-EC-EARTH"} "Climate model 1"]
+      [:option {:value "CNRM-CERFACS-CNRM-CM5"} "Climate model 2"]
+      [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
+     [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
+      [:option {:value "rcp45"} "Exhaust level 1"]
+      [:option {:value "rcp85"} "Exhaust level 2"]]
+     [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
+     [button "Precipitation" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Precipitation]]]])
 
 (defn navigation-selection
   "Buttons for choosing which data layer to display"
@@ -113,12 +117,14 @@
      [:select {:class "side-menu-button" :name "Climate Model"}
       [:option {:value ":spin-earth"} "Spin earth"]
       [:option {:value ":europe"} "Europe"]]
-     [button "Europe" "" "side-menu-button" reset! state/earth-animation-fn world/show-europe!]
-     [button "Asia" "" "side-menu-button" reset! state/earth-animation-fn world/show-asia!]
-     [button "Oceania" "" "side-menu-button" reset! state/earth-animation-fn world/show-oceania!]
-     [button "Africa" "" "side-menu-button" reset! state/earth-animation-fn world/show-africa!]
-     [button "South America" "" "side-menu-button" reset! state/earth-animation-fn world/show-south-america!]
-     [button "North America" "" "side-menu-button" reset! state/earth-animation-fn world/show-north-america!]]]])
+     [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
+     [button "Europe" "" "side-menu-button" set-static-view (vec3 45 80 0)]
+     [button "Africa" "" "side-menu-button" set-static-view (vec3 5 75 0)]
+     [button "SA" "" "side-menu-button" set-static-view (vec3 -20 150 0)]
+     [button "NA" "" "side-menu-button" set-static-view (vec3 35 190 0)]
+     [button "Oceania" "" "side-menu-button" set-static-view (vec3 -15 -40 0)]
+     [button "Asia" "" "side-menu-button" set-static-view (vec3 35 -15 0)]
+     [button "About" "" "side-menu-button" swap! state/landing-page-visible hide-unhide]]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)

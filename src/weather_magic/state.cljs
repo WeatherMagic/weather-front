@@ -51,6 +51,8 @@
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
 
+(defonce static-scene-coordinates (atom (vec3 0 0 0)))
+
 ;; The current rotation of earth.
 (defonce earth-orientation (atom M44))
 
