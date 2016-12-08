@@ -168,6 +168,7 @@ input[type="button"].play-pause {
   z-index:  1;
 }
 
+
 #view-selection-container {
   position: absolute;
   right:    calc(1% + 100px);
