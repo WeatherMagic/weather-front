@@ -95,7 +95,7 @@
   [camera-map delta-z]
   (let [current-camera-pos (:eye camera-map)
         current-z-camera-pos (aget (.-buf current-camera-pos) 2)
-        new-camera-pos (vec3 0 0 (max (min (+ current-z-camera-pos delta-z) 3.0) 1.1))]
+        new-camera-pos (if (and (neg? delta-z) (> delta-z -0.0001)) current-camera-pos (vec3 0 0 (max (min (+ current-z-camera-pos delta-z) 3.0) 1.1)))]
     (cam/perspective-camera
      (assoc camera-map :eye new-camera-pos))))
 

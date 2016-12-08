@@ -64,7 +64,7 @@
         zoom-level (* (- camera-z-pos 1.1) (/ 4 5))]
     (reset! state/earth-orientation (-> M44
                                         (g/rotate-z (* (Math/atan2 rel-y rel-x) -1))
-                                        (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) zoom-level) 0.15)))
+                                        (g/rotate-y (m/radians (* (* (Math/hypot rel-y rel-x) zoom-level) 0.2)))
                                         (g/rotate-z (Math/atan2 rel-y rel-x))
                                         (m/* @state/earth-orientation)))))
 
@@ -150,8 +150,8 @@
         total-steps (:total-steps @state/pointer-zoom-info)
         camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
         zoom-level (* (- camera-z-pos 1.1) (/ 4 5))
-        delta-x (* zoom-level (/ x-diff 80))
-        delta-y (* zoom-level (/ y-diff 80))
+        delta-x (* zoom-level (/ x-diff 70))
+        delta-y (* zoom-level (/ y-diff 70))
         zoom-distance (* (* (.-deltaY event) zoom-level) 1.0E-3)]
     (swap! state/camera-left world/zoom-camera zoom-distance)
     (swap! state/camera-right world/zoom-camera zoom-distance)
