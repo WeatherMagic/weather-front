@@ -254,11 +254,12 @@ input[type="button"]:active {
 
 #Data-selection {
   float: left;
-  height: 40px;
+  height: 15%;
   width: 100%;
   left: 10%;
   right: 10%;
-
+  margin-top: 5%;
+  margin-bottom: 5%;
   border-radius: 25px;
   border-width: 3px;
   border-color: #255aaa;
