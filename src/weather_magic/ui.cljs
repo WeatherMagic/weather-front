@@ -92,16 +92,6 @@
    [button "Blend shader"       reset! state/current-shader-key :blend]
    [button "Temperature shader" reset! state/current-shader-key :temp]])
 
-;(defn landing-page
-  ;"What the user sees when she arrives at the page."
-  ;[]
-  ;[:div {:id "landing-page" :class @state/intro-visible}
-  ;[:div
-   ;[:h1 "Welcome to WeatherMagic!"]
-  ; [:p "An interactive visualization of climate projections"]
- ;  [:p "or How fucked art thou?"]]
-;[button "To map" swap! state/intro-visible hide-unhide]])
-
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
@@ -109,7 +99,6 @@
    [data-layer-buttons]
    [view-selection-buttons]
    [shader-selection-buttons]
-;   [landing-page]
    [time-sliders]
    [map-ui-blur]])
 
