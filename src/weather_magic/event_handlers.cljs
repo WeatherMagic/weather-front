@@ -123,9 +123,10 @@
            :delta-zoom (/ zoom-distance total-steps)))
   (reset! state/earth-animation-fn world/align-animation!))
 
-(defn pan-handler
+(defn mouse-down-handler
   "Handles the mouse events for panning"
   [event]
+  (swap! state/navigation-menu-visible (fn [] :visible))
   (swap! state/pan-speed assoc :speed 0)
   (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
   (reset! mouse-pressed true)
@@ -167,7 +168,7 @@
   (.addEventListener (.getElementById js/document "right-canvas") "wheel" (fn [event] (zoom-to-mouse event "right-canvas")))
   (.addEventListener js/window "load" resize-handler false)
   (.addEventListener js/window "resize" resize-handler false)
-  (.addEventListener (.getElementById js/document "canvases") "mousedown" pan-handler false)
+  (.addEventListener (.getElementById js/document "canvases") "mousedown" mouse-down-handler false)
   (.addEventListener (.getElementById js/document "left-canvas") "dblclick" (fn [event] (pointer-zoom-handler event "left-canvas")) false)
   (.addEventListener (.getElementById js/document "right-canvas") "dblclick" (fn [event] (pointer-zoom-handler event "right-canvas")) false)
   true)
