@@ -10,19 +10,21 @@
   volatile indicating whether or not the texture has been loaded
   like: {:texture T :loaded (volatile! false)}"
   (let [loaded (volatile! false)
+        failed (volatile! false)
         texture (buf/load-texture
                  gl-ctx {:callback
                          (fn [tex img]
                            (vreset! loaded true))
                          :error-callback
                          (fn [event]
-                           (.error js/console "Failed to load image."
-                                   (aget (.-path event) 0) event))
+                           (vreset! failed true)
+                           (.warn js/console "Failed to load image."
+                                  (aget (.-path event) 0) event))
                          :src    path
                          :filter [glc/linear glc/linear]
                          :cors   ""
                          :format glc/rgba})]
-    {:texture texture :loaded loaded}))
+    {:texture texture :loaded loaded :failed failed}))
 
 (defn load-texture-if-needed
   [textures gl-ctx path & {:keys [key-fn] :or {key-fn #(keyword (util/get-filename %))}}]

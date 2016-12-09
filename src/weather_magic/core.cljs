@@ -48,7 +48,6 @@
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                       state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
                       @state/earth-orientation @state/camera-left)]
-        (println (:current texture-keys) next-key)
         (when-not (= (:current texture-keys) next-key)
           (swap! state/dynamic-texture-keys assoc :next next-key))))))
 
@@ -110,14 +109,18 @@
     (swap! state/year-update assoc-in [:right :time-of-last-update] (* 5 t)))
   ;; If the next texture is loaded, set it to be the current texture and unload the old.
   (when-let* [next-key (:next    @state/dynamic-texture-keys)
-              old-key  (:current @state/dynamic-texture-keys)
-              _       @(:loaded (next-key @state/textures-left))]
-             (swap! state/dynamic-texture-keys
-                    #(-> % (assoc :current next-key) (dissoc :next)))
-             (gl/release (:texture (old-key @state/textures-left)))
-             (gl/release (:texture (old-key @state/textures-right)))
-             (swap! state/textures-left  dissoc old-key)
-             (swap! state/textures-right dissoc old-key))
+              old-key  (:current @state/dynamic-texture-keys)]
+             (when @(:loaded (next-key @state/textures-left))
+               (swap! state/dynamic-texture-keys
+                      #(-> % (assoc :current next-key) (dissoc :next)))
+               (gl/release (:texture (old-key @state/textures-left)))
+               (gl/release (:texture (old-key @state/textures-right)))
+               (swap! state/textures-left  dissoc old-key)
+               (swap! state/textures-right dissoc old-key))
+             (when @(:failed (next-key @state/textures-left))
+               (swap! state/dynamic-texture-keys dissoc :next)
+               (swap! state/textures-left        dissoc next-key)
+               (swap! state/textures-right       dissoc next-key)))
   (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left t)
   (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right t)
   (vreset! state/time-of-last-frame (* 5 t)))
