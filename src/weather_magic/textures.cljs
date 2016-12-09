@@ -91,7 +91,7 @@
   (-> {}
       (load-texture-if-needed gl-ctx "img/earth.jpg")
       (load-texture-if-needed gl-ctx "img/trump.png")
-      (load-texture-if-needed gl-ctx "img/space5.jpg")))
+      (load-texture-if-needed gl-ctx "img/space.jpg")))
 
 (defn load-data-for-current-viewport-and-return-key!
   "AKA the tightly coupled monster function of doom with an argument
