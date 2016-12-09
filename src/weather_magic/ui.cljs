@@ -17,10 +17,11 @@
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
 (defn toggle-play-stop
-  [atom left-right-key year-month-key]
+  [atom left-right-key year-month-key year-month-key-inv]
   (if (:play-mode (year-month-key (left-right-key @atom)))
     (swap! atom update-in [left-right-key year-month-key] merge {:play-mode false :play-mode-before-sliding false})
-    (swap! atom update-in [left-right-key year-month-key] merge {:play-mode true :play-mode-before-sliding true})))
+    (do (swap! atom update-in [left-right-key year-month-key] merge {:play-mode true :play-mode-before-sliding true})
+        (swap! atom update-in [left-right-key year-month-key-inv] merge {:play-mode false :play-mode-before-sliding false}))))
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
@@ -50,14 +51,14 @@
 (defn time-sliders []
   [:div {:id "time-slider-containers"}
    [:div {:class "time-sliders-left"}
-    [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year]
+    [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]
     [slider-component :left :year]
-    [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month]
+    [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]
     [slider-component :left :month]]
    [:div {:class "time-sliders-right"}
-    [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year]
+    [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]
     [slider-component :right :year]
-    [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month]
+    [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]
     [slider-component :right :month]]])
 
 (defn map-ui-blur []
