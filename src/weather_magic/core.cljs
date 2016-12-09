@@ -37,16 +37,6 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
-(defn enable-shader-alpha-blending []
-  (gl/prepare-render-state state/gl-ctx-left
-                           {:blend true
-                            :blend-fn [glc/src-alpha
-                                       glc/one-minus-src-alpha]})
-  (gl/prepare-render-state state/gl-ctx-right
-                           {:blend true
-                            :blend-fn [glc/src-alpha
-                                       glc/one-minus-src-alpha]}))
-
 (defn update-year-month-info
   [t key]
   (let [min  (:min (:year (key @state/date-atom)))
@@ -87,7 +77,7 @@
              (assoc-in [:uniforms :model] (set-model-matrix (- (* 5 t) @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
-             (assoc-in [:uniforms :fov] (:fov camera))
+             (assoc-in [:uniforms :eye] (:eye camera))
              (assoc-in [:uniforms :dataScale] (vec2 0.05 0.05))
              (assoc-in [:uniforms :dataPos] (vec2 0.51 0.2))))))))
 
