@@ -159,7 +159,9 @@
     [:h1 "What makes mangel mangel"]
     [:p "Mangel is the nickname of one of the group members"]
     [:p "Mangel likes to watch documentaries"]
-    [:p "Mangel is not the same person as Magnuzo"]]])
+    [:p "Mangel is the same person as Magnuzo"]
+    [:p "Mangel is love."]
+    [:p "Mangel is life"]]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
