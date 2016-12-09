@@ -39,14 +39,10 @@
 (defonce data-layer-atom (atom #{}))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:left  {:play-mode false
-                                  :play-mode-before-sliding false
-                                  :year  {:value 1950 :min 1950 :max 2100}
-                                  :month {:value 1 :min 1 :max 12}}
-                          :right {:play-mode false
-                                  :play-mode-before-sliding false
-                                  :year  {:value 1950 :min 1950 :max 2100}
-                                  :month {:value 1 :min 1 :max 12}}}))
+(defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
+                                  :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}
+                          :right {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
+                                  :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}}))
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
@@ -89,8 +85,10 @@
 
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 200 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
 
-(defonce year-update (atom {:left {:time-of-last-update 0}
-                            :right {:time-of-last-update 0}}))
+(defonce year-update (atom {:left  {:year {:time-of-last-update 0}
+                                    :month {:time-of-last-update 0}}
+                            :right {:year  {:time-of-last-update 0}
+                                    :month {:time-of-last-update 0}}}))
 
 (defonce texture-info (atom {:dataPos   (vec2 0 0)
                              :dataScale (vec2 0 0)}))
