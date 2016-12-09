@@ -45,7 +45,7 @@
         last-year-update (:time-of-last-update (year-month-key (left-right-key @state/year-update)))
         delta-year (int (- (* time-factor t) last-year-update))]
     (when (> delta-year 0.5)
-      (swap! state/date-atom assoc-in [left-right-key year-month-key :value] (+ min (rem (- (+ current-year delta-year) min) range)))
+      (swap! state/date-atom assoc-in [left-right-key year-month-key :value] (+ min (rem (- (+ current-year delta-year) min) (inc range))))
       (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update] (* time-factor t)))))
 
 (defn draw-in-context
