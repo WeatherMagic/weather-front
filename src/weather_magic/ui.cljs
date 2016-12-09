@@ -22,15 +22,21 @@
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
+(defn toggle-about-page
+  [atom1 atom2]
+  (swap! atom1 hide-unhide)
+  (swap! atom2 hide-unhide))
+
+(defn close-side-menu
+  [side-menu]
+  (swap! side-menu hide-unhide)
+  (swap! state/blur-visible (fn [] :hidden))
+  (swap! state/about-page-visible (fn [] :hidden)))
+
 (defn go-from-landing-page
   []
-  (swap! state/blur-visible hide-unhide)
-  (swap! state/landing-page-visible hide-unhide))
-
-(defn toggle-side-menu-visibility
-  [atom]
-  (swap! state/blur-visible hide-unhide)
-  (swap! atom hide-unhide))
+  (swap! state/blur-visible (fn [] :hidden))
+  (swap! state/landing-page-visible (fn [] :hidden)))
 
 (defn update-climate-model-info
   [key input]
@@ -117,11 +123,11 @@
    [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
     [button "Navigation" "" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
    [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
-    [:a {:href "#" :class "closebtn" :value "X" :on-click #(swap! state/navigation-menu-visible hide-unhide)}]
+    [:a {:href "#" :class "closebtn" :value "X" :on-click #(close-side-menu state/navigation-menu-visible)}]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "right-upper-side-menu-button-group"}
       [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
-      [button "About" "" "side-menu-button" swap! state/landing-page-visible hide-unhide]]
+      [button "About" "" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]
      [:div {:id "right-lower-side-menu-button-group"}
       [button "Europe" "" "side-menu-button" set-static-view (vec3 45 80 0)]
       [button "Africa" "" "side-menu-button" set-static-view (vec3 5 75 0)]
@@ -145,6 +151,16 @@
     [:p "or How fucked art thou?"]]
    [button "To map" "" "intro-button" go-from-landing-page]])
 
+(defn about-page
+  "What the user sees when she arrives at the page."
+  []
+  [:div {:id "landing-page" :class @state/about-page-visible}
+   [:div
+    [:h1 "What makes mangel mangel"]
+    [:p "Mangel is the nickname of one of the group members"]
+    [:p "Mangel likes to watch documentaries"]
+    [:p "Mangel is not the same person as Magnuzo"]]])
+
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
@@ -153,6 +169,7 @@
    [navigation-selection]
    [compass]
    [landing-page]
+   [about-page]
    [time-sliders]
    [map-ui-blur]])
 

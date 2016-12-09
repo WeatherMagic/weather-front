@@ -55,6 +55,8 @@
 ;; Whether or not the landing page is visible.
 (defonce landing-page-visible (atom :visible))
 
+(defonce about-page-visible (atom :hidden))
+
 (defonce blur-visible (atom :visible))
 
 (defonce data-menu-visible (atom :visible))
