@@ -17,7 +17,6 @@
       (g/rotate-y (m/radians (aget (.-buf rot-coords) 1)))
       (g/rotate-z (m/radians (aget (.-buf rot-coords) 2)))))
 
-
 (defn stop-spin!
   "Makes the earth stop spinning, aka the no-op function."
   [_])
