@@ -47,11 +47,23 @@
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
 
+(defonce static-scene-coordinates (atom (vec3 0 0 0)))
+
 ;; The current rotation of earth.
 (defonce earth-orientation (atom M44))
 
 ;; Whether or not the landing page is visible.
-(defonce intro-visible (atom :visible))
+(defonce landing-page-visible (atom :visible))
+
+(defonce about-page-visible (atom :hidden))
+
+(defonce blur-visible (atom :visible))
+
+(defonce data-menu-visible (atom :visible))
+
+(defonce navigation-menu-visible (atom :visible))
+
+(defonce climate-model-info (atom {:climate-model "ICHEC-EC-EARTH" :exhaust-level "rcp45"}))
 
 ;; The models with buffers prepared and ready for use by the program.
 (def models {:left  {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-left  glc/static-draw)
