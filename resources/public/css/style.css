@@ -1,36 +1,75 @@
-/* CSS reset */
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
 
-
-input[type="button"].play-pause {
-  background-color: rgba(230, 230, 230, 1);
-  background-image: url('../img/play-pause.png');
-  height: 40px;
-  margin: 5px 0 5px 15px;
-  width:  40px;
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  border:		  0;
+  font-size:  100%;
+  font-style: normal;
+  margin:		  0;
+  padding:	  0;
+	-webkit-user-select: none;
+  user-select: none;
+  vertical-align: baseline;
 }
-
-
-
-* {
-  margin:0;
-  padding:0;
-  boarder:0;
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
 }
-
-body, html {
- overflow:hidden;
- height: 100%;
- width: 100%;
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after, q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
 /* Our CSS */
 
+h1{
+  font-size: 2.2em;
+}
+p{
+  font-family: Sans-serif;
+}
+
+body, html {
+ height:    100%;
+ overflow:  hidden;
+ width:     100%;
+}
+
 #time-slider-containers {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  bottom:   0;
+  left:     0;
+  padding:  10px 0 0 0;
+  position: absolute;
+  width:    100%;
 }
 
 .time-sliders-left {
@@ -48,28 +87,49 @@ input[type=range] {
 }
 
 .time-slider {
-  margin: 0 2% 0 2%;
-  color: white;
-  float: right;
-  width: 60%;
+  color:  white;
+  float:  right;
+  width:  calc(100% - 70px);
+  cursor: default;
 }
+
+input[type="button"].play-pause {
+  background-color: rgba(230, 230, 230, 1);
+  background-image: url('../img/play-pause.png');
+  height: 40px;
+  margin: 5px 0 5px 15px;
+  width:  40px;
+}
+
 
 .hidden {
   visibility: hidden;
 }
 
 #blur{
-  height: 100vh;
-  width: 100vw;
-  top: 0;
-  left: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  height:   100vh;
+  left:     0;
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
+  top:      0;
+  width:    100vw;
 }
 
 #left-canvas, #right-canvas {
   height: 100vh;
-  width: 50vw;
+  width:  50vw;
+}
+
+#canvases {
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+#canvases:active {
+  cursor: -moz-grab;
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
 }
 
 #right-canvas {
@@ -77,78 +137,78 @@ input[type=range] {
 }
 
 * {
-  margin:0;
-  padding:0;
-  boarder:0;
+  boarder:  0;
+  margin:   0;
+  padding:  0;
+}
+
+#landing-page {
+  color:    white;
+	cursor:   default;
+  position: absolute;
+  top:      0;
+  width:    100%;
+	height:   90%;;
+  z-index:  1;
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+#landing-page > input[type="button"] {
+	margin: 10%;
 }
 
 #data-layer-container {
-  z-index: 1;
+  left:     1%;
   position: absolute;
-  width: 10%;
-  height: 100%;
-  top: 10%;
-  left: 5%;
-}
-
-#shader-selection-container {
-  z-index: 1;
-  position: absolute;
-  width: 100%;
-  height: 10%;
-  left: 25%;
-  top: 5%;
+  top:      25%;
+  width:    0;
+  z-index:  1;
 }
 
 
 #view-selection-container {
   position: absolute;
-  width: 10%;
-  height: 100%;
-  right: 5%;
-  top: 20%;
+  right:    calc(1% + 100px);
+  top:      25%;
+  width:    0;
 }
 
-.button {
-  float: left;
-  height: 60px;
-  width: 180px;
-  margin: 25px;
-  border-radius: 25px;
-  border-width: 3px;
-  border-color: #255aaa;
-  text-shadow: 0px 0px #255aaa;
-  color: black;
-  font-size: 100%;
-  font-family: sans-serif;
-  font-weight: bold;
-  font-style: normal;
+input[type="button"] {
+  background-image: url('../img/raindrops.jpg');
+  border-radius: 50%;
+  border-width:  0;
+  box-shadow:    0 0 0.5em #000;
+  color:         black;
+  cursor:        pointer;
+  font-size:     1.2em;
+  font-weight:   bold;
+  height:        100px;
+  margin:        1em 0;
+  outline:       0;
+  text-shadow:   0 0 0.3em white;
+  width:         100px;
 }
 
-.button:hover {
-  box-shadow: 0 0 50px #255aaa;
+input[type="button"]::-moz-focus-inner {
+  border: 0;
 }
 
-.button:active {
-  background-color: #7f8896;
+input[type="button"]:hover {
+  box-shadow: 0 0 0.7em #fff;
 }
 
-.button-clicked {
-  width: 250px;
-  height: 100px;
-  margin: 25px;
-  background-color: #7f8896;
-  border-radius: 25px;
-  border-width: 3px;
-  border-color: #255aaa;
-  text-shadow: 0px 0px #255aaa;
-  color: black;
-  font-size: 100%;
-  font-family: sans-serif;
-  font-weight: bold;
-  font-style: normal;
+input[type="button"]:active {
+  box-shadow: 0 0 1.5em #fff;
 }
 
-.button-clicked:hover {
-  box-shadow: 0 0 50px #255aaa;
+#Compass {
+  background-color: rgba(255, 255, 255, 0.3);
+  background-image: url('../img/compass.png');
+  position: absolute;
+  right:    1%;
+  top:      1%;
+  width:    100px;
 }

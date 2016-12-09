@@ -26,7 +26,7 @@
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [id func atom & args]
-  [:input {:type "button" :value id :id id :class "button"
+  [:input {:type "button" :value id :id id
            :on-click #(apply func atom args)}])
 
 (defn play-pause-button
@@ -69,29 +69,30 @@
   "Buttons for choosing which data layer to display"
   []
   [:div {:id "data-layer-container" :class (hide-unhide @state/intro-visible)}
-   [button "Temperature" swap! state/data-layer-atom util/toggle :Temperature]
-   [button "Sea-level"   swap! state/data-layer-atom util/toggle :Sea-level]
-   [button "Pests"       swap! state/data-layer-atom util/toggle :Pests]
-   [button "Drought"     swap! state/data-layer-atom util/toggle :Drought]])
+   [button "Temp"    swap! state/data-layer-atom util/toggle :Temperature]
+   [button "Drought" swap! state/data-layer-atom util/toggle :Drought]])
 
 (defn view-selection-buttons
   "Buttons for choosing view"
   []
   [:div {:id "view-selection-container" :class (hide-unhide @state/intro-visible)}
-   [button "Turkey" reset! state/earth-animation-fn world/show-turkey!]
-   [button "World"  reset! state/earth-animation-fn world/spin-earth!]
    [button "Europe" reset! state/earth-animation-fn world/show-europe!]
-   [button "Align" event-handlers/align-handler]
-   [button "Reset!" event-handlers/reset-spin-handler]])
+   [button "About"  swap!  state/intro-visible hide-unhide]])
 
-(defn shader-selection-buttons
-  "Buttons for choosing shader"
+(defn compass []
+  [:input {:type "button" :id "Compass" :class (hide-unhide @state/intro-visible)
+           :on-click event-handlers/align-handler
+           :style {:transform (str "rotate(" (util/north-pole-rotation-around-z @state/earth-orientation) "rad)")}}])
+
+(defn landing-page
+  "What the user sees when she arrives at the page."
   []
-  [:div {:id "shader-selection-container"}
-   [button "Go to map"          swap!  state/intro-visible  hide-unhide]
-   [button "Standard shader"    reset! state/current-shader-key :standard]
-   [button "Blend shader"       reset! state/current-shader-key :blend]
-   [button "Temperature shader" reset! state/current-shader-key :temp]])
+  [:div {:id "landing-page" :class @state/intro-visible}
+   [:div
+    [:h1 "Welcome to WeatherMagic!"]
+    [:p "An interactive visualization of climate projections"]
+    [:p "or How fucked art thou?"]]
+   [button "To map" swap! state/intro-visible hide-unhide]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
@@ -99,7 +100,8 @@
   [:div
    [data-layer-buttons]
    [view-selection-buttons]
-   [shader-selection-buttons]
+   [compass]
+   [landing-page]
    [time-sliders]
    [map-ui-blur]])
 

@@ -19,7 +19,8 @@
                                    (aget (.-path event) 0) event))
                          :src    path
                          :filter [glc/linear glc/linear]
-                         :cors   ""})]
+                         :cors   ""
+                         :format glc/rgba})]
     {:texture texture :loaded loaded}))
 
 (defn load-texture-if-needed
@@ -57,11 +58,11 @@
   to find the newly loaded texture in texture-map."
   [texture-map gl-ctx & {:keys [variable request-params] :or {variable "temperature"}}]
   (let [request-map (merge {:year              2083
-                            :month             1
-                            :from-longitude   -17
-                            :to-longitude      50
-                            :from-latitude     40
-                            :to-latitude       80
+                            :month             12
+                            :from-longitude    5
+                            :to-longitude      58
+                            :from-latitude     61
+                            :to-latitude       73
                             :climate-model     "CNRM-CERFACS-CNRM-CM5"
                             :exhaust-level     "rcp45"
                             :height-resolution 1024}

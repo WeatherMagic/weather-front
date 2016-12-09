@@ -19,19 +19,20 @@
 (defonce view-rect-left  (gl/get-viewport-rect gl-ctx-left))
 (defonce view-rect-right (gl/get-viewport-rect gl-ctx-right))
 
-(defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                    :fov    140
+(defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 3.0)
+                                                    :fov    70
                                                     :aspect (gl/get-viewport-rect gl-ctx-left)})))
-(defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                     :fov    140
+
+(defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 3.0)
+                                                     :fov    70
                                                      :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
-(defonce background-camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                               :fov    140
+(defonce background-camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 5.0)
+                                                               :fov    70
                                                                :aspect (gl/get-viewport-rect gl-ctx-left)})))
 
-(defonce background-camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 1.5)
-                                                                :fov    140
+(defonce background-camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 5.0)
+                                                                :fov    70
                                                                 :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
@@ -70,13 +71,9 @@
                                                   (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
 
 (def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
-                    :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
-                    :temp     (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)})
+                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)})
 (def shaders-right {:space    (sh/make-shader-from-spec gl-ctx-right shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
-                    :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec)
-                    :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)})
+                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)})
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.
@@ -87,7 +84,7 @@
 
 (defonce lat-lon-coords (atom {:from-lat 0 :to-lat 0 :from-lon 0 :to-lon 0}))
 
-(defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 100 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
+(defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 200 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
 
 (defonce year-update (atom {:left  {:year {:time-of-last-update 0}
                                     :month {:time-of-last-update 0}}
