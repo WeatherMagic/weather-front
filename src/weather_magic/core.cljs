@@ -47,27 +47,16 @@
                             :blend-fn [glc/src-alpha
                                        glc/one-minus-src-alpha]}))
 
-(defn update-year-info
-  [t left-right-key]
-  (let [min  (:min (:year (left-right-key @state/date-atom)))
-        range (- (:max (:year (left-right-key @state/date-atom))) min)
-        current-year (:value (:year (left-right-key @state/date-atom)))
-        last-year-update (:time-of-last-update (:year (left-right-key @state/year-update)))
-        delta-year (int (- (* 5 t) last-year-update))]
+(defn update-year-month-info
+  [t left-right-key year-month-key time-factor]
+  (let [min  (:min (year-month-key (left-right-key @state/date-atom)))
+        range (- (:max (year-month-key (left-right-key @state/date-atom))) min)
+        current-year (:value (year-month-key (left-right-key @state/date-atom)))
+        last-year-update (:time-of-last-update (year-month-key (left-right-key @state/year-update)))
+        delta-year (int (- (* time-factor t) last-year-update))]
     (when (> delta-year 0.5)
-      (swap! state/date-atom assoc-in [left-right-key :year :value] (+ min (rem (- (+ current-year delta-year) min) range)))
-      (swap! state/year-update assoc-in [left-right-key :year :time-of-last-update] (* 5 t)))))
-
-(defn update-month-info
-  [t left-right-key]
-  (let [min  (:min (:month (left-right-key @state/date-atom)))
-        range (- (:max (:month (left-right-key @state/date-atom))) min)
-        current-year (:value (:month (left-right-key @state/date-atom)))
-        last-year-update (:time-of-last-update (:month (left-right-key @state/year-update)))
-        delta-month (int (- (* 1 t) last-year-update))]
-    (when (> delta-month 0.5)
-      (swap! state/date-atom assoc-in [left-right-key :month :value] (+ min (rem (- (+ current-year delta-month) min) range)))
-      (swap! state/year-update assoc-in [left-right-key :month :time-of-last-update] (* 1 t)))))
+      (swap! state/date-atom assoc-in [left-right-key year-month-key :value] (+ min (rem (- (+ current-year delta-year) min) range)))
+      (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update] (* time-factor t)))))
 
 (defn draw-in-context
   [gl-ctx camera background-camera base-texture textures shaders left-right-key year-month-key t]
@@ -105,16 +94,16 @@
 (defn draw-frame! [t]
   (transforms/update-lat-lon)
   (if (:play-mode (:year (:left @state/date-atom)))
-    (update-year-info t :left)
+    (update-year-month-info t :left :year 5)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
   (if (:play-mode (:month (:left @state/date-atom)))
-    (update-month-info t :left)
+    (update-year-month-info t :left :month 1)
     (swap! state/year-update assoc-in [:left :month :time-of-last-update] (* 1 t)))
   (if (:play-mode (:year (:right @state/date-atom)))
-    (update-year-info t :right)
+    (update-year-month-info t :right :year 5)
     (swap! state/year-update assoc-in [:right :year :time-of-last-update] (* 5 t)))
   (if (:play-mode (:month (:right @state/date-atom)))
-    (update-month-info t :right)
+    (update-year-month-info t :right :month 1)
     (swap! state/year-update assoc-in [:right :month :time-of-last-update] (* 1 t)))
   (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :year t)
   (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right :year t)
