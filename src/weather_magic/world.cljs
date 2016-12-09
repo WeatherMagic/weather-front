@@ -9,15 +9,21 @@
    [thi.ng.math.core       :as m   :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.vector     :as v   :refer [vec2 vec3]]))
 
-(defn show-europe!
+(defn set-earth-rotation
+  ""
+  [rot-coords]
+
+  (-> M44
+      (g/rotate-x (m/radians (aget (.-buf rot-coords) 0)))
+      (g/rotate-y (m/radians (aget (.-buf rot-coords) 1)))
+      (g/rotate-z (m/radians (aget (.-buf rot-coords) 2)))))
+
+(defn show-static-view!
   "Rotates the sphere so that Europe is shown."
   [t]
   (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
-  (reset! state/earth-orientation (-> M44
-                                      (g/rotate-x (m/radians 45))
-                                      (g/rotate-y (m/radians 80))
-                                      (g/rotate-z (m/radians 0)))))
+  (reset! state/earth-orientation (set-earth-rotation @state/static-scene-coordinates)))
 
 (defn northpole-up!
   "Rotates the sphere so that the northpole is up after panning."
@@ -25,20 +31,6 @@
   (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation M44))
-
-; If we decide to display maps on a flat surface we have to reset the translation when changing to world-view
-(defn show-turkey!
-  "Shows Turkey on a flat surface."
-  [t]
-  (swap!  state/textures-left merge
-          (textures/load-texture-if-needed state/gl-ctx-left @state/textures-left "img/turkey.jpg"))
-  (reset! state/current-model-key :plane)
-  (reset! state/base-texture-left (:turkey @state/textures-left))
-  (reset! state/earth-orientation (-> M44
-                                      (g/translate (vec3 2 1.5 0))
-                                      (g/rotate-x (m/radians 0))
-                                      (g/rotate-y (m/radians 0))
-                                      (g/rotate-z (m/radians 180)))))
 
 (defn spin-earth!
   "Rotates the sphere indefinitely."
@@ -81,14 +73,6 @@
     (if (neg? new-speed)
       (reset! state/earth-animation-fn stop-spin!)
       (swap! state/pan-speed assoc :speed new-speed))))
-
-(defn show-turkey
-  "Shows Turkey on a flat surface."
-  [earth-atom t]
-  (reset! earth-atom {:xAngle 0
-                      :yAngle 0
-                      :zAngle 180
-                      :translation (vec3 2 1.5 0)}))
 
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."

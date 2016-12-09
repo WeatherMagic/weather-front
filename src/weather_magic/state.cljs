@@ -1,6 +1,7 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models           :as models]
+   [weather-magic.transforms       :as transforms]
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [thi.ng.geom.gl.camera          :as cam]
@@ -22,7 +23,6 @@
 (defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 3.0)
                                                     :fov    70
                                                     :aspect (gl/get-viewport-rect gl-ctx-left)})))
-
 (defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 3.0)
                                                      :fov    70
                                                      :aspect (gl/get-viewport-rect gl-ctx-right)})))
@@ -47,28 +47,39 @@
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
 
+(defonce static-scene-coordinates (atom (vec3 0 0 0)))
+
 ;; The current rotation of earth.
 (defonce earth-orientation (atom M44))
 
 ;; Whether or not the landing page is visible.
-(defonce intro-visible (atom :visible))
+(defonce landing-page-visible (atom :visible))
+
+(defonce about-page-visible (atom :hidden))
+
+(defonce blur-visible (atom :visible))
+
+(defonce data-menu-visible (atom :visible))
+
+(defonce navigation-menu-visible (atom :visible))
+
+(defonce climate-model-info (atom {:climate-model "ICHEC-EC-EARTH" :exhaust-level "rcp45"}))
 
 ;; The models with buffers prepared and ready for use by the program.
 (def models {:left  {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-left  glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
              :right {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-right glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-right glc/static-draw)}})
-
 (defonce current-model-key (atom :sphere))
 
 (defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
-
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
-
-(defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left gl-ctx-left)
-                                                  (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
+(defonce dynamic-texture-keys
+  (atom {:current (textures/load-data-for-current-viewport-and-return-key!
+                   textures-left textures-right gl-ctx-left gl-ctx-right
+                   @earth-orientation @camera-left)}))
 
 (def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
                     :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)})

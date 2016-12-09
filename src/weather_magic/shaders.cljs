@@ -16,7 +16,7 @@
 
 (def space-fs
   "void main() {
-     gl_FragColor = texture2D(starsTex, vec2(mod(uvLeftRightOffset + (uvOffset.x + vUV.x) / 2.0, 1.0), mod((uvOffset.y + vUV.y) / 2.0, 1.0)));
+     gl_FragColor = texture2D(starsTex, vec2(mod(uvLeftRightOffset + (uvOffset.x + vUV.x) / 2.0, 1.0), mod((uvOffset.y + vUV.y) / 2.0, 1.0))) + vec4(vNormal, 1.0) * 0.01;
    }")
 
 (def standard-vs
