@@ -48,9 +48,9 @@
                                clamp(-3.333 * temperature + 2.67, 0.0, 1.0),
                                0.0, 1.0);
      } else {
-       temperature = clamp(temperature, 0.2, 0.5);
-       temperatureColor = vec4(clamp(6.41 * (temperature-0.34), 0.0, 1.0),
-                               clamp(6.41 * (temperature-0.34), 0.0, 1.0),
+       temperature = clamp(temperature, 0.344, 0.5);
+       temperatureColor = vec4(clamp(6.41 * (temperature-0.344), 0.0, 1.0),
+                               clamp(6.41 * (temperature-0.344), 0.0, 1.0),
                                clamp((-6.41 * temperature + 3.205), 0.0, 1.0), 
                                1.0);
      }
