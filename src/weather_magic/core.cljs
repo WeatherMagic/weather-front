@@ -6,6 +6,7 @@
    [weather-magic.transforms       :as transforms]
    [weather-magic.textures         :as textures]
    [weather-magic.event-handlers   :as event-handlers]
+   [weather-magic.watchers         :as watchers]
    [thi.ng.math.core               :as m   :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core            :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
@@ -42,14 +43,15 @@
 (defn trigger-data-load!
   "Get climate data for the area currently in view on the screen."
   []
-  ;; Don't load a new texture if we're already loading one.
-  (let [texture-keys @state/dynamic-texture-keys]
-    (when-not (contains? texture-keys :next)
-      (let [next-key (textures/load-data-for-current-viewport-and-return-key!
-                      state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
-                      @state/earth-orientation @state/camera-left)]
-        (when-not (= (:current texture-keys) next-key)
-          (swap! state/dynamic-texture-keys assoc :next next-key))))))
+  (let [next-key (textures/load-data-for-current-viewport-and-return-key!
+                  state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
+                  @state/earth-orientation @state/camera-left)]
+    (when-not (= (:current @state/dynamic-texture-keys) next-key)
+      (swap! state/dynamic-texture-keys assoc :next next-key))))
+
+(defn trigger-data-load-if-not-already-loading! []
+  (when-not (contains? @state/dynamic-texture-keys :next)
+    trigger-data-load!))
 
 (defn update-year-month-info
   [t left-right-key year-month-key time-factor]
@@ -63,7 +65,7 @@
              (+ min (rem (- (+ current-year delta-year) min) range)))
       (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update]
              (* time-factor t)))
-    (trigger-data-load!)))
+    (trigger-data-load-if-not-already-loading!)))
 
 (defn draw-in-context
   [gl-ctx camera background-camera base-texture textures shaders left-right-key year-month-key t]
@@ -143,6 +145,8 @@
 (def ui-mounted? (ui/mount-ui!))
 
 (defonce hooked-up? (event-handlers/hook-up-events!))
+
+(watchers/mount-rotation-data-reload-watch state/earth-orientation trigger-data-load!)
 
 ;; This is a hook for figwheel, add stuff you want run after you save your source.
 (defn on-js-reload [])
