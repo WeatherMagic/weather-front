@@ -19,7 +19,9 @@
                          (fn [event]
                            (vreset! failed true)
                            (.warn js/console "Failed to load image."
-                                  (aget (.-path event) 0) event))
+                                  (if (exists? (.-path event))
+                                    (aget (.-path event) 0)
+                                    (.-target event))))
                          :src    path
                          :filter [glc/linear glc/linear]
                          :cors   ""
@@ -67,7 +69,7 @@
                             :to-longitude      58
                             :from-latitude     61
                             :to-latitude       73
-                            :climate-model     "CNRM-CERFACS-CNRM-CM5"
+                            :climate-model     "ICHEC-EC-EARTH"
                             :exhaust-level     "rcp45"
                             :height-resolution 1024}
                            request-params)
@@ -91,7 +93,7 @@
   (-> {}
       (load-texture-if-needed gl-ctx "img/earth.jpg")
       (load-texture-if-needed gl-ctx "img/trump.png")
-      (load-texture-if-needed gl-ctx "img/space5.jpg")))
+      (load-texture-if-needed gl-ctx "img/space.jpg")))
 
 (defn load-data-for-current-viewport-and-return-key!
   "AKA the tightly coupled monster function of doom with an argument

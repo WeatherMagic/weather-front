@@ -74,7 +74,7 @@
         texture-info (:placement ((:current @state/dynamic-texture-keys) textures))]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
-      (gl/bind (:texture (:space5 textures)) 0)
+      (gl/bind (:texture (:space textures)) 0)
       ;; Draw the background.
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
