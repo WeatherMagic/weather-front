@@ -94,16 +94,19 @@
     [button "Data-selection" "" "selection-button" toggle-side-menu-visibility state/data-menu-visible]]
    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
     [:a {:href "#" :class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility state/data-menu-visible)}]
-    [:div {:id "side-menu-button-group"}
-     [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
-      [:option {:value "ICHEC-EC-EARTH"} "Climate model 1"]
-      [:option {:value "CNRM-CERFACS-CNRM-CM5"} "Climate model 2"]
-      [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
-     [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
-      [:option {:value "rcp45"} "Exhaust level 1"]
-      [:option {:value "rcp85"} "Exhaust level 2"]]
-     [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
-     [button "Precipitation" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Precipitation]]]])
+    [:div {:id "side-menu-button-group-container"}
+     [:div {:id "upper-side-menu-button-group"}
+      [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
+       [:option {:value "ICHEC-EC-EARTH"} "Climate model 1"]
+       [:option {:value "CNRM-CERFACS-CNRM-CM5"} "Climate model 2"]
+       [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
+      [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
+       [:option {:value "rcp45"} "Exhaust level 1"]
+       [:option {:value "rcp85"} "Exhaust level 2"]]]
+     [:div {:id "right-side-menu-offset"}]   
+     [:div {:id "lower-side-menu-button-group"}
+      [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
+      [button "Precipitation" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Precipitation]]]]])
 
 (defn navigation-selection
   "Buttons for choosing which data layer to display"
@@ -113,18 +116,17 @@
     [button "Navigation" "" "selection-button" toggle-side-menu-visibility state/navigation-menu-visible]]
    [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
     [:a {:href "#" :class "closebtn" :value "X" :on-click #(toggle-side-menu-visibility state/navigation-menu-visible)}]
-    [:div {:id "side-menu-button-group"}
-     [:select {:class "side-menu-button" :name "Climate Model"}
-      [:option {:value ":spin-earth"} "Spin earth"]
-      [:option {:value ":europe"} "Europe"]]
-     [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
-     [button "Europe" "" "side-menu-button" set-static-view (vec3 45 80 0)]
-     [button "Africa" "" "side-menu-button" set-static-view (vec3 5 75 0)]
-     [button "SA" "" "side-menu-button" set-static-view (vec3 -20 150 0)]
-     [button "NA" "" "side-menu-button" set-static-view (vec3 35 190 0)]
-     [button "Oceania" "" "side-menu-button" set-static-view (vec3 -15 -40 0)]
-     [button "Asia" "" "side-menu-button" set-static-view (vec3 35 -15 0)]
-     [button "About" "" "side-menu-button" swap! state/landing-page-visible hide-unhide]]]])
+    [:div {:id "side-menu-button-group-container"}
+     [:div {:id "right-upper-side-menu-button-group"}
+      [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
+      [button "About" "" "side-menu-button" swap! state/landing-page-visible hide-unhide]]
+     [:div {:id "right-lower-side-menu-button-group"}
+      [button "Europe" "" "side-menu-button" set-static-view (vec3 45 80 0)]
+      [button "Africa" "" "side-menu-button" set-static-view (vec3 5 75 0)]
+      [button "SA" "" "side-menu-button" set-static-view (vec3 -20 150 0)]
+      [button "NA" "" "side-menu-button" set-static-view (vec3 35 190 0)]
+      [button "Oceania" "" "side-menu-button" set-static-view (vec3 -15 -40 0)]
+      [button "Asia" "" "side-menu-button" set-static-view (vec3 35 -15 0)]]]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)
