@@ -96,7 +96,8 @@
   [_]
   (reset! state/earth-animation-fn world/after-pan-spin!)
   (reset! mouse-pressed false)
-  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fn false))
+  (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
+  (.removeEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false))
 
 (defn pointer-zoom-handler
   "Rotates the globe to the point which is dubble clicked"

@@ -39,14 +39,10 @@
 (defonce data-layer-atom (atom #{}))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:left  {:play-mode false
-                                  :play-mode-before-sliding false
-                                  :year  {:value 1950 :min 1950 :max 2100}
-                                  :month {:value 1 :min 1 :max 12}}
-                          :right {:play-mode false
-                                  :play-mode-before-sliding false
-                                  :year  {:value 1950 :min 1950 :max 2100}
-                                  :month {:value 1 :min 1 :max 12}}}))
+(defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
+                                  :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}
+                          :right {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
+                                  :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}}))
 
 ;; The function currently animating the earth.
 (defonce earth-animation-fn (atom nil))
@@ -85,13 +81,9 @@
                                                   (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
 
 (def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
-                    :blend    (sh/make-shader-from-spec gl-ctx-left  shaders/blend-shader-spec)
-                    :temp     (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)})
+                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)})
 (def shaders-right {:space    (sh/make-shader-from-spec gl-ctx-right shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
-                    :blend    (sh/make-shader-from-spec gl-ctx-right shaders/blend-shader-spec)
-                    :temp     (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)})
+                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)})
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.
@@ -104,8 +96,10 @@
 
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 200 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
 
-(defonce year-update (atom {:left {:time-of-last-update 0}
-                            :right {:time-of-last-update 0}}))
+(defonce year-update (atom {:left  {:year {:time-of-last-update 0}
+                                    :month {:time-of-last-update 0}}
+                            :right {:year  {:time-of-last-update 0}
+                                    :month {:time-of-last-update 0}}}))
 
 (defonce texture-info (atom {:dataPos   (vec2 0 0)
                              :dataScale (vec2 0 0)}))
