@@ -103,7 +103,8 @@
        [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
       [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
        [:option {:value "rcp45"} "Exhaust level 1"]
-       [:option {:value "rcp85"} "Exhaust level 2"]]]
+       [:option {:value "rcp85"} "Exhaust level 2"]
+       [:option {:value "historical"} "Historical"]]]
      [:div {:id "right-side-menu-offset"}]
      [:div {:id "lower-side-menu-button-group"}
       [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
