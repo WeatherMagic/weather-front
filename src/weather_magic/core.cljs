@@ -21,7 +21,9 @@
    [thi.ng.color.core              :as col]
    [thi.ng.glsl.core               :as glsl :include-macros true]
    [thi.ng.glsl.vertex             :as vertex]
-   [thi.ng.glsl.lighting           :as light]))
+   [thi.ng.glsl.lighting           :as light])
+  (:require-macros
+   [weather-magic.macros           :refer [when-let*]]))
 
 (enable-console-print!)
 
@@ -37,6 +39,18 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
+(defn trigger-data-load!
+  "Get climate data for the area currently in view on the screen."
+  []
+  ;; Don't load a new texture if we're already loading one.
+  (let [texture-keys @state/dynamic-texture-keys]
+    (when-not (contains? texture-keys :next)
+      (let [next-key (textures/load-data-for-current-viewport-and-return-key!
+                      state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
+                      @state/earth-orientation @state/camera-left)]
+        (when-not (= (:current texture-keys) next-key)
+          (swap! state/dynamic-texture-keys assoc :next next-key))))))
+
 (defn update-year-month-info
   [t left-right-key year-month-key time-factor]
   (let [min  (:min (year-month-key (left-right-key @state/date-atom)))
@@ -45,19 +59,23 @@
         last-year-update (:time-of-last-update (year-month-key (left-right-key @state/year-update)))
         delta-year (int (- (* time-factor t) last-year-update))]
     (when (> delta-year 0.5)
-      (swap! state/date-atom assoc-in [left-right-key year-month-key :value] (+ min (rem (- (+ current-year delta-year) min) (inc range))))
-      (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update] (* time-factor t)))))
+      (swap! state/date-atom assoc-in [left-right-key year-month-key :value]
+             (+ min (rem (- (+ current-year delta-year) min) range)))
+      (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update]
+             (* time-factor t)))
+    (trigger-data-load!)))
 
 (defn draw-in-context
   [gl-ctx camera background-camera base-texture textures shaders left-right-key year-month-key t]
   (let [range (- (:max  (year-month-key (left-right-key @state/date-atom)))
                  (:min  (year-month-key (left-right-key @state/date-atom))))
         time (- (:value (year-month-key (left-right-key @state/date-atom)))
-                (:min   (year-month-key (left-right-key @state/date-atom))))]
+                (:min   (year-month-key (left-right-key @state/date-atom))))
+        texture-info (:placement ((:current @state/dynamic-texture-keys) textures))]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture (:space5 textures)) 0)
-      ;; Do the actual drawing.
+      ;; Draw the background.
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
         (gl/draw-with-shader
@@ -67,22 +85,37 @@
              (assoc-in [:uniforms :uvLeftRightOffset] (if (= left-right-key :left) (* 0 1.0) (* 0.5 1.0)))
              (assoc-in [:uniforms :uvOffset]   @state/space-offset))))
       (gl/bind (:texture base-texture) 0)
+      ;; If the data from thor has been loaded, use that instead of trump.
       (if @(:loaded ((:current @state/dynamic-texture-keys) textures))
         (gl/bind (:texture ((:current @state/dynamic-texture-keys) textures)) 1)
         (gl/bind (:texture (:trump textures)) 1))
+      ;; Do the actual drawing.
       (doto gl-ctx
         (gl/draw-with-shader
          (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
-             (assoc-in [:uniforms :model] (set-model-matrix (-  (* 5 t) @state/time-of-last-frame)))
+             (assoc-in [:uniforms :model] (set-model-matrix (- (* 5 t) @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :eye] (:eye camera))
-             (assoc-in [:uniforms :dataScale] (vec2 0.05 0.05))
-             (assoc-in [:uniforms :dataPos] (vec2 0.51 0.2))))))))
+             (assoc-in [:uniforms :dataScale] (:dataScale texture-info))
+             (assoc-in [:uniforms :dataPos]   (:dataPos   texture-info))))))))
 
 (defn draw-frame! [t]
-  (transforms/update-lat-lon)
+  ;; If the next texture is loaded, set it to be the current texture and unload the old.
+  (when-let* [next-key (:next    @state/dynamic-texture-keys)
+              old-key  (:current @state/dynamic-texture-keys)]
+             (when @(:loaded (next-key @state/textures-left))
+               (swap! state/dynamic-texture-keys
+                      #(-> % (assoc :current next-key) (dissoc :next)))
+               (gl/release (:texture (old-key @state/textures-left)))
+               (gl/release (:texture (old-key @state/textures-right)))
+               (swap! state/textures-left  dissoc old-key)
+               (swap! state/textures-right dissoc old-key))
+             (when @(:failed (next-key @state/textures-left))
+               (swap! state/dynamic-texture-keys dissoc :next)
+               (swap! state/textures-left        dissoc next-key)
+               (swap! state/textures-right       dissoc next-key)))
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))

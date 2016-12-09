@@ -1,6 +1,7 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models           :as models]
+   [weather-magic.transforms       :as transforms]
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [thi.ng.geom.gl.camera          :as cam]
@@ -22,7 +23,6 @@
 (defonce camera-left (atom (cam/perspective-camera {:eye    (vec3 0 0 3.0)
                                                     :fov    70
                                                     :aspect (gl/get-viewport-rect gl-ctx-left)})))
-
 (defonce camera-right (atom (cam/perspective-camera {:eye    (vec3 0 0 3.0)
                                                      :fov    70
                                                      :aspect (gl/get-viewport-rect gl-ctx-right)})))
@@ -70,17 +70,16 @@
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
              :right {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-right glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-right glc/static-draw)}})
-
 (defonce current-model-key (atom :sphere))
 
 (defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
-
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
-
-(defonce dynamic-texture-keys (atom {:current (do (textures/load-data-into-atom-and-return-key! textures-left gl-ctx-left)
-                                                  (textures/load-data-into-atom-and-return-key! textures-right gl-ctx-right))}))
+(defonce dynamic-texture-keys
+  (atom {:current (textures/load-data-for-current-viewport-and-return-key!
+                   textures-left textures-right gl-ctx-left gl-ctx-right
+                   @earth-orientation @camera-left)}))
 
 (def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
                     :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)})
