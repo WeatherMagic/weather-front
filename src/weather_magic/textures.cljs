@@ -69,7 +69,7 @@
                             :to-longitude      58
                             :from-latitude     61
                             :to-latitude       73
-                            :climate-model     "CNRM-CERFACS-CNRM-CM5"
+                            :climate-model     "ICHEC-EC-EARTH"
                             :exhaust-level     "rcp45"
                             :height-resolution 1024}
                            request-params)
