@@ -52,7 +52,7 @@
   The third argument is a map in which we use the following keys:
 
   :variable       - The type of data to request from the backend,
-                    normally 'temperature' or 'percipitation'.
+                    normally 'temperature' or 'precipitation'.
   :request-params - A map of arguments to be passed on to thor in the
                     HTTP GET request in the form of a query string.
   :placement      - Positioning data to be associated with the loaded data.
