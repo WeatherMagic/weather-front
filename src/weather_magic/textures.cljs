@@ -19,7 +19,9 @@
                          (fn [event]
                            (vreset! failed true)
                            (.warn js/console "Failed to load image."
-                                  (aget (.-path event) 0) event))
+                                  (if (exists? (.-path event))
+                                    (aget (.-path event) 0)
+                                    (.-target event))))
                          :src    path
                          :filter [glc/linear glc/linear]
                          :cors   ""
