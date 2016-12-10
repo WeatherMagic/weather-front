@@ -61,13 +61,13 @@
        temperature = clamp(temperature, 0.344, 0.5);
        temperatureColor = vec4(clamp(6.41 * temperature - 2.205, 0.0, 1.0),
                                clamp(6.41 * temperature - 2.205, 0.0, 1.0),
-                               clamp((-6.41 * temperature + 3.205), 0.0, 1.0), 
+                               clamp((-6.41 * temperature + 3.205), 0.0, 1.0),
                                1.0);
      }
 
      float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
-     vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam; 
+     vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam;
 
      vec4 mixColor = baseColor * 0.35 + temperatureColor * textureAlpha * 0.65;
 
@@ -79,36 +79,42 @@
      float lam = lambert(surfaceNormal(vNormal, normalMat),
                          normalize(lightDir));
 
-     float temperature = texture2D(data, mod((vUV - dataPos), 1.0) / dataScale).r;
+     float precipitation = texture2D(data, mod((vUV - dataPos), 1.0) / dataScale).r;
      vec4 baseTexture = texture2D(base, vUV);
 
-     vec4 temperatureColor;
-
-     if (mod(temperature, 0.078125) < 0.003 && eye.z < 1.2) {
-       if (temperature > 0.5) {
-         temperatureColor = vec4(0.5, 0.5, 0.5, 1.0);
-       } else if (temperature < 0.5) {
-         temperatureColor = vec4(1.0, 1.0, 1.0, 1.0);
-       }
-     } else if(temperature > 0.5) {
-       temperature = clamp(temperature, 0.5, 0.8);
-       temperatureColor = vec4(1.0,
-                               clamp(-3.333 * temperature + 2.67, 0.0, 1.0),
-                               0.0, 1.0);
-     } else {
-       temperature = clamp(temperature, 0.344, 0.5);
-       temperatureColor = vec4(clamp(6.41 * temperature - 2.205, 0.0, 1.0),
-                               clamp(6.41 * temperature - 2.205, 0.0, 1.0),
-                               clamp((-6.41 * temperature + 3.205), 0.0, 1.0),
-                               1.0);
-     }
-
+     vec4 precipitationColor = vec4(0.0, 0.0, 0.0, 0.0);
      float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
+     if(precipitation > 0.15) {
+       float precipitationClamped = clamp(precipitation, 0.05, 1.0);
+       precipitationColor = vec4(1.0,
+                               clamp(1.0 + (precipitationClamped - 1.0) / 0.95, 0.0, 1.0),
+                               0.0, 1.0);
+     } else if(precipitation > 0.0) {
+       precipitationColor = vec4(clamp(1.0 + (precipitation - 0.05) / 0.05, 0.0, 1.0),
+                               clamp(1.0 + (precipitation - 0.05) / 0.05, 0.0, 1.0),
+                               clamp((0.05 - precipitation) / 0.05, 0.0, 1.0),
+                               1.0);
+     } else {
+       textureAlpha = 0.0;
+     }
+
      vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam;
+     precipitationColor = precipitationColor * textureAlpha;
+     vec4 outColor;
 
-     vec4 mixColor = baseColor * 0.6 + temperatureColor * textureAlpha * 0.4;
+     float baseFactor;
+     float dataFactor;
 
+     if(textureAlpha < 0.3) {
+       baseFactor = 1.0;
+       dataFactor = 0.0;
+     } else {
+       baseFactor = 0.4;
+       dataFactor = 0.6;
+     }
+
+     vec4 mixColor = baseColor * baseFactor + precipitationColor * dataFactor;
      gl_FragColor = mixColor;
    }")
 
@@ -158,3 +164,15 @@
    :varying  {:vUV        :vec2
               :vNormal    :vec3}
    :state    {:depth-test true}})
+
+(def temperature-shader-spec
+  (assoc standard-shader-spec
+         :fs (->> temperature-fs
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))
+
+(def precipitation-shader-spec
+  (assoc standard-shader-spec
+         :fs (->> precipitation-fs
+                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
+                  (glsl/assemble))))

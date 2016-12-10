@@ -36,7 +36,7 @@
                                                                 :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
-(defonce data-layer-atom (atom #{}))
+(defonce data-layer-atom (atom "precipitation"))
 
 ;; User input from the time slider UI.
 (defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
@@ -79,7 +79,7 @@
 (defonce dynamic-texture-keys
   (atom {:current (textures/load-data-for-current-viewport-and-return-key!
                    textures-left textures-right gl-ctx-left gl-ctx-right
-                   @earth-orientation @camera-left)}))
+                   @earth-orientation @camera-left @data-layer-atom)}))
 
 (def shaders-left  {:space         (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
                     :standard      (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
