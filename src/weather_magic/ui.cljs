@@ -42,8 +42,6 @@
 
 (defn update-climate-model-info
   [key input]
-  (println key)
-  (println input)
   (swap! state/climate-model-info assoc-in [key] input))
 
 (defn toggle-play-stop
@@ -56,8 +54,7 @@
 (defn update-shader-and-data-layer
   [shader data-layer]
   (reset! state/current-shader-key shader)
-  (reset! state/data-layer-atom data-layer)
-  (println @state/data-layer-atom))
+  (reset! state/data-layer-atom data-layer))
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
