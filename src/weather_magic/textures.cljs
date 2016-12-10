@@ -5,6 +5,8 @@
    [thi.ng.geom.gl.webgl.constants :as glc]
    [weather-magic.transforms       :as transforms]))
 
+(enable-console-print!)
+
 (defn load-texture [gl-ctx path]
   "Loads a texture from path and places it in a map along with a
   volatile indicating whether or not the texture has been loaded
@@ -57,10 +59,12 @@
                     HTTP GET request in the form of a query string.
   :placement      - Positioning data to be associated with the loaded data.
 
-  Returs a map with {:key str :map texture-map} where :key holds how
+  Returns a map with {:key str :map texture-map} where :key holds how
   to find the newly loaded texture in texture-map."
   [texture-map gl-ctx {variable :variable request-params :request-params placement :placement
                        :or {variable "temperature"}}]
+  (println (:year request-params))
+
   (let [request-map (merge {:year              2083
                             :month             12
                             :from-longitude    5
@@ -70,11 +74,14 @@
                             :climate-model     "CNRM-CERFACS-CNRM-CM5"
                             :exhaust-level     "rcp45"
                             :height-resolution 1024}
-                           request-params)
+                           (if (< (:year request-params) 2006)
+                             (assoc request-params :exhaust-level "historical")
+                             request-params))
         query-string (util/map->query-string request-map)
         url (str "http://thor.hfelo.se/api/" variable query-string)
         key (keyword query-string)
         texture-map (load-texture-if-needed texture-map gl-ctx url :key-fn (fn [_] key))]
+    (println "This is what we request: " request-map)
     {:key key
      :map (assoc-in texture-map [key :placement] placement)}))
 
@@ -97,12 +104,14 @@
   "AKA the tightly coupled monster function of doom with an argument
   list so large it eclipses the sun."
   [textures-left-atom textures-right-atom
-   gl-ctx-left gl-ctx-right earth-orientation camera-left]
+   gl-ctx-left gl-ctx-right earth-orientation camera-left current-time-data]
   (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera-left)
         placement       (transforms/get-texture-position-map lat-lon-corners)]
     (load-data-into-atom-and-return-key! textures-left-atom gl-ctx-left
-                                         {:request-params lat-lon-corners
+                                         {:request-params (merge lat-lon-corners {:year (:value (:year (:left current-time-data)))
+                                                                                  :month (:value (:month (:left current-time-data)))})
                                           :placement placement})
     (load-data-into-atom-and-return-key! textures-right-atom gl-ctx-right
-                                         {:request-params lat-lon-corners
+                                         {:request-params (merge lat-lon-corners {:year (:value (:year (:right current-time-data)))
+                                                                                  :month (:value (:month (:right current-time-data)))})
                                           :placement placement})))

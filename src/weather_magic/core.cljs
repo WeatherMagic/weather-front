@@ -43,11 +43,12 @@
   "Get climate data for the area currently in view on the screen."
   []
   ;; Don't load a new texture if we're already loading one.
-  (let [texture-keys @state/dynamic-texture-keys]
+  (let [texture-keys @state/dynamic-texture-keys
+        current-time-data @state/date-atom]
     (when-not (contains? texture-keys :next)
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                       state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
-                      @state/earth-orientation @state/camera-left)]
+                      @state/earth-orientation @state/camera-left current-time-data)]
         (when-not (= (:current texture-keys) next-key)
           (swap! state/dynamic-texture-keys assoc :next next-key))))))
 
