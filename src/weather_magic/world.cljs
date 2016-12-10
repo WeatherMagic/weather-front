@@ -78,7 +78,7 @@
                                         (m/* @state/earth-orientation)))
     (if (neg? new-speed)
       (reset! state/earth-animation-fn stop-spin!)
-      (swap! state/pan-speed assoc :speed new-speed))))
+      (swap! state/pan-speed assoc :speed new-speed :panning false))))
 
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."
