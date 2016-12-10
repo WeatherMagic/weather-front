@@ -12,18 +12,22 @@
 (defn set-earth-rotation
   ""
   [rot-coords]
-
   (-> M44
       (g/rotate-x (m/radians (aget (.-buf rot-coords) 0)))
       (g/rotate-y (m/radians (aget (.-buf rot-coords) 1)))
       (g/rotate-z (m/radians (aget (.-buf rot-coords) 2)))))
+
+(defn stop-spin!
+  "Makes the earth stop spinning, aka the no-op function."
+  [_])
 
 (defn show-static-view!
   "Rotates the sphere so that Europe is shown."
   [t]
   (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
-  (reset! state/earth-orientation (set-earth-rotation @state/static-scene-coordinates)))
+  (reset! state/earth-orientation (set-earth-rotation @state/static-scene-coordinates))
+  (reset! state/earth-animation-fn stop-spin!))
 
 (defn northpole-up!
   "Rotates the sphere so that the northpole is up after panning."
@@ -49,11 +53,6 @@
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation M44)
   (reset! state/earth-animation-fn spin-earth!))
-
-(defn stop-spin!
-  "Makes the earth stop spinning"
-  [_]
-  (reset! state/earth-orientation @state/earth-orientation))
 
 (defn after-pan-spin!
   "Rotates the sphere indefinitely."

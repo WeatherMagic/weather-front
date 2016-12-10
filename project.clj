@@ -40,7 +40,8 @@
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
-                           :preloads [devtools.preload]}}
+                           :preloads [devtools.preload]
+                           :external-config {:devtools/config {:features-to-install [:formatters :hints :async]}}}}
                ;; This next build is an compressed minified build for
                ;; production. You can build this with:
                ;; lein cljsbuild once min
@@ -91,13 +92,13 @@
 
   ;; Setting up nREPL for Figwheel and ClojureScript development, please see:
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
-  :profiles {:dev {:dependencies [[cider/cider-nrepl "0.13.0"]
-                                  [binaryage/devtools "0.7.2"]
+  :profiles {:dev {:dependencies [[cider/cider-nrepl "0.14.0"]
+                                  [binaryage/devtools "0.8.3"]
                                   [figwheel-sidecar "0.5.4-7"]
                                   [com.cemerick/piggieback "0.2.1"]]
                    ;; need to add dev source path here to get user.clj loaded
                    :source-paths ["src" "dev"]
-                   :plugins [[cider/cider-nrepl "0.13.0"] ; For CIDER
+                   :plugins [[cider/cider-nrepl "0.14.0"] ; For CIDER
                              [lein-cljfmt "0.5.6"]        ; Checks formatting.
                              [lein-kibit "0.1.2"]]        ; Checks if code is ideomatic.
                    }}

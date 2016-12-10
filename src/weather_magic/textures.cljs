@@ -21,7 +21,9 @@
                          (fn [event]
                            (vreset! failed true)
                            (.warn js/console "Failed to load image."
-                                  (aget (.-path event) 0) event))
+                                  (if (exists? (.-path event))
+                                    (aget (.-path event) 0)
+                                    (.-target event))))
                          :src    path
                          :filter [glc/linear glc/linear]
                          :cors   ""
@@ -71,7 +73,7 @@
                             :to-longitude      58
                             :from-latitude     61
                             :to-latitude       73
-                            :climate-model     "CNRM-CERFACS-CNRM-CM5"
+                            :climate-model     "ICHEC-EC-EARTH"
                             :exhaust-level     "rcp45"
                             :height-resolution 1024}
                            (if (< (:year request-params) 2006)
