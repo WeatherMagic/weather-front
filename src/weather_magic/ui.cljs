@@ -5,6 +5,7 @@
    [weather-magic.event-handlers :as event-handlers]
    [weather-magic.world    :as world]
    [weather-magic.shaders  :as shaders]
+   [thi.ng.geom.gl.camera :as cam]
    [weather-magic.util     :as util]
    [reagent.core           :as reagent :refer [atom]]
    [thi.ng.geom.vector     :as v       :refer [vec2 vec3]]
