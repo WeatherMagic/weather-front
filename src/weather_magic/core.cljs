@@ -45,11 +45,12 @@
   ;; Don't load a new texture if we're already loading one.
   (let [texture-keys @state/dynamic-texture-keys
         current-time-data @state/date-atom]
-    (println "date-atom" current-time-data)
+    ;(println "date-atom" current-time-data)
     (when-not (contains? texture-keys :next)
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                       state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
                       @state/earth-orientation @state/camera-left current-time-data)]
+     ;       (println "next key: " next-key)
         (when-not (= (:current texture-keys) next-key)
           (swap! state/dynamic-texture-keys assoc :next next-key))))))
 
@@ -105,9 +106,16 @@
 
 (defn draw-frame! [t]
   ;; If the next texture is loaded, set it to be the current texture and unload the old.
+
+
   (when-let* [next-key (:next    @state/dynamic-texture-keys)
               old-key  (:current @state/dynamic-texture-keys)]
+             (println "next key: " next-key)
+             (println "old key: " old-key)
+             (println "loaded: " @(:loaded (next-key @state/textures-left)))
+             (println "failed: " @(:failed (next-key @state/textures-left)))
              (when @(:loaded (next-key @state/textures-left))
+               (println "when loaded true")
                (swap! state/dynamic-texture-keys
                       #(-> % (assoc :current next-key) (dissoc :next)))
                (gl/release (:texture (old-key @state/textures-left)))
@@ -115,9 +123,11 @@
                (swap! state/textures-left  dissoc old-key)
                (swap! state/textures-right dissoc old-key))
              (when @(:failed (next-key @state/textures-left))
+               (println "when failed true")
                (swap! state/dynamic-texture-keys dissoc :next)
                (swap! state/textures-left        dissoc next-key)
                (swap! state/textures-right       dissoc next-key)))
+  ;(println "efter when-let*")
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
