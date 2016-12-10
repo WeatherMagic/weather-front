@@ -88,13 +88,14 @@
         rel-y (- current-y (:y-val last-pos))]
     (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (/ rel-x 1000)) (+ (aget (.-buf atom) 1) (/ rel-y 1000)))))
     (update-pan rel-x rel-y)
-    (swap! state/pan-speed assoc :speed (min (Math/hypot rel-x rel-y) 40) :rel-y rel-y :rel-x rel-x)
+    (swap! state/pan-speed assoc :speed (min (Math/hypot rel-x rel-y) 40) :rel-y rel-y :rel-x rel-x :panning true)
     (reset! last-xy-pos {:x-val current-x :y-val current-y})))
 
 (defn mouse-up
   "If the mouse is released during panning"
   [_]
-  (reset! state/earth-animation-fn world/after-pan-spin!)
+  (when (:panning @state/pan-speed)
+    (reset! state/earth-animation-fn world/after-pan-spin!))
   (reset! mouse-pressed false)
   (.removeEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
   (.removeEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false))
@@ -126,15 +127,17 @@
 (defn mouse-down-handler
   "Handles the mouse events for panning"
   [event]
-  (swap! state/navigation-menu-visible (fn [] :visible))
-  (swap! state/pan-speed assoc :speed 0)
-  (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
-  (reset! mouse-pressed true)
-  (reset! state/earth-animation-fn world/stop-spin!)
-  (when (= @mouse-pressed true)
-    (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
-    (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)
-    (.addEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false)))
+  (if (or (= @state/navigation-menu-visible :hidden) (= @state/data-menu-visible :hidden))
+    (do (swap! state/navigation-menu-visible (fn [] :visible))
+        (swap! state/data-menu-visible (fn [] :visible)))
+    (do (swap! state/pan-speed assoc :speed 0)
+        (reset! last-xy-pos {:x-val (.-clientX event) :y-val (.-clientY event)})
+        (reset! mouse-pressed true)
+        (reset! state/earth-animation-fn world/stop-spin!)
+        (when (= @mouse-pressed true)
+          (.addEventListener (.getElementById js/document "canvases") "mousemove" move-fn false)
+          (.addEventListener (.getElementById js/document "canvases") "mouseup" mouse-up false)
+          (.addEventListener (.getElementById js/document "canvases") "mouseleave" mouse-up false)))))
 
 (defn zoom-to-mouse
   [event canvas]
