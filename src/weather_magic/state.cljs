@@ -107,4 +107,4 @@
 
 (defonce space-offset (atom (vec2 0 0)))
 
-(defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0}))
+(defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0 :panning false}))
