@@ -42,55 +42,34 @@
                 90
                 -90)))}))
 
-(defn model-coords-from-corner
+(defn get-center-model-coords
   ""
-  [x-coord y-coord earth-orientation camera]
-  (let [matrix (-> (m/invert earth-orientation)
-                   (g/rotate-z (* (Math/atan2 y-coord x-coord) -1))
-                   (g/rotate-y (m/radians (* (* (Math/hypot y-coord x-coord)
-                                                (:fov camera)) 1.0E-3)))
-                   (g/rotate-z (Math/atan2 y-coord x-coord)))
+  [earth-orientation]
+  (let [matrix (m/invert earth-orientation)
         model-x (.-m20 matrix)
         model-y (.-m21 matrix)
         model-z (.-m22 matrix)]
     (vec3 model-x model-y model-z)))
 
-(defn get-model-coords
-  "Returns the model-coords-boundaries."
-  [earth-orientation camera]
-  (let [canvas-element (.getElementById js/document "left-canvas")
-        canvas-width (.-clientWidth canvas-element)
-        canvas-height (.-clientHeight canvas-element)
-        half-width (/ canvas-width 2)
-        half-height (/ canvas-height 2)]
-    {:upper-left (model-coords-from-corner (* half-width -1) (* half-height -1) earth-orientation camera)
-     :upper-right (model-coords-from-corner half-width (* half-height -1) earth-orientation camera)
-     :lower-left (model-coords-from-corner (* half-width -1) half-height earth-orientation camera)
-     :lower-right (model-coords-from-corner half-width half-height earth-orientation camera)}))
-
-(defn lat-lon-helper
-  "Get model-coords and transform to latitude and longitude"
-  [earth-orientation camera]
-  (let [model-coords (get-model-coords earth-orientation camera)]
-    {:upper-left  (model-coords-to-lat-lon (:upper-left  model-coords))
-     :upper-right (model-coords-to-lat-lon (:upper-right model-coords))
-     :lower-left  (model-coords-to-lat-lon (:lower-left  model-coords))
-     :lower-right (model-coords-to-lat-lon (:lower-right model-coords))}))
-
 (defn get-lat-lon-map
   "Get the lat and lon on the format from lat/lon to lat/lon."
   [earth-orientation camera]
   ;; Truncate all numbers into whole integers.
-  (let [coords (postwalk #(if (number? %) (int %) %)
-                         (lat-lon-helper earth-orientation camera))]
-    {:from-latitude  (min (:lat (:upper-left coords)) (:lat (:upper-right coords))
-                          (:lat (:lower-left coords)) (:lat (:lower-right coords)))
-     :to-latitude    (max (:lat (:upper-left coords)) (:lat (:upper-right coords))
-                          (:lat (:lower-left coords)) (:lat (:lower-right coords)))
-     :from-longitude (min (:lon (:upper-left coords)) (:lon (:upper-right coords))
-                          (:lon (:lower-left coords)) (:lon (:lower-right coords)))
-     :to-longitude   (max (:lon (:upper-left coords)) (:lon (:upper-right coords))
-                          (:lon (:lower-left coords)) (:lon (:lower-right coords)))}))
+  (let [center-model-coords (get-center-model-coords earth-orientation)
+        center-lat-lon-coords (model-coords-to-lat-lon center-model-coords)
+        lat-coords (* (Math/round (/ (:lat center-lat-lon-coords) 10)) 10)
+        lon-coords (* (Math/round (/ (:lon center-lat-lon-coords) 10)) 10)
+        camera-z-pos (aget (.-buf (:eye camera)) 2)
+        zoom-level (/ (- camera-z-pos 1.1) 3.0)
+        zoom-rect (if (> zoom-level 0.05) 25 15)
+        from-lat (if (> zoom-level 0.1) -90 (max (- lat-coords zoom-rect) -90))
+        to-lat (if (> zoom-level 0.1) 90 (min (+ lat-coords zoom-rect) 90))
+        from-lon (if (> zoom-level 0.1) -180 (max (- lon-coords (* zoom-rect 2)) -180))
+        to-lon (if (> zoom-level 0.1) 180 (min (+ lon-coords (* zoom-rect 2)) 180))]
+    {:from-latitude from-lat
+     :to-latitude to-lat
+     :from-longitude from-lon
+     :to-longitude to-lon}))
 
 (defn get-texture-position-map
   "Get the positioning and scale information of the area the camera is

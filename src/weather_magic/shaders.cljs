@@ -61,15 +61,15 @@
        temperature = clamp(temperature, 0.344, 0.5);
        temperatureColor = vec4(clamp(6.41 * temperature - 2.205, 0.0, 1.0),
                                clamp(6.41 * temperature - 2.205, 0.0, 1.0),
-                               clamp((-6.41 * temperature + 3.205), 0.0, 1.0),
+                               clamp((-6.41 * temperature + 3.205), 0.0, 1.0), 
                                1.0);
      }
 
      float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
-     vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam;
+     vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam; 
 
-     vec4 mixColor = baseColor * 0.6 + temperatureColor * textureAlpha * 0.4;
+     vec4 mixColor = baseColor * 0.35 + temperatureColor * textureAlpha * 0.65;
 
      gl_FragColor = mixColor;
    }")
@@ -158,15 +158,3 @@
    :varying  {:vUV        :vec2
               :vNormal    :vec3}
    :state    {:depth-test true}})
-
-(def temperature-shader-spec
-  (assoc standard-shader-spec
-         :fs (->> temperature-fs
-                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                  (glsl/assemble))))
-
-(def precipitation-shader-spec
-  (assoc standard-shader-spec
-         :fs (->> precipitation-fs
-                  (glsl/glsl-spec-plain [vertex/surface-normal light/lambert])
-                  (glsl/assemble))))
