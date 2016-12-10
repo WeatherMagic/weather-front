@@ -21,13 +21,20 @@
   "Makes the earth stop spinning, aka the no-op function."
   [_])
 
+(defn reset-zoom
+  [camera-map]
+  (cam/perspective-camera
+   (assoc camera-map :eye (vec3 0 0 3.0))))
+
 (defn show-static-view!
   "Rotates the sphere so that Europe is shown."
   [t]
   (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation (set-earth-rotation @state/static-scene-coordinates))
-  (reset! state/earth-animation-fn stop-spin!))
+  (reset! state/earth-animation-fn stop-spin!)
+  (swap! state/camera-left reset-zoom)
+  (swap! state/camera-right reset-zoom))
 
 (defn northpole-up!
   "Rotates the sphere so that the northpole is up after panning."
@@ -71,7 +78,7 @@
                                         (m/* @state/earth-orientation)))
     (if (neg? new-speed)
       (reset! state/earth-animation-fn stop-spin!)
-      (swap! state/pan-speed assoc :speed new-speed))))
+      (swap! state/pan-speed assoc :speed new-speed :panning false))))
 
 (defn zoom-camera
   "Returns the camera given in camera-map modified zooming by scroll-distance."

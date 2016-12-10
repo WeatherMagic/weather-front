@@ -5,6 +5,7 @@
    [weather-magic.event-handlers :as event-handlers]
    [weather-magic.world    :as world]
    [weather-magic.shaders  :as shaders]
+   [thi.ng.geom.gl.camera :as cam]
    [weather-magic.util     :as util]
    [reagent.core           :as reagent :refer [atom]]
    [thi.ng.geom.vector     :as v       :refer [vec2 vec3]]
@@ -40,8 +41,6 @@
 
 (defn update-climate-model-info
   [key input]
-  (println key)
-  (println input)
   (swap! state/climate-model-info assoc-in [key] input))
 
 (defn toggle-play-stop
@@ -54,8 +53,7 @@
 (defn update-shader-and-data-layer
   [shader data-layer]
   (reset! state/current-shader-key shader)
-  (reset! state/data-layer-atom data-layer)
-  (println @state/data-layer-atom))
+  (reset! state/data-layer-atom data-layer))
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
