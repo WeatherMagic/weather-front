@@ -84,7 +84,7 @@
      }
 
      vec4 mixColor = baseColor * baseFactor + temperatureColor * dataFactor;
-     gl_FragColor = mixColor*textureAlpha;
+     gl_FragColor = mixColor;
    }")
 
 (def precipitation-fs
