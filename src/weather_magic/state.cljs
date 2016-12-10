@@ -36,7 +36,7 @@
                                                                 :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
-(defonce data-layer-atom (atom "precipitation"))
+(defonce data-layer-atom (atom "temperature"))
 
 ;; User input from the time slider UI.
 (defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
