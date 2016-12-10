@@ -47,7 +47,7 @@
     (when-not (contains? texture-keys :next)
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                       state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
-                      @state/earth-orientation @state/camera-left)]
+                      @state/earth-orientation @state/camera-left @state/data-layer-atom)]
         (when-not (= (:current texture-keys) next-key)
           (swap! state/dynamic-texture-keys assoc :next next-key))))))
 

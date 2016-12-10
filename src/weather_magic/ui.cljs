@@ -51,6 +51,12 @@
     (do (swap! atom update-in [left-right-key year-month-key] merge {:play-mode true :play-mode-before-sliding true})
         (swap! atom update-in [left-right-key year-month-key-inv] merge {:play-mode false :play-mode-before-sliding false}))))
 
+(defn update-shader-and-data-layer
+  [shader data-layer]
+  (reset! state/current-shader-key shader)
+  (reset! state/data-layer-atom data-layer)
+  (println @state/data-layer-atom))
+
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [name id class func atom & args]
@@ -113,8 +119,9 @@
        [:option {:value "historical"} "Historical"]]]
      [:div {:id "right-side-menu-offset"}]
      [:div {:id "lower-side-menu-button-group"}
-      [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
-      [button "Precipitation" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Precipitation]]]]])
+      [button "Standard" "" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
+      [button "Temperature" "" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
+      [button "Precipitation" "" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
 
 (defn navigation-selection
   "Buttons for choosing which data layer to display"
