@@ -61,7 +61,7 @@
         lon-coords (* (Math/round (/ (:lon center-lat-lon-coords) 10)) 10)
         camera-z-pos (aget (.-buf (:eye camera)) 2)
         zoom-level (/ (- camera-z-pos 1.1) 3.0)
-        zoom-rect (if (> zoom-level 0.05) 25 15)
+        zoom-rect (if (> zoom-level 0.1) 30 15)
         from-lat (if (> zoom-level 0.1) -90 (max (- lat-coords zoom-rect) -90))
         to-lat (if (> zoom-level 0.1) 90 (min (+ lat-coords zoom-rect) 90))
         from-lon (if (> zoom-level 0.1) -180 (max (- lon-coords (* zoom-rect 2)) -180))
