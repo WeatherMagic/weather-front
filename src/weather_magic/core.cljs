@@ -3,10 +3,11 @@
    [weather-magic.ui               :as ui]
    [weather-magic.state            :as state]
    [weather-magic.shaders          :as shaders]
-   [weather-magic.transforms       :as transforms]
    [weather-magic.textures         :as textures]
-   [weather-magic.event-handlers   :as event-handlers]
    [weather-magic.watchers         :as watchers]
+   [weather-magic.transforms       :as transforms]
+   [weather-magic.event-handlers   :as event-handlers]
+   [weather-magic.cache-management :as cache]
    [thi.ng.math.core               :as m   :refer [PI HALF_PI TWO_PI]]
    [thi.ng.geom.gl.core            :as gl]
    [thi.ng.geom.gl.webgl.constants :as glc]
@@ -22,9 +23,7 @@
    [thi.ng.color.core              :as col]
    [thi.ng.glsl.core               :as glsl :include-macros true]
    [thi.ng.glsl.vertex             :as vertex]
-   [thi.ng.glsl.lighting           :as light])
-  (:require-macros
-   [weather-magic.macros           :refer [when-let*]]))
+   [thi.ng.glsl.lighting           :as light]))
 
 (enable-console-print!)
 
@@ -40,19 +39,6 @@
       (gl/make-buffers-in-spec gl-ctx glc/static-draw)
       (cam/apply camera)))
 
-(defn trigger-data-load!
-  "Get climate data for the area currently in view on the screen."
-  []
-  (let [next-key (textures/load-data-for-current-viewport-and-return-key!
-                  state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
-                  @state/earth-orientation @state/camera-left)]
-    (when-not (= (:current @state/dynamic-texture-keys) next-key)
-      (swap! state/dynamic-texture-keys assoc :next next-key))))
-
-(defn trigger-data-load-if-not-already-loading! []
-  (when-not (contains? @state/dynamic-texture-keys :next)
-    trigger-data-load!))
-
 (defn update-year-month-info
   [t left-right-key year-month-key time-factor]
   (let [min  (:min (year-month-key (left-right-key @state/date-atom)))
@@ -65,7 +51,7 @@
              (+ min (rem (- (+ current-year delta-year) min) range)))
       (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update]
              (* time-factor t)))
-    (trigger-data-load-if-not-already-loading!)))
+    (cache/trigger-data-load! false)))
 
 (defn draw-in-context
   [gl-ctx camera background-camera base-texture textures shaders left-right-key year-month-key t]
@@ -104,20 +90,7 @@
              (assoc-in [:uniforms :dataPos]   (:dataPos   texture-info))))))))
 
 (defn draw-frame! [t]
-  ;; If the next texture is loaded, set it to be the current texture and unload the old.
-  (when-let* [next-key (:next    @state/dynamic-texture-keys)
-              old-key  (:current @state/dynamic-texture-keys)]
-             (when @(:loaded (next-key @state/textures-left))
-               (swap! state/dynamic-texture-keys
-                      #(-> % (assoc :current next-key) (dissoc :next)))
-               (gl/release (:texture (old-key @state/textures-left)))
-               (gl/release (:texture (old-key @state/textures-right)))
-               (swap! state/textures-left  dissoc old-key)
-               (swap! state/textures-right dissoc old-key))
-             (when @(:failed (next-key @state/textures-left))
-               (swap! state/dynamic-texture-keys dissoc :next)
-               (swap! state/textures-left        dissoc next-key)
-               (swap! state/textures-right       dissoc next-key)))
+  (cache/rotate-in-next!)
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
@@ -146,7 +119,8 @@
 
 (defonce hooked-up? (event-handlers/hook-up-events!))
 
-(watchers/mount-rotation-data-reload-watch state/earth-orientation trigger-data-load!)
+(watchers/mount-rotation-data-reload-watch state/earth-orientation
+                                           #(cache/trigger-data-load! true))
 
 ;; This is a hook for figwheel, add stuff you want run after you save your source.
 (defn on-js-reload [])
