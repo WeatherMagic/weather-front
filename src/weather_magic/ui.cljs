@@ -57,8 +57,8 @@
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
-  [name id class func atom & args]
-  [:input {:type "button" :value name :id id :class class
+  [name class func atom & args]
+  [:input {:type "button" :value name :id name :class class
            :on-click #(apply func atom args)}])
 
 (defn play-pause-button
@@ -102,7 +102,7 @@
   []
   [:div
    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
-    [button "Data-selection" "" "selection-button" swap! state/data-menu-visible hide-unhide]]
+    [button "Data-selection" "selection-button" swap! state/data-menu-visible hide-unhide]]
    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
     [:a {:href "#" :class "closebtn" :value "X" :on-click #(swap! state/data-menu-visible hide-unhide)}]
     [:div {:id "side-menu-button-group-container"}
@@ -117,29 +117,29 @@
        [:option {:value "historical"} "Historical"]]]
      [:div {:id "right-side-menu-offset"}]
      [:div {:id "lower-side-menu-button-group"}
-      [button "Standard" "" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
-      [button "Temperature" "" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
-      [button "Precipitation" "" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
+      [button "Standard" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
+      [button "Temperature" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
+      [button "Precipitation" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
 
 (defn navigation-selection
   "Buttons for choosing which data layer to display"
   []
   [:div
    [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
-    [button "Navigation" "" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
+    [button "Navigation" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
    [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
     [:a {:href "#" :class "closebtn" :value "X" :on-click #(close-side-menu state/navigation-menu-visible)}]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "right-upper-side-menu-button-group"}
-      [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
-      [button "About" "" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]
+      [button "Spin-earth" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
+      [button "About" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]
      [:div {:id "right-lower-side-menu-button-group"}
-      [button "Europe" "" "side-menu-button" set-static-view (vec3 45 80 0)]
-      [button "Africa" "" "side-menu-button" set-static-view (vec3 5 75 0)]
-      [button "South America" "" "side-menu-button" set-static-view (vec3 -20 150 0)]
-      [button "North America" "" "side-menu-button" set-static-view (vec3 35 190 0)]
-      [button "Oceania" "" "side-menu-button" set-static-view (vec3 -15 -40 0)]
-      [button "Asia" "" "side-menu-button" set-static-view (vec3 35 -15 0)]]]]])
+      [button "Europe" "side-menu-button" set-static-view (vec3 45 80 0)]
+      [button "Africa" "side-menu-button" set-static-view (vec3 5 75 0)]
+      [button "South America" "side-menu-button" set-static-view (vec3 -20 150 0)]
+      [button "North America" "side-menu-button" set-static-view (vec3 35 190 0)]
+      [button "Oceania" "side-menu-button" set-static-view (vec3 -15 -40 0)]
+      [button "Asia" "side-menu-button" set-static-view (vec3 35 -15 0)]]]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)
@@ -154,7 +154,7 @@
     [:h1 "Welcome to WeatherMagic!"]
     [:p "An interactive visualization of climate projections"]
     [:p "or How fucked art thou?"]]
-   [button "To map" "" "intro-button" go-from-landing-page]])
+   [button "To map" "intro-button" go-from-landing-page]])
 
 (defn about-page
   "What the user sees when she arrives at the page."
