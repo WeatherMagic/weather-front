@@ -22,6 +22,24 @@
   [hidden-or-not]
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
+
+(defn data-slide-in-out
+  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
+  [hidden-or-not]
+  (hidden-or-not {:data-menu-slide-out
+                  :data-menu-slide-in
+                  :data-menu-slide-in
+                  :data-menu-slide-out}))
+
+
+(defn navigation-slide-in-out
+  "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
+  [hidden-or-not]
+  (hidden-or-not {:navigation-menu-slide-out
+                  :navigation-menu-slide-in
+                  :navigation-menu-slide-in
+                  :navigation-menu-slide-out}))
+
 (defn toggle-about-page
   [atom1 atom2]
   (swap! atom1 hide-unhide)
@@ -98,9 +116,9 @@
   []
   [:div
    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
-    [button "Data-selection" "" "selection-button" swap! state/data-menu-visible hide-unhide]]
+    [button "Data-selection" "" "selection-button" swap! state/data-menu-visible data-slide-in-out]]
    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
-    [:a {:href "#" :class "closebtn" :value "X" :on-click #(swap! state/data-menu-visible hide-unhide)}]
+    [:a {:href "#" :class "closebtn" :value "X" :on-click #(swap! state/data-menu-visible data-slide-in-out)}]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "upper-side-menu-button-group"}
       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
@@ -121,9 +139,9 @@
   []
   [:div
    [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
-    [button "Navigation" "" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
+    [button "Navigation" "" "selection-button" swap! state/navigation-menu-visible navigation-slide-in-out]]
    [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
-    [:a {:href "#" :class "closebtn" :value "X" :on-click #(close-side-menu state/navigation-menu-visible)}]
+    [:a {:href "#" :class "closebtn" :value "X" :on-click #(swap! state/navigation-menu-visible navigation-slide-in-out)}]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "right-upper-side-menu-button-group"}
       [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]

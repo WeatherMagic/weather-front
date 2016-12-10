@@ -243,6 +243,15 @@ input[type="button"]:active {
   left: 0;
   background-color: #111; /* Black*/
   overflow-x: hidden; /* Disable horizontal scroll */
+  transition-delay: 5s;
+}
+
+.data-menu-slide-in{
+    left: 0;
+}
+
+.data-menu-slide-out{
+    left: -1000px;
 }
 
 #navigation-menu-container {
@@ -254,6 +263,15 @@ input[type="button"]:active {
   right: 0;
   background-color: #111; /* Black*/
   overflow-x: hidden; /* Disable horizontal scroll */
+  transition-delay: 5s;
+}
+
+.navigation-menu-slide-in{
+    right: 0;
+}
+
+.navigation-menu-slide-out{
+    right: -1000px
 }
 
 #side-menu-button-group-container {
