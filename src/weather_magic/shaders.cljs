@@ -77,8 +77,6 @@
                                clamp(1.0 + (116.0/255.0) * (temperature - 0.4) / 0.2, 0.0, 1.0), 1.0);
      }
 
-     float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
-
      vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam;
      temperatureColor = temperatureColor * textureAlpha;
      vec4 outColor;
