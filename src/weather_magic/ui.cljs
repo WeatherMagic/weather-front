@@ -16,8 +16,7 @@
 (defn set-static-view
   [rot-coords]
   (reset! state/earth-animation-fn world/show-static-view!)
-  (reset! state/static-scene-coordinates rot-coords)
-  (println state/camera-left))
+  (reset! state/static-scene-coordinates rot-coords))
 
 (defn hide-unhide
   "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
