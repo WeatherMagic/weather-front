@@ -45,6 +45,7 @@
   ;; Don't load a new texture if we're already loading one.
   (let [texture-keys @state/dynamic-texture-keys
         current-time-data @state/date-atom]
+    (println "date-atom" current-time-data)
     (when-not (contains? texture-keys :next)
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                       state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right

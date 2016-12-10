@@ -45,6 +45,7 @@
   So (load-texture X {} 'earth.png') will return:
     {:earth {:texture T :loaded (volatile! false)}}
   where :loaded will turn true once the load is complete."
+  (println "load-texture-if-needed 1")
   (into textures
         (let [name (key-fn path)]
           (when-not (contains? textures name)
@@ -65,8 +66,8 @@
   to find the newly loaded texture in texture-map."
   [texture-map gl-ctx {variable :variable request-params :request-params placement :placement
                        :or {variable "temperature"}}]
-  (println (:year request-params))
-
+  ;(println (:year request-params))
+  (println "load-data 1")
   (let [request-map (merge {:year              2083
                             :month             12
                             :from-longitude    5
@@ -83,7 +84,8 @@
         url (str "http://thor.hfelo.se/api/" variable query-string)
         key (keyword query-string)
         texture-map (load-texture-if-needed texture-map gl-ctx url :key-fn (fn [_] key))]
-    (println "This is what we request: " request-map)
+    (println "load-data 2")
+    ;(println "This is what we request: " request-map)
     {:key key
      :map (assoc-in texture-map [key :placement] placement)}))
 
@@ -91,8 +93,11 @@
   "Load a texture if needed and mutate the given atom to contain
   it. Return the key of the newly loaded texture."
   [texture-map-atom gl-ctx options]
+  (println "load-data-into-atom-and-return-key 1")
   (let [ret-val (load-data @texture-map-atom gl-ctx options)]
+    (println "load-data-into-atom-and-return-key 2")
     (swap! texture-map-atom merge (:map ret-val))
+    (println "load-data-into-atom-and-return-key 3")
     (:key ret-val)))
 
 (defn load-base-textures
@@ -109,6 +114,7 @@
    gl-ctx-left gl-ctx-right earth-orientation camera-left current-time-data]
   (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera-left)
         placement       (transforms/get-texture-position-map lat-lon-corners)]
+    (println "load-data-for-current-viewport-and-return-key 1")
     (load-data-into-atom-and-return-key! textures-left-atom gl-ctx-left
                                          {:request-params (merge lat-lon-corners {:year (:value (:year (:left current-time-data)))
                                                                                   :month (:value (:month (:left current-time-data)))})
