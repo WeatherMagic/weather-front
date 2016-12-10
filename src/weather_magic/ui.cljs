@@ -5,6 +5,7 @@
    [weather-magic.event-handlers :as event-handlers]
    [weather-magic.world    :as world]
    [weather-magic.shaders  :as shaders]
+   [thi.ng.geom.gl.camera :as cam]
    [weather-magic.util     :as util]
    [reagent.core           :as reagent :refer [atom]]
    [thi.ng.geom.vector     :as v       :refer [vec2 vec3]]
@@ -15,7 +16,8 @@
 (defn set-static-view
   [rot-coords]
   (reset! state/earth-animation-fn world/show-static-view!)
-  (reset! state/static-scene-coordinates rot-coords))
+  (reset! state/static-scene-coordinates rot-coords)
+  (println state/camera-left))
 
 (defn hide-unhide
   "Returns the inverse of hidden and visible. If :hidden is given, :visible is returned and vice versa."
