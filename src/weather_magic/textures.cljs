@@ -62,7 +62,7 @@
   Returs a map with {:key str :map texture-map} where :key holds how
   to find the newly loaded texture in texture-map."
   [texture-map gl-ctx {variable :variable request-params :request-params placement :placement
-                       :or {variable "temperature"}}]
+                       :or {variable "precipitation"}}]
   (let [request-map (merge {:year              2083
                             :month             12
                             :from-longitude    5
@@ -99,12 +99,14 @@
   "AKA the tightly coupled monster function of doom with an argument
   list so large it eclipses the sun."
   [textures-left-atom textures-right-atom
-   gl-ctx-left gl-ctx-right earth-orientation camera-left]
+   gl-ctx-left gl-ctx-right earth-orientation camera-left data-layer]
   (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera-left)
         placement       (transforms/get-texture-position-map lat-lon-corners)]
     (load-data-into-atom-and-return-key! textures-left-atom gl-ctx-left
                                          {:request-params lat-lon-corners
-                                          :placement placement})
+                                          :placement placement
+                                          :variable data-layer})
     (load-data-into-atom-and-return-key! textures-right-atom gl-ctx-right
                                          {:request-params lat-lon-corners
-                                          :placement placement})))
+                                          :placement placement
+                                          :variable data-layer})))
