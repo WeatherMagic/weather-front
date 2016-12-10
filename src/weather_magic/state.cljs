@@ -81,10 +81,15 @@
                    textures-left textures-right gl-ctx-left gl-ctx-right
                    @earth-orientation @camera-left)}))
 
-(def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)})
-(def shaders-right {:space    (sh/make-shader-from-spec gl-ctx-right shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)})
+(def shaders-left  {:space         (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
+                    :standard      (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
+                    :temperature   (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)
+                    :precipitation (sh/make-shader-from-spec gl-ctx-left  shaders/precipitation-shader-spec)})
+(def shaders-right {:space         (sh/make-shader-from-spec gl-ctx-right shaders/space-shader-spec)
+                    :standard      (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
+                    :temperature   (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)
+                    :precipitation (sh/make-shader-from-spec gl-ctx-right shaders/precipitation-shader-spec)})
+
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.

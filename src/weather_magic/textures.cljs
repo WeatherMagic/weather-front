@@ -62,7 +62,7 @@
   Returs a map with {:key str :map texture-map} where :key holds how
   to find the newly loaded texture in texture-map."
   [texture-map gl-ctx {variable :variable request-params :request-params placement :placement
-                       :or {variable "temperature"}}]
+                       :or {variable "precipitation"}}]
   (let [request-map (merge {:year              2083
                             :month             12
                             :from-longitude    5

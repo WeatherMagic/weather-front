@@ -113,8 +113,9 @@
        [:option {:value "historical"} "Historical"]]]
      [:div {:id "right-side-menu-offset"}]
      [:div {:id "lower-side-menu-button-group"}
-      [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
-      [button "Precipitation" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Precipitation]]]]])
+      [button "Standard" "" "side-menu-button" reset! state/current-shader-key :standard]
+      [button "Temperature" "" "side-menu-button" reset! state/current-shader-key :temperature]
+      [button "Precipitation" "" "side-menu-button" reset! state/current-shader-key :precipitation]]]]])
 
 (defn navigation-selection
   "Buttons for choosing which data layer to display"
