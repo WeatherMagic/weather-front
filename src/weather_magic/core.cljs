@@ -71,8 +71,8 @@
       (swap! state/date-atom assoc-in [left-right-key year-month-key :value]
              (+ min (rem (- (+ current-year delta-year) min) range)))
       (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update]
-             (* time-factor t)))
-    (trigger-data-load!)))
+             (* time-factor t))
+      (trigger-data-load!))))
 
 (defn draw-in-context
   [gl-ctx camera background-camera base-texture textures shaders left-right-key year-month-key t]
@@ -121,6 +121,7 @@
                (gl/release (:texture (old-key @texture-atom)))
                (swap! texture-atom  dissoc old-key))
              (when @(:failed (next-key @texture-atom))
+               (println "failed")
                (swap! state/dynamic-texture-keys update-in [left-right-key :next] dissoc)
                (swap! texture-atom        dissoc next-key))))
 
