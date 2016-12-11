@@ -36,11 +36,11 @@
                (swap! state/textures-right dissoc old-key)
                (when @data-load-queued
                  (reset! data-load-queued false)
-                 (trigger-data-load! false))
-               (when @(:failed (next-key @state/textures-left))
-                 (swap! state/dynamic-texture-keys dissoc :next)
-                 (swap! state/textures-left        dissoc next-key)
-                 (swap! state/textures-right       dissoc next-key)
-                 (when @data-load-queued
-                   (reset! data-load-queued false)
-                   (trigger-data-load! false))))))
+                 (trigger-data-load! false)))
+             (when @(:failed (next-key @state/textures-left))
+               (swap! state/dynamic-texture-keys dissoc :next)
+               (swap! state/textures-left        dissoc next-key)
+               (swap! state/textures-right       dissoc next-key)
+               (when @data-load-queued
+                 (reset! data-load-queued false)
+                 (trigger-data-load! false)))))
