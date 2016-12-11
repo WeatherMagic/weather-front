@@ -44,7 +44,8 @@
      float temperature = texture2D(data, mod((vUV - dataPos), 1.0) / dataScale).r;
      vec4 baseTexture = texture2D(base, vUV);
 
-     vec4 temperatureColor;
+     vec4 temperatureColor = vec4(0.0);
+     float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
      if (mod(temperature, 0.078125) < 0.003 && eye.z < 1.2) {
        if (temperature > 0.5) {
@@ -52,25 +53,46 @@
        } else if (temperature < 0.5) {
          temperatureColor = vec4(1.0, 1.0, 1.0, 1.0);
        }
-     } else if(temperature > 0.5) {
-       temperature = clamp(temperature, 0.5, 0.8);
+     } else if(temperature > 0.7) {
+       temperature = clamp(temperature, 0.7, 0.8);
        temperatureColor = vec4(1.0,
-                               clamp(-3.333 * temperature + 2.67, 0.0, 1.0),
+                               clamp((0.8 - temperature) / 0.1, 0.0, 1.0),
                                0.0, 1.0);
+     } else if(temperature > 0.6) {
+       temperatureColor = vec4(clamp(1.0 + (temperature - 0.7) / 0.1, 0.0, 1.0),
+                               1.0,
+                               0.0, 1.0);
+     } else if(temperature > 0.55) {
+       temperatureColor = vec4(0.0,
+                               1.0,
+                               clamp((0.6 - temperature) / 0.05, 0.0, 1.0), 1.0);
+     } else if(temperature > 0.45){
+       temperatureColor = vec4(0.0,
+                               clamp(1.0 + (temperature - 0.55) / 0.1, 0.0, 1.0),
+                               1.0, 1.0);
      } else {
-       temperature = clamp(temperature, 0.344, 0.5);
-       temperatureColor = vec4(clamp(6.41 * temperature - 2.205, 0.0, 1.0),
-                               clamp(6.41 * temperature - 2.205, 0.0, 1.0),
-                               clamp((-6.41 * temperature + 3.205), 0.0, 1.0),
-                               1.0);
+       temperature = clamp(temperature, 0.2, 0.4);
+       temperatureColor = vec4((139.0/255.0) * clamp((0.4 - temperature) / 0.2 , 0.0, 1.0),
+                               0.0,
+                               clamp(1.0 + (116.0/255.0) * (temperature - 0.4) / 0.2, 0.0, 1.0), 1.0);
      }
 
-     float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
-
      vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam;
+     temperatureColor = temperatureColor * textureAlpha;
+     vec4 outColor;
 
-     vec4 mixColor = baseColor * 0.35 + temperatureColor * textureAlpha * 0.65;
+     float baseFactor;
+     float dataFactor;
 
+     if(textureAlpha < 0.3) {
+       baseFactor = 1.0;
+       dataFactor = 0.0;
+     } else {
+       baseFactor = 0.35;
+       dataFactor = 0.65;
+     }
+
+     vec4 mixColor = baseColor * baseFactor + temperatureColor * dataFactor;
      gl_FragColor = mixColor;
    }")
 
