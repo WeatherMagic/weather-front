@@ -7,8 +7,6 @@
    [thi.ng.geom.vector     :as v   :refer [vec2 vec3]]
    [thi.ng.math.core       :as m   :refer [PI HALF_PI TWO_PI]]))
 
-(enable-console-print!)
-
 (defn north-pole-rotation-around-z
   [earth-transform]
   (let [northpole-x (.-m10 earth-transform)
@@ -88,7 +86,6 @@
         to-lat (if (> zoom-level 0.1) 90 (min (+ lat-coords zoom-rect) 90))
         from-lon (if (> zoom-level 0.1) -180 (max (- lon-coords (* zoom-rect 2)) -180))
         to-lon (if (> zoom-level 0.1) 180 (min (+ lon-coords (* zoom-rect 2)) 180))]
-    (println center-model-coords)
     {:from-latitude from-lat
      :to-latitude to-lat
      :from-longitude from-lon

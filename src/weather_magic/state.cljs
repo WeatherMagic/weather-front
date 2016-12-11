@@ -107,4 +107,4 @@
 
 (defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0 :panning false}))
 
-(defonce move-to-view-info (atom {:delta-angle 0 :delta-z 0 :total-steps 200 :current-step 0}))
+(defonce move-to-view-info (atom {:align false :delta-angle 0 :delta-z 0 :total-steps 200 :current-step 0}))

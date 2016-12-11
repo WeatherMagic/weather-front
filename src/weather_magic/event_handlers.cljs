@@ -51,8 +51,8 @@
                                         (m/* @state/earth-orientation)))))
 
 (defn align-handler []
-  (transforms/update-alignment-angle 0 0 (:eye @state/camera-left) (:total-steps @state/pointer-zoom-info) @state/earth-orientation)
-  (swap! state/pointer-zoom-info assoc :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
+  (swap! state/pointer-zoom-info assoc :delta-z-angle (transforms/update-alignment-angle 0 0 (:eye @state/camera-left) (:total-steps @state/pointer-zoom-info) @state/earth-orientation)
+         :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
   (reset! state/earth-animation-fn world/align-animation!))
 
 (defn move-fn
