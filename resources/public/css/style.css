@@ -239,7 +239,7 @@ input[type="button"]:active {
   width: 15%; /* 0 width - change this with JavaScript */
   min-width: 140px;
   position: fixed; /* Stay in place */
-  z-index: 1; /* Stay on top */
+  z-index: 2; /* Stay on top */
   top: 0;
   left: 0;
   background-color: #111; /* Black*/
@@ -251,7 +251,7 @@ input[type="button"]:active {
   width: 15%; /* 0 width - change this with JavaScript */
   min-width: 140px;
   position: fixed; /* Stay in place */
-  z-index: 3; /* Stay on top */
+  z-index: 2; /* Stay on top */
   top: 0;
   right: 0;
   background-color: #111; /* Black*/
@@ -361,10 +361,6 @@ input[type="button"]:active {
 
 .side-menu-button:hover {
   box-shadow: 0 0 0.7em #fff;
-}
-
-#Temperature {
-  background-image: url('../img/raindrops.jpg');
 }
 
 #closebtn input[type="button"].closebtn {

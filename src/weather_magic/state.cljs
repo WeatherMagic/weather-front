@@ -70,7 +70,6 @@
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
              :right {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-right glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-right glc/static-draw)}})
-(defonce current-model-key (atom :sphere))
 
 (defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
@@ -94,11 +93,6 @@
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
-
-(defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0)
-                             :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
-
-(defonce lat-lon-coords (atom {:from-lat 0 :to-lat 0 :from-lon 0 :to-lon 0}))
 
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 200 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
 

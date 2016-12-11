@@ -32,13 +32,6 @@
   (@state/earth-animation-fn delta-time)
   (m/* M44 @state/earth-orientation))
 
-(defn combine-model-and-camera
-  [model camera gl-ctx t]
-  (-> model
-      (gl/as-gl-buffer-spec {})
-      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
-      (cam/apply camera)))
-
 (defn trigger-data-load!
   "Get climate data for the area currently in view on the screen."
   []
@@ -92,7 +85,7 @@
       ;; Do the actual drawing.
       (doto gl-ctx
         (gl/draw-with-shader
-         (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)
+         (-> (cam/apply (:sphere (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
              (assoc-in [:uniforms :model] (set-model-matrix (- (* 5 t) @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
