@@ -365,20 +365,21 @@ input[type="button"]:active {
   background-image: url('../img/raindrops.jpg');
 }
 
-.closebtn {
+#closebtn input[type="button"].closebtn {
   position: absolute;
-  background-color: #111;
-  color: white;
+  background-color: rgba(0, 0, 0, 1);
   width: 25px;
   height: 25px;
   z-index: 2;
-  top: 5%;
-  right: 5%;
-  font-size: 36px;
-  margin-left: 50px;
+  top: 2%;
+  font-size: 100%;
+  color:  white;
 }
 
-.closebtn:before {
-  transform: rotate(45deg);
-  content: 'x';
+.data input[type="button"].closebtn{
+  margin-left: 60%;
+}
+
+.nav input[type="button"].closebtn{
+  margin-right: 60%;
 }
