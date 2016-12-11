@@ -106,6 +106,7 @@
   "AKA the tightly coupled monster function of doom with an argument
   list so large it eclipses the sun."
   [textures-atom gl-ctx earth-orientation camera current-time-data]
+  (println "load-data-for-current-viewport-and-return-key is run")
   (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera)
         placement       (transforms/get-texture-position-map lat-lon-corners)]
     (load-data-into-atom-and-return-key! textures-atom gl-ctx

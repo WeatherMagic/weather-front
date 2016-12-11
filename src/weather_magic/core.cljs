@@ -119,6 +119,7 @@
                (gl/release (:texture (old-key @texture-atom)))
                (swap! texture-atom  dissoc old-key))
              (when @(:failed (next-key @texture-atom))
+               (println "failed")
                (swap! state/dynamic-texture-keys update-in [left-right-key :next] dissoc)
                (swap! texture-atom        dissoc next-key))))
 
