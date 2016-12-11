@@ -107,3 +107,5 @@
 (defonce space-offset (atom (vec2 0 0)))
 
 (defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0 :panning false}))
+
+(defonce move-to-view-info (atom {:delta-angle 0 :delta-z 0 :total-steps 200 :current-step 0}))

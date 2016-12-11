@@ -142,12 +142,14 @@
       [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
       [button "About" "" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]
      [:div {:id "right-lower-side-menu-button-group"}
-      [button "Europe" "" "side-menu-button" set-static-view (vec3 45 80 0)]
-      [button "Africa" "" "side-menu-button" set-static-view (vec3 5 75 0)]
-      [button "South America" "" "side-menu-button" set-static-view (vec3 -20 150 0)]
-      [button "North America" "" "side-menu-button" set-static-view (vec3 35 190 0)]
-      [button "Oceania" "" "side-menu-button" set-static-view (vec3 -15 -40 0)]
-      [button "Asia" "" "side-menu-button" set-static-view (vec3 35 -15 0)]]]]])
+      [button "Arctic" "" "side-menu-button" world/get-to-view-angles 0.0 1.0 0.0]
+      [button "Europe" "" "side-menu-button" world/get-to-view-angles -0.6378739 0.7512540 0.1695120]
+      [button "Africa" "" "side-menu-button" world/get-to-view-angles -0.9418886 0.0472268 0.3325892]
+      [button "South America" "" "side-menu-button" world/get-to-view-angles -0.4850580 -0.3197941 -0.8139106]
+      [button "North America" "" "side-menu-button" world/get-to-view-angles 0.1276255 0.7026068 -0.7000396]
+      [button "Oceania" "" "side-menu-button" world/get-to-view-angles 0.5729999 -0.2510875 0.7801449]
+      [button "Asia" "" "side-menu-button" world/get-to-view-angles 0.1583381 0.5093238 0.8458831]
+      [button "Antarctica" "" "side-menu-button" world/get-to-view-angles 0.0 -1.0 0.0]]]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)

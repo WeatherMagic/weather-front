@@ -21,6 +21,45 @@
   "Makes the earth stop spinning, aka the no-op function."
   [_])
 
+(defn move-to-europe!
+  [t]
+  (let [delta-angle (:delta-angle @state/move-to-view-info)
+        z-angle (:z-angle @state/move-to-view-info)
+        total-steps (:total-steps @state/move-to-view-info)
+        current-step (:current-step @state/move-to-view-info)]
+  (reset! state/earth-orientation (-> M44
+                                      (g/rotate-z (* z-angle -1))
+                                      (g/rotate-y delta-angle)
+                                      (g/rotate-z (* z-angle 1))
+                                      (m/* @state/earth-orientation)))
+  (swap! state/move-to-view-info assoc-in [:current-step] (inc current-step))
+  (when (= current-step total-steps)
+    (reset! state/earth-animation-fn stop-spin!))))
+
+(defn get-to-view-angles
+  [model-x model-y model-z]
+  (let [inverse-earth-orientation (m/invert @state/earth-orientation)
+        model-vector-x (+ (+ (* (.-m00 inverse-earth-orientation) model-x) (* (.-m01 inverse-earth-orientation) model-y)) (* (.-m02 inverse-earth-orientation) model-z))
+        model-vector-y (+ (+ (* (.-m10 inverse-earth-orientation) model-x) (* (.-m11 inverse-earth-orientation) model-y)) (* (.-m12 inverse-earth-orientation) model-z))
+        model-vector-z (+ (+ (* (.-m20 inverse-earth-orientation) model-x) (* (.-m21 inverse-earth-orientation) model-y)) (* (.-m22 inverse-earth-orientation) model-z))
+        model-vector (vec3 model-vector-x model-vector-y model-vector-z)
+        rotation-vec (m/cross model-vector (vec3 0 0 1))
+        rot-vec-x (aget (.-buf rotation-vec) 0)
+        rot-vec-y (aget (.-buf rotation-vec) 1)
+        z-angle (if (> rot-vec-x 0.0) (Math/acos rot-vec-y) (* (Math/acos rot-vec-y) -1))
+        rot-angle (Math/acos model-vector-z)]
+        (println "model-vector-x: " model-vector-x)
+        (println "model-vector-y: " model-vector-y)
+        (println "model-vector-z: " model-vector-z)
+        (println "rotation-vec: " rotation-vec)
+        (println "z-angle: " z-angle)
+        (println "rot-angle: " rot-angle)
+        (swap! state/move-to-view-info assoc
+               :delta-angle (/ rot-angle 200)
+               :z-angle z-angle
+               :current-step 0)
+        (reset! state/earth-animation-fn move-to-europe!)))
+
 (defn reset-zoom
   [camera-map]
   (cam/perspective-camera
