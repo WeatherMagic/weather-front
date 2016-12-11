@@ -10,7 +10,9 @@ The first thing you'll see when you open up the application is the landing page.
 
 ![First look](User-guide-res/first-look.png)
 
-When you first open up Weather-front, you see the earth with temperature data current year mapped onto it. From here you can use different actions to move the view of the earth freely. 
+When you first open up Weather-front, you see the earth with temperature data current year mapped onto it. Since the data models that WeatherMagic uses doesn't cover the entire earth - some areas of the earth does not show any data but instead just the map of the earth. 
+
+From this view you can use different actions to move the earth freely. 
 
 -   Spin the earth by grabbing it with the mouse and dragging it over the screen.
 -   Zoom in into the view by scrolling on your mouse or trackpad with scrolling support.
