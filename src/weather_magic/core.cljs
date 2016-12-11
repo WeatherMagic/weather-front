@@ -45,25 +45,26 @@
   ;; Don't load a new texture if we're already loading one.
   (let [left-texture-keys (:left @state/dynamic-texture-keys)
         right-texture-keys (:right @state/dynamic-texture-keys)
-        current-time-data @state/date-atom]
+        left-time-data (:left @state/date-atom)
+        right-time-data (:right @state/date-atom)]
     ;(println "left and right texture keys")
     ;(println "left: " left-texture-keys)
     ;(println "right: " right-texture-keys)
     (when-not (contains? left-texture-keys :next)
       (println "no next left")
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
-                      state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
-                      @state/earth-orientation @state/camera-left current-time-data)]
+                      state/textures-left state/gl-ctx-left
+                      @state/earth-orientation @state/camera-left left-time-data)]
      ;       (println "next key: " next-key)
         (when-not (= (:current left-texture-keys) next-key)
-          (println "before next: " @state/dynamic-texture-keys)
-          (swap! state/dynamic-texture-keys assoc-in [:left :next] next-key)
-          (println "after next: " @state/dynamic-texture-keys))))
+          ;(println "before next: " @state/dynamic-texture-keys)
+          (swap! state/dynamic-texture-keys assoc-in [:left :next] next-key))))
+          ;(println "after next: " @state/dynamic-texture-keys))))
     (when-not (contains? right-texture-keys :next)
       (println "no next right")
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
-                      state/textures-left state/textures-right state/gl-ctx-left state/gl-ctx-right
-                      @state/earth-orientation @state/camera-left current-time-data)]
+                      state/textures-right state/gl-ctx-right
+                      @state/earth-orientation @state/camera-right right-time-data)]
      ;       (println "next key: " next-key)
         (when-not (= (:current right-texture-keys) next-key)
           (swap! state/dynamic-texture-keys assoc-in [:right :next] next-key))))))
@@ -120,46 +121,19 @@
 
 (defn draw-frame! [t]
   ;; If the next texture is loaded, set it to be the current texture and unload the old.
-
-  ;(println "left " (:left @state/dynamic-texture-keys))
-  ;(println "right " (:right @state/dynamic-texture-keys))
-  (when-let* [next-key (:next    (:left @state/dynamic-texture-keys))
-              old-key  (:current (:left @state/dynamic-texture-keys))]
-             (println "left next key: " next-key)
-             (println "left old key: " old-key)
-             (println "left loaded: " @(:loaded (next-key @state/textures-left)))
-             (println "left failed: " @(:failed (next-key @state/textures-left)))
-             (when @(:loaded (next-key @state/textures-left))
-               (println "when loaded true")
-               (swap! state/dynamic-texture-keys
-                      #(-> % (assoc (:current :left) next-key) (dissoc :next)))
-               (gl/release (:texture (old-key @state/textures-left)))
-               ;(gl/release (:texture (old-key @state/textures-right)))
-               (swap! state/textures-left  dissoc old-key))
-               ;(swap! state/textures-right dissoc old-key))
-             (when @(:failed (next-key (:left @state/textures-left)))
-               (println "when failed true")
-               (swap! state/dynamic-texture-keys dissoc (:next :left)
-                      (swap! state/textures-left        dissoc next-key))))
-               ;(swap! state/textures-right       dissoc next-key)))
-  (when-let* [next-key (:next    (:right @state/dynamic-texture-keys))
-              old-key  (:current (:right @state/dynamic-texture-keys))]
-             (println "right next key: " next-key)
-             (println "right old key: " old-key)
-             (println "right loaded: " @(:loaded (next-key @state/textures-left)))
-             (println "right failed: " @(:failed (next-key @state/textures-left)))
-             (when @(:loaded (next-key @state/textures-right))
-               (println "when loaded true")
-               (swap! state/dynamic-texture-keys
-                      #(-> % (assoc (:current :right) next-key) (dissoc :next)))
-               (gl/release (:texture (old-key @state/textures-right)))
-               ;(gl/release (:texture (old-key @state/textures-right)))
-               (swap! state/textures-right  dissoc old-key))
-               ;(swap! state/textures-right dissoc old-key))
-             (when @(:failed (next-key (:right @state/textures-right)))
-               (println "when failed true")
-               (swap! state/dynamic-texture-keys dissoc (:next :right)
-                      (swap! state/textures-right        dissoc next-key))))
+   (when-let* [next-key (:next    @state/dynamic-texture-keys)
+               old-key  (:current @state/dynamic-texture-keys)]
+              (when @(:loaded (next-key @state/textures-left))
+                (swap! state/dynamic-texture-keys
+                       #(-> % (assoc :current next-key) (dissoc :next)))
+                (gl/release (:texture (old-key @state/textures-left)))
+                (gl/release (:texture (old-key @state/textures-right)))
+                (swap! state/textures-left  dissoc old-key)
+                (swap! state/textures-right dissoc old-key))
+              (when @(:failed (next-key @state/textures-left))
+                (swap! state/dynamic-texture-keys dissoc :next)
+                (swap! state/textures-left        dissoc next-key)
+                (swap! state/textures-right       dissoc next-key)))
   ;(println "efter when-let*")
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
