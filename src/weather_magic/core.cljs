@@ -110,31 +110,24 @@
              (assoc-in [:uniforms :dataScale] (:dataScale texture-info))
              (assoc-in [:uniforms :dataPos]   (:dataPos   texture-info))))))))
 
+(defn rotate-texture
+  [left-right-key texture-atom]
+  (when-let* [next-key (:next    (left-right-key @state/dynamic-texture-keys))
+              old-key  (:current (left-right-key @state/dynamic-texture-keys))]
+             (when @(:loaded (next-key @texture-atom))
+               (swap! state/dynamic-texture-keys
+                      #(-> % (assoc-in [left-right-key :current] next-key)
+                           (update-in [left-right-key :next] dissoc)))
+               (gl/release (:texture (old-key @texture-atom)))
+               (swap! texture-atom  dissoc old-key))
+             (when @(:failed (next-key @texture-atom))
+               (swap! state/dynamic-texture-keys update-in [left-right-key :next] dissoc)
+               (swap! texture-atom        dissoc next-key))))
+
 (defn draw-frame! [t]
   ;; If the next texture is loaded, set it to be the current texture and unload the old.
-  (when-let* [next-key (:next    (:left @state/dynamic-texture-keys))
-              old-key  (:current (:left @state/dynamic-texture-keys))]
-             (when @(:loaded (next-key @state/textures-left))
-               (swap! state/dynamic-texture-keys
-                      #(-> % (assoc-in [:left :current] next-key)
-                           (update-in [:left :next] dissoc)))
-               (gl/release (:texture (old-key @state/textures-left)))
-               (swap! state/textures-left  dissoc old-key))
-             (when @(:failed (next-key @state/textures-left))
-               (swap! state/dynamic-texture-keys update-in [:left :next] dissoc)
-               (swap! state/textures-left        dissoc next-key)))
-  (when-let* [next-key (:next    (:right @state/dynamic-texture-keys))
-              old-key  (:current (:right @state/dynamic-texture-keys))]
-             (when @(:loaded (next-key @state/textures-right))
-               (swap! state/dynamic-texture-keys
-                      #(-> % (assoc-in [:right :current] next-key)
-                           (update-in [:right :next] dissoc)))
-               (gl/release (:texture (old-key @state/textures-right)))
-               (swap! state/textures-right  dissoc old-key))
-             (when @(:failed (next-key @state/textures-right))
-               (println "failed right")
-               (swap! state/dynamic-texture-keys update-in [:right :next] dissoc)
-               (swap! state/textures-right        dissoc next-key)))
+  (rotate-texture :left state/textures-left)
+  (rotate-texture :right state/textures-right)
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
