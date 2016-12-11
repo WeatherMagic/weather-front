@@ -41,24 +41,20 @@
 
 (defn trigger-data-load!
   "Get climate data for the area currently in view on the screen."
-  []
-  ;; Don't load a new texture if we're already loading one.
-  (let [left-texture-keys (:left @state/dynamic-texture-keys)
-        right-texture-keys (:right @state/dynamic-texture-keys)
-        left-time-data (:left @state/date-atom)
-        right-time-data (:right @state/date-atom)]
-    (when-not (contains? left-texture-keys :next)
+  [left-right-key]
+  (let [texture-keys (left-right-key @state/dynamic-texture-keys)
+        time-data (left-right-key @state/date-atom)
+        gl-ctx (if (:left left-right-key) state/gl-ctx-left state/gl-ctx-right)
+        textures (if (:left left-right-key) state/textures-left state/textures-right)]
+        ;(println "time data: " time-data)
+    (println "trigger-data-load in ctx: " left-right-key)
+    (when-not (contains? texture-keys :next)
+      (println "no next")
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
-                      state/textures-left state/gl-ctx-left
-                      @state/earth-orientation @state/camera-left left-time-data)]
-        (when-not (= (:current left-texture-keys) next-key)
-          (swap! state/dynamic-texture-keys assoc-in [:left :next] next-key))))
-    (when-not (contains? right-texture-keys :next)
-      (let [next-key (textures/load-data-for-current-viewport-and-return-key!
-                      state/textures-right state/gl-ctx-right
-                      @state/earth-orientation @state/camera-right right-time-data)]
-        (when-not (= (:current right-texture-keys) next-key)
-          (swap! state/dynamic-texture-keys assoc-in [:right :next] next-key))))))
+                      textures gl-ctx
+                      @state/earth-orientation @state/camera-right time-data)]
+        (when-not (= (:current texture-keys) next-key)
+          (swap! state/dynamic-texture-keys assoc-in [left-right-key :next] next-key))))))
 
 (defn update-year-month-info
   [t left-right-key year-month-key time-factor]
@@ -72,7 +68,7 @@
              (+ min (rem (- (+ current-year delta-year) min) range)))
       (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update]
              (* time-factor t)))
-    (trigger-data-load!)))
+    (trigger-data-load! left-right-key)))
 
 (defn draw-in-context
   [gl-ctx camera background-camera base-texture textures shaders left-right-key year-month-key t]
@@ -115,9 +111,11 @@
   (when-let* [next-key (:next    (left-right-key @state/dynamic-texture-keys))
               old-key  (:current (left-right-key @state/dynamic-texture-keys))]
              (when @(:loaded (next-key @texture-atom))
+               (println "dtk before: " (left-right-key @state/dynamic-texture-keys))
                (swap! state/dynamic-texture-keys
                       #(-> % (assoc-in [left-right-key :current] next-key)
                            (update-in [left-right-key :next] dissoc)))
+               (println "dtk after: " (left-right-key @state/dynamic-texture-keys))
                (gl/release (:texture (old-key @texture-atom)))
                (swap! texture-atom  dissoc old-key))
              (when @(:failed (next-key @texture-atom))
