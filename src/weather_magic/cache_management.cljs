@@ -12,21 +12,21 @@
 (defn trigger-data-load!
   "Get climate data for the area currently in view on the screen."
   ([queue-if-already-loading]
-    (trigger-data-load! :left queue-if-already-loading)
-    (trigger-data-load! :right queue-if-already-loading))
+   (trigger-data-load! :left queue-if-already-loading)
+   (trigger-data-load! :right queue-if-already-loading))
   ([left-right-key queue-if-already-loading]
-  (let [texture-keys (left-right-key @state/dynamic-texture-keys)
-        time-data    (left-right-key @state/date-atom)
-        gl-ctx       (if (= :left left-right-key) state/gl-ctx-left state/gl-ctx-right)
-        texture-atom (if (= :left left-right-key) state/textures-left state/textures-right)]
-    (if-not (contains? texture-keys :next)
-      (let [next-key (textures/load-data-for-current-viewport-and-return-key!
-                      texture-atom gl-ctx @state/earth-orientation 
-                      @state/camera-right time-data @state/data-layer-atom)]
-        (when-not (= (:current texture-keys) next-key)
-          (swap! state/dynamic-texture-keys assoc-in [left-right-key :next] next-key)))
-      (when queue-if-already-loading
-        (swap! data-load-queued assoc left-right-key true))))))
+   (let [texture-keys (left-right-key @state/dynamic-texture-keys)
+         time-data    (left-right-key @state/date-atom)
+         gl-ctx       (if (= :left left-right-key) state/gl-ctx-left state/gl-ctx-right)
+         texture-atom (if (= :left left-right-key) state/textures-left state/textures-right)]
+     (if-not (contains? texture-keys :next)
+       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
+                       texture-atom gl-ctx @state/earth-orientation
+                       @state/camera-right time-data @state/data-layer-atom)]
+         (when-not (= (:current texture-keys) next-key)
+           (swap! state/dynamic-texture-keys assoc-in [left-right-key :next] next-key)))
+       (when queue-if-already-loading
+         (swap! data-load-queued assoc left-right-key true))))))
 
 (defn rotate-in-next!
   [left-right-key texture-atom]

@@ -39,9 +39,9 @@
 (defonce data-layer-atom (atom "temperature"))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 2082 :min 1950 :max 2100}
+(defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 2017 :min 1950 :max 2100}
                                   :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}
-                          :right {:year  {:play-mode false :play-mode-before-sliding false :value 2082 :min 1950 :max 2100}
+                          :right {:year  {:play-mode false :play-mode-before-sliding false :value 2017 :min 1950 :max 2100}
                                   :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}}))
 
 ;; The function currently animating the earth.
