@@ -34,6 +34,7 @@
                                       (m/* @state/earth-orientation)))
   (swap! state/move-to-view-info assoc-in [:current-step] (inc current-step))
   (when (= current-step total-steps)
+
     (reset! state/earth-animation-fn stop-spin!))))
 
 (defn get-to-view-angles

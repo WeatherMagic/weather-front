@@ -1,7 +1,6 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models           :as models]
-   [weather-magic.transforms       :as transforms]
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [thi.ng.geom.gl.camera          :as cam]

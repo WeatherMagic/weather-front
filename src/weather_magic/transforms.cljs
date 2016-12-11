@@ -9,6 +9,26 @@
 
 (enable-console-print!)
 
+(defn north-pole-rotation-around-z
+  [earth-transform]
+  (let [northpole-x (.-m10 earth-transform)
+        northpole-y (.-m11 earth-transform)
+        northpole-z (.-m12 earth-transform)
+        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))]
+    (* (Math/acos northpole-y-norm) (Math/sign northpole-x))))
+
+(defn update-alignment-angle
+  "Updating how much the globe should be rotated around the z axis to align northpole"
+  [x-diff y-diff camera-position nr-of-steps earth-orientation]
+  (let [camera-z-pos (aget (.-buf camera-position) 2)
+        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))
+        future-earth-orientation (-> M44
+                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
+                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) zoom-level) 0.1)))
+                                     (g/rotate-z (Math/atan2 y-diff x-diff))
+                                     (m/* earth-orientation))]
+    (/ (north-pole-rotation-around-z future-earth-orientation) nr-of-steps)))
+
 (defn lat-lon-to-uv
   [lat lon]
   (let [u (+ (/ lon 360) 0.5)
