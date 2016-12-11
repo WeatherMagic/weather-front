@@ -47,27 +47,17 @@
         right-texture-keys (:right @state/dynamic-texture-keys)
         left-time-data (:left @state/date-atom)
         right-time-data (:right @state/date-atom)]
-    ;(println "left and right texture keys")
-    ;(println "left: " left-texture-keys)
-    ;(println "right: " right-texture-keys)
     (when-not (contains? left-texture-keys :next)
-      (println "no next left")
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                       state/textures-left state/gl-ctx-left
                       @state/earth-orientation @state/camera-left left-time-data)]
-     ;       (println "next key: " next-key)
         (when-not (= (:current left-texture-keys) next-key)
-          ;(println "before next: " @state/dynamic-texture-keys)
           (swap! state/dynamic-texture-keys assoc-in [:left :next] next-key))))
-          ;(println "after next: " @state/dynamic-texture-keys))))
     (when-not (contains? right-texture-keys :next)
-      (println "no next right")
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                       state/textures-right state/gl-ctx-right
                       @state/earth-orientation @state/camera-right right-time-data)]
-        (println "next key: " next-key)
         (when-not (= (:current right-texture-keys) next-key)
-          (println "current is not next")
           (swap! state/dynamic-texture-keys assoc-in [:right :next] next-key))))))
 
 (defn update-year-month-info
@@ -90,7 +80,7 @@
                  (:min  (year-month-key (left-right-key @state/date-atom))))
         time (- (:value (year-month-key (left-right-key @state/date-atom)))
                 (:min   (year-month-key (left-right-key @state/date-atom))))
-        texture-info (:placement ((:current (:left @state/dynamic-texture-keys)) textures))]
+        texture-info (:placement ((:current (left-right-key @state/dynamic-texture-keys)) textures))]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture (:space textures)) 0)
@@ -105,8 +95,8 @@
              (assoc-in [:uniforms :uvOffset]   @state/space-offset))))
       (gl/bind (:texture base-texture) 0)
       ;; If the data from thor has been loaded, use that instead of trump.
-      (if @(:loaded ((:current (:left @state/dynamic-texture-keys)) textures))
-        (gl/bind (:texture ((:current (:left @state/dynamic-texture-keys)) textures)) 1)
+      (if @(:loaded ((:current (left-right-key @state/dynamic-texture-keys)) textures))
+        (gl/bind (:texture ((:current (left-right-key @state/dynamic-texture-keys)) textures)) 1)
         (gl/bind (:texture (:trump textures)) 1))
       ;; Do the actual drawing.
       (doto gl-ctx
@@ -122,24 +112,20 @@
 
 (defn draw-frame! [t]
   ;; If the next texture is loaded, set it to be the current texture and unload the old.
-  (println "före when-let*")
   (when-let* [next-key (:next    (:left @state/dynamic-texture-keys))
               old-key  (:current (:left @state/dynamic-texture-keys))]
              (when @(:loaded (next-key @state/textures-left))
-               (println "loaded left")
                (swap! state/dynamic-texture-keys
                       #(-> % (assoc-in [:left :current] next-key)
                            (update-in [:left :next] dissoc)))
                (gl/release (:texture (old-key @state/textures-left)))
                (swap! state/textures-left  dissoc old-key))
              (when @(:failed (next-key @state/textures-left))
-               (println "failed left")
                (swap! state/dynamic-texture-keys update-in [:left :next] dissoc)
                (swap! state/textures-left        dissoc next-key)))
   (when-let* [next-key (:next    (:right @state/dynamic-texture-keys))
               old-key  (:current (:right @state/dynamic-texture-keys))]
              (when @(:loaded (next-key @state/textures-right))
-               (println "loaded right")
                (swap! state/dynamic-texture-keys
                       #(-> % (assoc-in [:right :current] next-key)
                            (update-in [:right :next] dissoc)))
@@ -149,9 +135,6 @@
                (println "failed right")
                (swap! state/dynamic-texture-keys update-in [:right :next] dissoc)
                (swap! state/textures-right        dissoc next-key)))
-
-  (println "efter when-let*")
-  (println "före if of doom")
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
@@ -164,14 +147,12 @@
   (if (:play-mode (:month (:right @state/date-atom)))
     (update-year-month-info t :right :month 1)
     (swap! state/year-update assoc-in [:right :month :time-of-last-update] (* 1 t)))
-  (println "efter if of doom")
   (if (or (:play-mode (:month (:left @state/date-atom))) (:play-mode (:month (:right @state/date-atom))))
     (do (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :month t)
         (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right :month t))
     (do (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :year t)
         (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right :year t)))
-  (vreset! state/time-of-last-frame (* 5 t))
-  (println "efter andra if of doom"))
+  (vreset! state/time-of-last-frame (* 5 t)))
 
 ;; Start the demo only once.
 (defonce running
