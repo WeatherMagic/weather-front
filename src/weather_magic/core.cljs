@@ -32,13 +32,6 @@
   (@state/earth-animation-fn delta-time)
   (m/* M44 @state/earth-orientation))
 
-(defn combine-model-and-camera
-  [model camera gl-ctx t]
-  (-> model
-      (gl/as-gl-buffer-spec {})
-      (gl/make-buffers-in-spec gl-ctx glc/static-draw)
-      (cam/apply camera)))
-
 (defn update-year-month-info
   [t left-right-key year-month-key time-factor]
   (let [min  (:min (year-month-key (left-right-key @state/date-atom)))
