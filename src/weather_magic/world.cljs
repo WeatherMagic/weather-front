@@ -29,7 +29,6 @@
 (defn show-static-view!
   "Rotates the sphere so that Europe is shown."
   [t]
-  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation (set-earth-rotation @state/static-scene-coordinates))
   (reset! state/earth-animation-fn stop-spin!)
@@ -39,27 +38,17 @@
 (defn northpole-up!
   "Rotates the sphere so that the northpole is up after panning."
   []
-  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (reset! state/earth-orientation M44))
 
 (defn spin-earth!
   "Rotates the sphere indefinitely."
   [delta-time]
-  (reset! state/current-model-key :sphere)
   (reset! state/base-texture-left (:earth @state/textures-left))
   (swap! state/space-offset (fn [atom] (vec2 (+ (aget (.-buf atom) 0) (/ (m/radians delta-time) TWO_PI)) (aget (.-buf atom) 1))))
   (reset! state/earth-orientation (-> M44
                                       (g/rotate-y (m/radians delta-time))
                                       (m/* @state/earth-orientation))))
-
-(defn reset-spin!
-  "Rotates the sphere so that the northpole is up after panning."
-  [delta-time]
-  (reset! state/current-model-key :sphere)
-  (reset! state/base-texture-left (:earth @state/textures-left))
-  (reset! state/earth-orientation M44)
-  (reset! state/earth-animation-fn spin-earth!))
 
 (defn after-pan-spin!
   "Rotates the sphere indefinitely."

@@ -92,7 +92,7 @@
       ;; Do the actual drawing.
       (doto gl-ctx
         (gl/draw-with-shader
-         (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)
+         (-> (cam/apply (:sphere (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
              (assoc-in [:uniforms :model] (set-model-matrix (- (* 5 t) @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)

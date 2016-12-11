@@ -111,7 +111,7 @@
     [button "Data-selection" "" "selection-button" swap! state/data-menu-visible hide-unhide]]
    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
     [:div {:id "closebtn" :class "data"}
-     [close-button "x" "" "side-menu-button"  swap! state/data-menu-visible hide-unhide]]
+     [close-button "x" "" "side-menu-button" close-side-menu state/data-menu-visible]]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "upper-side-menu-button-group"}
       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
@@ -136,7 +136,7 @@
     [button "Navigation" "" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
    [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
     [:div {:id "closebtn" :class "nav"}
-     [close-button "x" "" "side-menu-button"  swap! state/navigation-menu-visible hide-unhide]]
+     [close-button "x" "" "side-menu-button" close-side-menu state/navigation-menu-visible]]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "right-upper-side-menu-button-group"}
       [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
