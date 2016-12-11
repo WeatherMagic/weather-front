@@ -116,7 +116,7 @@
     (reset! state/earth-orientation (-> M44
                                         (g/rotate-z (* z-angle -1))
                                         (g/rotate-y delta-angle)
-                                        (g/rotate-z (* z-angle 1))
+                                        (g/rotate-z z-angle 1)
                                         (m/* @state/earth-orientation)))
     (swap! state/move-to-view-info assoc-in [:current-step] (inc current-step))
     (when (= current-step total-steps)
@@ -139,12 +139,12 @@
         rot-vec-y (aget (.-buf rotation-vec) 1)
         z-angle (if (> rot-vec-x 0.0) (Math/acos rot-vec-y) (* (Math/acos rot-vec-y) -1))
         rot-angle (Math/acos model-vector-z)]
-        (swap! state/move-to-view-info assoc
-               :align align-true-or-false
-               :delta-angle (/ rot-angle 200)
-               :z-angle z-angle
-               :current-step 0)
-        (reset! state/earth-animation-fn go-to-view!)))
+    (swap! state/move-to-view-info assoc
+           :align align-true-or-false
+           :delta-angle (/ rot-angle 200)
+           :z-angle z-angle
+           :current-step 0)
+    (reset! state/earth-animation-fn go-to-view!)))
 
 ;; THIS IS BAD AND I SHOULD FEEL BAD.
 (reset! state/earth-animation-fn spin-earth!)
