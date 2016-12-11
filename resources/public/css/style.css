@@ -379,9 +379,9 @@ input[type="button"]:active {
 }
 
 .data input[type="button"].closebtn{
-  margin-left: 60%;
+  left: auto;
 }
 
 .nav input[type="button"].closebtn{
-  margin-right: 60%;
+  right:auto;
 }

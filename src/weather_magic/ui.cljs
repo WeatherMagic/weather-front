@@ -129,7 +129,7 @@
       [button "Precipitation" "" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
 
 (defn navigation-selection
-  "Buttons for choosing which data layer to display"
+  "Buttons for navigation"
   []
   [:div
    [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
