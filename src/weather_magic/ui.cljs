@@ -5,6 +5,7 @@
    [weather-magic.event-handlers :as event-handlers]
    [weather-magic.world    :as world]
    [weather-magic.shaders  :as shaders]
+   [thi.ng.geom.gl.camera :as cam]
    [weather-magic.util     :as util]
    [reagent.core           :as reagent :refer [atom]]
    [thi.ng.geom.vector     :as v       :refer [vec2 vec3]]
@@ -40,8 +41,6 @@
 
 (defn update-climate-model-info
   [key input]
-  (println key)
-  (println input)
   (swap! state/climate-model-info assoc-in [key] input))
 
 (defn toggle-play-stop
@@ -50,6 +49,11 @@
     (swap! atom update-in [left-right-key year-month-key] merge {:play-mode false :play-mode-before-sliding false})
     (do (swap! atom update-in [left-right-key year-month-key] merge {:play-mode true :play-mode-before-sliding true})
         (swap! atom update-in [left-right-key year-month-key-inv] merge {:play-mode false :play-mode-before-sliding false}))))
+
+(defn update-shader-and-data-layer
+  [shader data-layer]
+  (reset! state/current-shader-key shader)
+  (reset! state/data-layer-atom data-layer))
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
@@ -62,6 +66,12 @@
   [id func atom & args]
   [:input.play-pause {:type "button" :id id
                       :on-click #(apply func atom args)}])
+
+(defn close-button
+  "A close button"
+  [name id class func atom & args]
+  [:input.closebtn {:type "button" :value name :id id :class class
+                    :on-click #(apply func atom args)}])
 
 (defn slider [left-right-key year-month-key value min max]
   [:input {:type "range" :value value :min min :max max
@@ -100,7 +110,8 @@
    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
     [button "Data-selection" "" "selection-button" swap! state/data-menu-visible hide-unhide]]
    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
-    [:a {:href "#" :class "closebtn" :value "X" :on-click #(swap! state/data-menu-visible hide-unhide)}]
+    [:div {:id "closebtn" :class "data"}
+     [close-button "x" "" "side-menu-button" close-side-menu state/data-menu-visible]]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "upper-side-menu-button-group"}
       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
@@ -113,17 +124,19 @@
        [:option {:value "historical"} "Historical"]]]
      [:div {:id "right-side-menu-offset"}]
      [:div {:id "lower-side-menu-button-group"}
-      [button "Temperature" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Temperature]
-      [button "Precipitation" "" "side-menu-button" swap! state/data-layer-atom util/toggle :Precipitation]]]]])
+      [button "Standard" "" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
+      [button "Temperature" "" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
+      [button "Precipitation" "" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
 
 (defn navigation-selection
-  "Buttons for choosing which data layer to display"
+  "Buttons for navigation"
   []
   [:div
    [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
     [button "Navigation" "" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
    [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
-    [:a {:href "#" :class "closebtn" :value "X" :on-click #(close-side-menu state/navigation-menu-visible)}]
+    [:div {:id "closebtn" :class "nav"}
+     [close-button "x" "" "side-menu-button" close-side-menu state/navigation-menu-visible]]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "right-upper-side-menu-button-group"}
       [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]

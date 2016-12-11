@@ -65,7 +65,7 @@
   to find the newly loaded texture in texture-map."
   [texture-map gl-ctx {variable :variable request-params :request-params placement :placement
                        :or {variable "temperature"}}]
-    (let [request-map (merge {:year              2083
+  (let [request-map (merge {:year              2083
                             :month             12
                             :from-longitude    5
                             :to-longitude      58
@@ -89,9 +89,7 @@
   it. Return the key of the newly loaded texture."
   [texture-map-atom gl-ctx options]
   (let [ret-val (load-data @texture-map-atom gl-ctx options)]
-    (.log js/console @texture-map-atom)
     (swap! texture-map-atom merge (:map ret-val))
-    (.log js/console @texture-map-atom)
     (:key ret-val)))
 
 (defn load-base-textures
@@ -104,10 +102,13 @@
 (defn load-data-for-current-viewport-and-return-key!
   "AKA the tightly coupled monster function of doom with an argument
   list so large it eclipses the sun."
-  [textures-atom gl-ctx earth-orientation camera current-time-data]
+  [textures-atom gl-ctx earth-orientation camera current-time-data variable]
   (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera)
         placement       (transforms/get-texture-position-map lat-lon-corners)]
-    (load-data-into-atom-and-return-key! textures-atom gl-ctx
-                                         {:request-params (merge lat-lon-corners {:year (:value (:year current-time-data))
-                                                                                  :month (:value (:month current-time-data))})
-                                          :placement placement})))
+    (load-data-into-atom-and-return-key!
+     textures-atom gl-ctx
+     {:request-params (merge lat-lon-corners
+                             {:year (:value (:year current-time-data))
+                              :month (:value (:month current-time-data))})
+      :placement placement
+      :variable variable})))

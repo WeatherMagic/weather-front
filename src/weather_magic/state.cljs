@@ -36,7 +36,7 @@
                                                                 :aspect (gl/get-viewport-rect gl-ctx-right)})))
 
 ;; What data is being displayed on the map right now?
-(defonce data-layer-atom (atom #{}))
+(defonce data-layer-atom (atom "temperature"))
 
 ;; User input from the time slider UI.
 (defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 2082 :min 1950 :max 2100}
@@ -70,34 +70,31 @@
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
              :right {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-right glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-right glc/static-draw)}})
-(defonce current-model-key (atom :sphere))
 
 (defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
-
 (defonce dynamic-texture-keys
   (atom {:left {:current (textures/load-data-for-current-viewport-and-return-key!
-                          textures-left gl-ctx-left
-                          @earth-orientation @camera-left (:left @date-atom))}
+                          textures-left gl-ctx-left @earth-orientation
+                          @camera-left (:left @date-atom) @data-layer-atom)}
          :right {:current (textures/load-data-for-current-viewport-and-return-key!
-                           textures-right gl-ctx-right
-                           @earth-orientation @camera-right (:right @date-atom))}}))
+                           textures-right gl-ctx-right @earth-orientation
+                           @camera-right (:right @date-atom) @data-layer-atom)}}))
 
-(def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)})
-(def shaders-right {:space    (sh/make-shader-from-spec gl-ctx-right shaders/space-shader-spec)
-                    :standard (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)})
+(def shaders-left  {:space         (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
+                    :standard      (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
+                    :temperature   (sh/make-shader-from-spec gl-ctx-left  shaders/temperature-shader-spec)
+                    :precipitation (sh/make-shader-from-spec gl-ctx-left  shaders/precipitation-shader-spec)})
+(def shaders-right {:space         (sh/make-shader-from-spec gl-ctx-right shaders/space-shader-spec)
+                    :standard      (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
+                    :temperature   (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)
+                    :precipitation (sh/make-shader-from-spec gl-ctx-right shaders/precipitation-shader-spec)})
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
-
-(defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0)
-                             :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
-
-(defonce lat-lon-coords (atom {:from-lat 0 :to-lat 0 :from-lon 0 :to-lon 0}))
 
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 200 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
 
@@ -111,4 +108,6 @@
 
 (defonce space-offset (atom (vec2 0 0)))
 
-(defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0}))
+(defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0 :panning false}))
+
+(defonce current-model-key (atom :sphere))
