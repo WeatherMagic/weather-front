@@ -128,14 +128,15 @@
              (when @(:loaded (next-key @state/textures-left))
                (println "loaded left")
                (swap! state/dynamic-texture-keys
-                      #(-> % (assoc-in [:left :current] next-key) (dissoc (:next :left))))
+                      #(-> % (assoc-in [:left :current] next-key) 
+                             (update-in [:left :next] dissoc old-key))
                (gl/release (:texture (old-key @state/textures-left)))
                ;(gl/release (:texture (old-key @state/textures-right)))
                (swap! state/textures-left  dissoc old-key))
                ;(swap! state/textures-right dissoc old-key))
              (when @(:failed (next-key @state/textures-left))
                (println "failed left")
-               (swap! state/dynamic-texture-keys dissoc (:next :left))
+	       (swap! state/dynamic-texture-keys update-in [:left :next] dissoc old-key)
                (swap! state/textures-left        dissoc next-key)))
   (when-let* [next-key (:next    (:right @state/dynamic-texture-keys))
               old-key  (:current (:right @state/dynamic-texture-keys))]
