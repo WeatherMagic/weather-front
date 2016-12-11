@@ -38,9 +38,9 @@
 (defonce data-layer-atom (atom "temperature"))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
+(defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 2017 :min 1950 :max 2100}
                                   :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}
-                          :right {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
+                          :right {:year  {:play-mode false :play-mode-before-sliding false :value 2017 :min 1950 :max 2100}
                                   :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}}))
 
 ;; The function currently animating the earth.
@@ -75,9 +75,12 @@
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
 (defonce dynamic-texture-keys
-  (atom {:current (textures/load-data-for-current-viewport-and-return-key!
-                   textures-left textures-right gl-ctx-left gl-ctx-right
-                   @earth-orientation @camera-left @data-layer-atom)}))
+  (atom {:left {:current (textures/load-data-for-current-viewport-and-return-key!
+                          textures-left gl-ctx-left @earth-orientation
+                          @camera-left (:left @date-atom) @data-layer-atom)}
+         :right {:current (textures/load-data-for-current-viewport-and-return-key!
+                           textures-right gl-ctx-right @earth-orientation
+                           @camera-right (:right @date-atom) @data-layer-atom)}}))
 
 (def shaders-left  {:space         (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
                     :standard      (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
