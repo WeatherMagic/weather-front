@@ -1,6 +1,7 @@
 (ns weather-magic.core
   (:require
    [weather-magic.ui               :as ui]
+   [weather-magic.util               :as util]
    [weather-magic.state            :as state]
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
@@ -43,8 +44,8 @@
       (swap! state/date-atom assoc-in [left-right-key year-month-key :value]
              (+ min (rem (- (+ current-year delta-year) min) range)))
       (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update]
-             (* time-factor t)))
-    (cache/trigger-data-load! false)))
+             (* time-factor t))
+      (cache/trigger-data-load! left-right-key false))))
 
 (defn draw-in-context
   [gl-ctx camera background-camera base-texture textures shaders left-right-key year-month-key t]
@@ -52,7 +53,7 @@
                  (:min  (year-month-key (left-right-key @state/date-atom))))
         time (- (:value (year-month-key (left-right-key @state/date-atom)))
                 (:min   (year-month-key (left-right-key @state/date-atom))))
-        texture-info (:placement ((:current @state/dynamic-texture-keys) textures))]
+        texture-info (:placement ((:current (left-right-key @state/dynamic-texture-keys)) textures))]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
       (gl/bind (:texture (:space textures)) 0)
@@ -67,15 +68,15 @@
              (assoc-in [:uniforms :uvOffset]   @state/space-offset))))
       (gl/bind (:texture base-texture) 0)
       ;; If the data from thor has been loaded, use that instead of trump.
-      (if @(:loaded ((:current @state/dynamic-texture-keys) textures))
-        (gl/bind (:texture ((:current @state/dynamic-texture-keys) textures)) 1)
+      (if @(:loaded ((:current (left-right-key @state/dynamic-texture-keys)) textures))
+        (gl/bind (:texture ((:current (left-right-key @state/dynamic-texture-keys)) textures)) 1)
         (gl/bind (:texture (:trump textures)) 1))
       ;; Do the actual drawing.
       (doto gl-ctx
         (gl/draw-with-shader
          (-> (cam/apply (@state/current-model-key (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
-             (assoc-in [:uniforms :model] (set-model-matrix (- (* 5 t) @state/time-of-last-frame)))
+             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :eye] (:eye camera))
@@ -83,25 +84,27 @@
              (assoc-in [:uniforms :dataPos]   (:dataPos   texture-info))))))))
 
 (defn draw-frame! [t]
-  (cache/rotate-in-next!)
+  ;; If the next texture is loaded, set it to be the current texture and unload the old.
+  (cache/rotate-in-next! :left state/textures-left)
+  (cache/rotate-in-next! :right state/textures-right)
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
-    (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
+    (swap! state/year-update assoc-in [:left :year :time-of-last-update] t))
   (if (:play-mode (:month (:left @state/date-atom)))
     (update-year-month-info t :left :month 1)
-    (swap! state/year-update assoc-in [:left :month :time-of-last-update] (* 1 t)))
+    (swap! state/year-update assoc-in [:left :month :time-of-last-update] t))
   (if (:play-mode (:year (:right @state/date-atom)))
     (update-year-month-info t :right :year 5)
-    (swap! state/year-update assoc-in [:right :year :time-of-last-update] (* 5 t)))
+    (swap! state/year-update assoc-in [:right :year :time-of-last-update] t))
   (if (:play-mode (:month (:right @state/date-atom)))
     (update-year-month-info t :right :month 1)
-    (swap! state/year-update assoc-in [:right :month :time-of-last-update] (* 1 t)))
+    (swap! state/year-update assoc-in [:right :month :time-of-last-update] t))
   (if (or (:play-mode (:month (:left @state/date-atom))) (:play-mode (:month (:right @state/date-atom))))
     (do (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :month t)
         (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right :month t))
     (do (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :year t)
         (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right :year t)))
-  (vreset! state/time-of-last-frame (* 5 t)))
+  (vreset! state/time-of-last-frame t))
 
 ;; Start the demo only once.
 (defonce running

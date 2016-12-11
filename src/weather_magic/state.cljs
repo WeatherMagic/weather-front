@@ -76,9 +76,12 @@
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
 (defonce dynamic-texture-keys
-  (atom {:current (textures/load-data-for-current-viewport-and-return-key!
-                   textures-left textures-right gl-ctx-left gl-ctx-right
-                   @earth-orientation @camera-left @data-layer-atom)}))
+  (atom {:left {:current (textures/load-data-for-current-viewport-and-return-key!
+                          textures-left gl-ctx-left @earth-orientation
+                          @camera-left (:left @date-atom) @data-layer-atom)}
+         :right {:current (textures/load-data-for-current-viewport-and-return-key!
+                           textures-right gl-ctx-right @earth-orientation
+                           @camera-right (:right @date-atom) @data-layer-atom)}}))
 
 (def shaders-left  {:space         (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
                     :standard      (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
@@ -88,7 +91,6 @@
                     :standard      (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
                     :temperature   (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)
                     :precipitation (sh/make-shader-from-spec gl-ctx-right shaders/precipitation-shader-spec)})
-
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.
