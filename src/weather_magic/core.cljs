@@ -65,8 +65,9 @@
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                       state/textures-right state/gl-ctx-right
                       @state/earth-orientation @state/camera-right right-time-data)]
-     ;       (println "next key: " next-key)
+        (println "next key: " next-key)
         (when-not (= (:current right-texture-keys) next-key)
+          (println "current is not next")
           (swap! state/dynamic-texture-keys assoc-in [:right :next] next-key))))))
 
 (defn update-year-month-info
@@ -121,20 +122,38 @@
 
 (defn draw-frame! [t]
   ;; If the next texture is loaded, set it to be the current texture and unload the old.
-  (when-let* [next-key (:next    @state/dynamic-texture-keys)
-              old-key  (:current @state/dynamic-texture-keys)]
+  (println "före when-let*")
+  (when-let* [next-key (:next    (:left @state/dynamic-texture-keys))
+              old-key  (:current (:left @state/dynamic-texture-keys))]
              (when @(:loaded (next-key @state/textures-left))
+               (println "loaded left")
                (swap! state/dynamic-texture-keys
-                      #(-> % (assoc :current next-key) (dissoc :next)))
+                      #(-> % (assoc-in [:left :current] next-key) (dissoc (:next :left))))
                (gl/release (:texture (old-key @state/textures-left)))
-               (gl/release (:texture (old-key @state/textures-right)))
-               (swap! state/textures-left  dissoc old-key)
-               (swap! state/textures-right dissoc old-key))
+               ;(gl/release (:texture (old-key @state/textures-right)))
+               (swap! state/textures-left  dissoc old-key))
+               ;(swap! state/textures-right dissoc old-key))
              (when @(:failed (next-key @state/textures-left))
-               (swap! state/dynamic-texture-keys dissoc :next)
-               (swap! state/textures-left        dissoc next-key)
-               (swap! state/textures-right       dissoc next-key)))
-  ;(println "efter when-let*")
+               (println "failed left")
+               (swap! state/dynamic-texture-keys dissoc (:next :left))
+               (swap! state/textures-left        dissoc next-key)))
+  (when-let* [next-key (:next    (:right @state/dynamic-texture-keys))
+              old-key  (:current (:right @state/dynamic-texture-keys))]
+             (when @(:loaded (next-key @state/textures-right))
+               (println "loaded right")
+               (swap! state/dynamic-texture-keys
+                      #(-> % (assoc-in [:right :current] next-key) (dissoc (:next :right))))
+               (gl/release (:texture (old-key @state/textures-right)))
+               ;(gl/release (:texture (old-key @state/textures-right)))
+               (swap! state/textures-right  dissoc old-key))
+               ;(swap! state/textures-right dissoc old-key))
+             (when @(:failed (next-key @state/textures-right))
+               (println "failed right")
+               (swap! state/dynamic-texture-keys dissoc (:next :right))
+               (swap! state/textures-right        dissoc next-key)))
+               ;(swap! state/textures-right       dissoc next-key)))
+  (println "efter when-let*")
+  (println "före if of doom")
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
@@ -147,12 +166,14 @@
   (if (:play-mode (:month (:right @state/date-atom)))
     (update-year-month-info t :right :month 1)
     (swap! state/year-update assoc-in [:right :month :time-of-last-update] (* 1 t)))
+  (println "efter if of doom")
   (if (or (:play-mode (:month (:left @state/date-atom))) (:play-mode (:month (:right @state/date-atom))))
     (do (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :month t)
         (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right :month t))
     (do (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :year t)
         (draw-in-context state/gl-ctx-right @state/camera-right @state/background-camera-right @state/base-texture-right @state/textures-right state/shaders-right :right :year t)))
-  (vreset! state/time-of-last-frame (* 5 t)))
+  (vreset! state/time-of-last-frame (* 5 t))
+  (println "efter andra if of doom"))
 
 ;; Start the demo only once.
 (defonce running

@@ -79,11 +79,11 @@
 
 (defonce dynamic-texture-keys
   (atom {:left {:current (textures/load-data-for-current-viewport-and-return-key!
-                          textures-left textures-right gl-ctx-left gl-ctx-right
-                          @earth-orientation @camera-left @date-atom)}
+                          textures-left gl-ctx-left
+                          @earth-orientation @camera-left (:left @date-atom))}
          :right {:current (textures/load-data-for-current-viewport-and-return-key!
-                           textures-left textures-right gl-ctx-left gl-ctx-right
-                           @earth-orientation @camera-left @date-atom)}}))
+                           textures-right gl-ctx-right
+                           @earth-orientation @camera-right (:right @date-atom))}}))
 
 (def shaders-left  {:space    (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
                     :standard (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)})
