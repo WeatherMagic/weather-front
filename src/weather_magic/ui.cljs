@@ -58,7 +58,10 @@
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
   [name class func atom & args]
-  [:input {:type "button" :value name :id name :class class
+  [:input {:type "button"
+           :value name
+           :id (clojure.string/replace name " " "")
+           :class class
            :on-click #(apply func atom args)}])
 
 (defn play-pause-button
