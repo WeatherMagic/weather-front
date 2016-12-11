@@ -338,10 +338,8 @@ input[type="button"]:active {
 
 .side-menu-button {
   float: left;
-  height: 10%;
+  height: 30px;
   width: 100%;
-  min-height: 30px;
-  max-height: 30px;
   left: 10%;
   right: 10%;
   margin-top: 5%;
@@ -369,7 +367,7 @@ input[type="button"]:active {
 
 .closebtn {
   position: absolute;
-  background-color: #333;
+  background-color: #111;
   color: white;
   width: 25px;
   height: 25px;

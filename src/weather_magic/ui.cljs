@@ -104,7 +104,7 @@
    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
     [button "Data-selection" "" "selection-button" swap! state/data-menu-visible hide-unhide]]
    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
-    [:a {:href "#" :class "closebtn" :value "X" :on-click #(swap! state/data-menu-visible hide-unhide)}]
+    [:a {:class "closebtn" :value "x" :on-click #(swap! state/data-menu-visible hide-unhide)}]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "upper-side-menu-button-group"}
       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
