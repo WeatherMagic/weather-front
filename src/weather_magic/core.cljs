@@ -1,6 +1,7 @@
 (ns weather-magic.core
   (:require
    [weather-magic.ui               :as ui]
+   [weather-magic.util               :as util]
    [weather-magic.state            :as state]
    [weather-magic.shaders          :as shaders]
    [weather-magic.transforms       :as transforms]
@@ -114,7 +115,7 @@
                (println "dtk before: " (left-right-key @state/dynamic-texture-keys))
                (swap! state/dynamic-texture-keys
                       #(-> % (assoc-in [left-right-key :current] next-key)
-                           (update-in [left-right-key :next] dissoc)))
+                           (util/dissoc-in [left-right-key :next])))
                (println "dtk after: " (left-right-key @state/dynamic-texture-keys))
                (gl/release (:texture (old-key @texture-atom)))
                (swap! texture-atom  dissoc old-key))
