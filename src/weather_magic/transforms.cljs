@@ -66,15 +66,15 @@
         to-lat (if (> zoom-level 0.16) 90 (min (+ lat-coords zoom-rect) 90))
         from-lon (if (> zoom-level 0.16) -180
                      (if (< (Math/abs lat-coords) 30)
-                       (max (- lon-coords  (* zoom-rect 1.3) ) -180)
+                       (max (- lon-coords  (* zoom-rect 1.3)) -180)
                        (if (< (Math/abs lat-coords) 49)
-                         (max (- lon-coords  (* zoom-rect 2) ) -180)
+                         (max (- lon-coords  (* zoom-rect 2)) -180)
                          -180)))
         to-lon (if (> zoom-level 0.16) 180
                    (if (< (Math/abs lat-coords) 30)
-                     (min (+ lon-coords  (* zoom-rect 1.3) ) 180)
+                     (min (+ lon-coords  (* zoom-rect 1.3)) 180)
                      (if (< (Math/abs lat-coords) 49)
-                       (min (+ lon-coords  (* zoom-rect 2) ) 180)
+                       (min (+ lon-coords  (* zoom-rect 2)) 180)
                        180)))]
     {:from-latitude from-lat
      :to-latitude to-lat
