@@ -44,15 +44,12 @@
   "Get climate data for the area currently in view on the screen."
   [left-right-key]
   (let [texture-keys (left-right-key @state/dynamic-texture-keys)
-        time-data (left-right-key @state/date-atom)
-        gl-ctx (if (:left left-right-key) state/gl-ctx-left state/gl-ctx-right)
-        textures (if (:left left-right-key) state/textures-left state/textures-right)]
-        ;(println "time data: " time-data)
-    (println "trigger-data-load in ctx: " left-right-key)
+        time-data    (left-right-key @state/date-atom)
+        gl-ctx       (if (= :left left-right-key) state/gl-ctx-left state/gl-ctx-right)
+        texture-atom (if (= :left left-right-key) state/textures-left state/textures-right)]
     (when-not (contains? texture-keys :next)
-      (println "no next")
       (let [next-key (textures/load-data-for-current-viewport-and-return-key!
-                      textures gl-ctx
+                      texture-atom gl-ctx
                       @state/earth-orientation @state/camera-right time-data)]
         (when-not (= (:current texture-keys) next-key)
           (swap! state/dynamic-texture-keys assoc-in [left-right-key :next] next-key))))))
@@ -107,27 +104,24 @@
              (assoc-in [:uniforms :dataScale] (:dataScale texture-info))
              (assoc-in [:uniforms :dataPos]   (:dataPos   texture-info))))))))
 
-(defn rotate-texture
+(defn rotate-in-texture
   [left-right-key texture-atom]
   (when-let* [next-key (:next    (left-right-key @state/dynamic-texture-keys))
               old-key  (:current (left-right-key @state/dynamic-texture-keys))]
              (when @(:loaded (next-key @texture-atom))
-               (println "dtk before: " (left-right-key @state/dynamic-texture-keys))
                (swap! state/dynamic-texture-keys
                       #(-> % (assoc-in [left-right-key :current] next-key)
                            (util/dissoc-in [left-right-key :next])))
-               (println "dtk after: " (left-right-key @state/dynamic-texture-keys))
                (gl/release (:texture (old-key @texture-atom)))
                (swap! texture-atom  dissoc old-key))
              (when @(:failed (next-key @texture-atom))
-               (println "failed")
                (swap! state/dynamic-texture-keys update-in [left-right-key :next] dissoc)
                (swap! texture-atom        dissoc next-key))))
 
 (defn draw-frame! [t]
   ;; If the next texture is loaded, set it to be the current texture and unload the old.
-  (rotate-texture :left state/textures-left)
-  (rotate-texture :right state/textures-right)
+  (rotate-in-texture :left state/textures-left)
+  (rotate-in-texture :right state/textures-right)
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] (* 5 t)))
