@@ -61,11 +61,21 @@
         lon-coords (* (Math/round (/ (:lon center-lat-lon-coords) 10)) 10)
         camera-z-pos (aget (.-buf (:eye camera)) 2)
         zoom-level (/ (- camera-z-pos 1.1) 3.0)
-        zoom-rect (if (> zoom-level 0.05) 25 15)
-        from-lat (if (> zoom-level 0.1) -90 (max (- lat-coords zoom-rect) -90))
-        to-lat (if (> zoom-level 0.1) 90 (min (+ lat-coords zoom-rect) 90))
-        from-lon (if (> zoom-level 0.1) -180 (max (- lon-coords (* zoom-rect 2)) -180))
-        to-lon (if (> zoom-level 0.1) 180 (min (+ lon-coords (* zoom-rect 2)) 180))]
+        zoom-rect  (if (< zoom-level 0.06) 19 44)
+        from-lat (if (> zoom-level 0.16) -90 (max (- lat-coords zoom-rect) -90))
+        to-lat (if (> zoom-level 0.16) 90 (min (+ lat-coords zoom-rect) 90))
+        from-lon (if (> zoom-level 0.16) -180
+                     (if (< (Math/abs lat-coords) 30)
+                       (max (- lon-coords  (* zoom-rect 1.3)) -180)
+                       (if (< (Math/abs lat-coords) 49)
+                         (max (- lon-coords  (* zoom-rect 2)) -180)
+                         -180)))
+        to-lon (if (> zoom-level 0.16) 180
+                   (if (< (Math/abs lat-coords) 30)
+                     (min (+ lon-coords  (* zoom-rect 1.3)) 180)
+                     (if (< (Math/abs lat-coords) 49)
+                       (min (+ lon-coords  (* zoom-rect 2)) 180)
+                       180)))]
     {:from-latitude from-lat
      :to-latitude to-lat
      :from-longitude from-lon
@@ -84,11 +94,3 @@
     {:dataPos   (vec2 (aget (.-buf from-uv) 0)
                       (- 1 (aget (.-buf to-uv) 1)))
      :dataScale scale}))
-
-(defn north-pole-rotation-around-z
-  [earth-transform]
-  (let [northpole-x (.-m10 earth-transform)
-        northpole-y (.-m11 earth-transform)
-        northpole-z (.-m12 earth-transform)
-        northpole-y-norm (/ northpole-y (Math/hypot northpole-y northpole-x))]
-    (* (Math/acos northpole-y-norm) (Math/sign northpole-x))))
