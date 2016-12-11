@@ -121,19 +121,19 @@
 
 (defn draw-frame! [t]
   ;; If the next texture is loaded, set it to be the current texture and unload the old.
-   (when-let* [next-key (:next    @state/dynamic-texture-keys)
-               old-key  (:current @state/dynamic-texture-keys)]
-              (when @(:loaded (next-key @state/textures-left))
-                (swap! state/dynamic-texture-keys
-                       #(-> % (assoc :current next-key) (dissoc :next)))
-                (gl/release (:texture (old-key @state/textures-left)))
-                (gl/release (:texture (old-key @state/textures-right)))
-                (swap! state/textures-left  dissoc old-key)
-                (swap! state/textures-right dissoc old-key))
-              (when @(:failed (next-key @state/textures-left))
-                (swap! state/dynamic-texture-keys dissoc :next)
-                (swap! state/textures-left        dissoc next-key)
-                (swap! state/textures-right       dissoc next-key)))
+  (when-let* [next-key (:next    @state/dynamic-texture-keys)
+              old-key  (:current @state/dynamic-texture-keys)]
+             (when @(:loaded (next-key @state/textures-left))
+               (swap! state/dynamic-texture-keys
+                      #(-> % (assoc :current next-key) (dissoc :next)))
+               (gl/release (:texture (old-key @state/textures-left)))
+               (gl/release (:texture (old-key @state/textures-right)))
+               (swap! state/textures-left  dissoc old-key)
+               (swap! state/textures-right dissoc old-key))
+             (when @(:failed (next-key @state/textures-left))
+               (swap! state/dynamic-texture-keys dissoc :next)
+               (swap! state/textures-left        dissoc next-key)
+               (swap! state/textures-right       dissoc next-key)))
   ;(println "efter when-let*")
   (if (:play-mode (:year (:left @state/date-atom)))
     (update-year-month-info t :left :year 5)
