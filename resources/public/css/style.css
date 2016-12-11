@@ -237,6 +237,7 @@ input[type="button"]:active {
 #data-menu-container {
   height: 100%; /* 100% Full-height */
   width: 15%; /* 0 width - change this with JavaScript */
+  min-width: 140px;
   position: fixed; /* Stay in place */
   z-index: 1; /* Stay on top */
   top: 0;
@@ -248,6 +249,7 @@ input[type="button"]:active {
 #navigation-menu-container {
   height: 100%; /* 100% Full-height */
   width: 15%; /* 0 width - change this with JavaScript */
+  min-width: 140px;
   position: fixed; /* Stay in place */
   z-index: 3; /* Stay on top */
   top: 0;
