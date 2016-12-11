@@ -65,6 +65,7 @@
   to find the newly loaded texture in texture-map."
   [texture-map gl-ctx {variable :variable request-params :request-params placement :placement
                        :or {variable "temperature"}}]
+  (println (:year request-params))
   (let [request-map (merge {:year              2083
                             :month             12
                             :from-longitude    5
@@ -112,6 +113,6 @@
                                                                                   :month (:value (:month (:left current-time-data)))})
                                           :placement placement})
     (load-data-into-atom-and-return-key! textures-right-atom gl-ctx-right
-                                         {:request-params (merge lat-lon-corners {:year (:value (:year (:left current-time-data)))
-                                                                                  :month (:value (:month (:left current-time-data)))})
+                                         {:request-params (merge lat-lon-corners {:year (:value (:year (:right current-time-data)))
+                                                                                  :month (:value (:month (:right current-time-data)))})
                                           :placement placement})))
