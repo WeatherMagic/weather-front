@@ -363,10 +363,6 @@ input[type="button"]:active {
   box-shadow: 0 0 0.7em #fff;
 }
 
-#Temperature {
-  background-image: url('../img/raindrops.jpg');
-}
-
 #closebtn input[type="button"].closebtn {
   position: absolute;
   background-color: rgba(0, 0, 0, 1);
