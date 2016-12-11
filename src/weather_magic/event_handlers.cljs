@@ -148,6 +148,7 @@
         zoom-distance (* (* (.-deltaY event) zoom-level) 1.0E-3)]
     (swap! state/camera-left world/zoom-camera zoom-distance)
     (swap! state/camera-right world/zoom-camera zoom-distance)
+    (reset! state/earth-animation-fn world/stop-spin!)
     (if (neg? zoom-distance)
       (update-pan delta-x delta-y)
       (when (< camera-z-pos 3.0)
