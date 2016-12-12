@@ -34,12 +34,6 @@
   (swap! state/blur-visible (fn [] :hidden))
   (swap! state/about-page-visible (fn [] :hidden)))
 
-(defn go-from-landing-page
-  [data-layer]
-  (reset! state/blur-visible :hidden)
-  (reset! state/landing-page-visible :hidden)
-  (reset! state/data-layer-atom data-layer))
-
 (defn update-climate-model-info
   [key input]
   (swap! state/climate-model-info assoc-in [key] input))
@@ -55,6 +49,12 @@
   [shader data-layer]
   (reset! state/current-shader-key shader)
   (reset! state/data-layer-atom data-layer))
+
+(defn go-from-landing-page
+  [data-layer]
+  (reset! state/blur-visible :hidden)
+  (reset! state/landing-page-visible :hidden)
+  (update-shader-and-data-layer (keyword data-layer) data-layer))
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
@@ -118,31 +118,30 @@
     [button "Data-selection" "selection-button" swap! state/data-menu-visible hide-unhide]]
    [:div {:id "data-menu-container" :class (str (name (hide-unhide @state/data-menu-visible)) " sidebar")}
     [close-button "x" "side-menu-button" close-side-menu state/data-menu-visible]
-    [:div {:id "side-menu-button-group-container"}
-     [:div {:id "upper-side-menu-button-group"}
-      [:h4 "Climate model"]
-      [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
-       [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
-       [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CERFACS-CNRM-CM5"]
-       [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
-      [:div
-       [:p "These are different climate prediction models in use by the different climate-institutes. These models takes a lot of different in-parametres, levels och green house gases is one among them, and then simulates climate over hundreds of years."]
-       [:ul
-        [:li "ICHEC-EC-EARTH is an Irish model from the weather institute ICHEC."]
-        [:li "CNRM-CERFACS-CNRM-CM5 is a french model from CNRM"]
-        [:li "IPSL-IPSL-CM5A-MR is a french climate model from the institude IPSL"]]]
-      [:h4 "Exhaust level"]      [:h4 "Exhaust level"]
-      [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
-       [:option {:value "rcp45"} "rcp45"]
-       [:option {:value "rcp85"} "rcp85"]]]
-     [:div
-      [:p "These are different exhaust-levels of green house gases (GHGs) for which climate institutes predicts the future around. Both rcp45 and rcp85 are seen as likely cases, with rcp85 beeing a higher level of GHGs than rcp45. Try experimenting with these options and see hoe they affect the predicted climate of the earth. "]]
-     [:div {:id "right-side-menu-offset"}]
-     [:div {:id "lower-side-menu-button-group"}
-      [:h4 "Data type"]
-      [button "No data" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
-      [button "Temperature" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
-      [button "Precipitation" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
+    [:h4 "Climate model"]
+    [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
+     [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
+     [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CNRM-CM5"]
+     [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
+    [:input {:type "button" :value "?" :class "help"}]
+    [:div {:class "hidden-helper"}
+     [:p "These are different climate prediction models produced by climate-institutes across the world. These models takes a lot of different in-parametres, levels och green house gases is one among them, and then simulates climate over the coming century."]
+     [:ul
+      [:li "ICHEC-EC-EARTH is an Irish model from the weather institute ICHEC."]
+      [:li "CNRM-CERFACS-CNRM-CM5 is a french model from CNRM."]
+      [:li "IPSL-IPSL-CM5A-MR is a french climate model from the institude IPSL."]]]
+    [:h4 "Exhaust level"]
+    [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
+     [:option {:value "rcp45"} "RCP 4.5"]
+     [:option {:value "rcp85"} "RCP 8.5"]]
+    [:input {:type "button" :value "?" :class "help"}]
+    [:div {:class "hidden-helper"}
+     [:p "These are different exhaust-levels of green house gases (GHGs) for which climate institutes predicts the future around. Both RCP4.5 and RCP8.5 are seen as likely cases, with RCP8.5 beeing a higher level of GHGs than RCP4.5. Try experimenting with these options and see how they affect the predicted climate of the earth. "]
+     [:p "You can read more about these prediction models on " [:a {:href "https://en.wikipedia.org/wiki/Representative_Concentration_Pathways"} "Wikipedia"]]]
+    [:h4 "Data type"]
+    [button "No data" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
+    [button "Temperature" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
+    [button "Precipitation" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]])
 
 (defn navigation-selection
   "Buttons for navigation"
@@ -172,7 +171,7 @@
 (defn landing-page
   "What the user sees when she arrives at the page."
   []
-  [:div {:id "landing-page" :class @state/landing-page-visible}
+  [:div {:id "landing-page" :class (str (name @state/landing-page-visible) " full-page")}
    [:div
     [:h1 "Welcome to WeatherMagic!"]
     [:p "An interactive visualization of climate projections."
@@ -186,9 +185,10 @@
 (defn about-page
   "What the user sees when she arrives at the page."
   []
-  [:div {:id "about-page" :class @state/about-page-visible}
+  [:div {:id "about-page" :class (str (name @state/about-page-visible) " full-page")}
    [:div
     [:h1 "WeatherMagic"]
+    [:p "A project built by the dedicated team consisting of:"]
     [:ul
      [:li "Alexander Poole"]
      [:li "Christian Luckey"]
@@ -196,13 +196,14 @@
      [:li "Magnus Ivarsson"]
      [:li "Magnus Wedberg"]
      [:li "Maja Ilestrand"]]
-    [:br]
-    [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " is created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called " [:a {:href "https://github.com/WeatherMagic/thor/"} "Thor"] ", which delivers data from climate simulations done by SMHI and other weather institutes."]
+    [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " was created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called " [:a {:href "https://github.com/WeatherMagic/thor/"} "Thor"] ", which delivers data from climate simulations done by SMHI and other weather institutes."]
     [:h2 "Technologies"]
     [:p "These softwares are built using the following technologies. "]
     [:h3 "Weather-front"]
     [:ul
      [:li "ClojureScript"]
+     [:li "Thi.ng Geom"]
+     [:li "Figwheel"]
      [:li "WebGL"]]
     [:h3 "Thor"]
     [:ul

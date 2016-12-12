@@ -35,6 +35,7 @@ body {
 }
 ol, ul {
   list-style: none;
+	font-family: Sans-serif;
 }
 blockquote, q {
   quotes: none;
@@ -60,7 +61,7 @@ h4 {
 	color: white;
 	font-size: 1.1em;
 	font-family: Sans-serif;
-	margin: 20% 0 0 0;
+	margin: 10% 0 0 0;
 }
 h5 {
 	font-family: Sans-serif;
@@ -70,12 +71,20 @@ h5 {
 }
 p {
   font-family: Sans-serif;
+	margin: 1em 0 1em 0;
+}
+a {
+	color: lightgrey;
+}
+a:hover {
+	color: grey;
 }
 
 body, html {
  height:    100%;
  overflow:  hidden;
  width:     100%;
+ color: white;
 }
 
 #time-slider-containers {
@@ -98,7 +107,6 @@ input[type=range] {
 }
 
 .time-slider {
-  color:  white;
   float:  right;
   width:  calc(100% - 60px);
   cursor: default;
@@ -116,6 +124,7 @@ input[type=range] {
   position: absolute;
   top:      0;
   width:    100vw;
+	z-index:  4;
 }
 
 #left-canvas, #right-canvas {
@@ -139,36 +148,22 @@ input[type=range] {
   position: absolute;
 }
 
-#landing-page {
-  color:    white;
-	cursor:   default;
-  position: absolute;
-  top:      0;
-  width:    100%;
-	height:   90%;
-  z-index:  1;
-	flex: 1 1 auto;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-}
-
-#landing-page>div {
-	margin: 0 5% 5% 5%;
-}
-
-input[type=button], select{
+input[type=button], select, div.hidden-helper {
 	border: 0;
 	color: white;
+	cursor: pointer;
 	display: block;
 	font-size: 1em;
   background-color: black;
 	box-shadow:    0 0 0.2em #fff;
 	border-radius: 3px;
 	padding: 0.2em 0.8em;
-	margin: 0.5em 0;
+	margin: 0.5em 1em 0 0;
 }
+select {
+	display: inline-block;
+}
+
 input[type=button]:focus, select:focus {
 	outline:0;
 }
@@ -184,7 +179,7 @@ input[type=button]:active, select:active {
   box-shadow: 0 0 0.5em #fff;
 }
 
-input[type="button"].play-pause {
+input[type=button].play-pause {
 	display: inline-block;
   background-image: url('../img/play-pause.png');
 	float: left;
@@ -196,7 +191,7 @@ input[type="button"].play-pause {
 
 }
 
-input[type="button"].intro-button {
+input[type=button].intro-button {
 	display: inline-block;
   font-size: 1.2em;
   margin:    1em 1em 0 0;
@@ -253,6 +248,10 @@ input[type=button].selection-button {
   top: 0;
   left: 0;
 }
+#data-menu-container>.closebtn {
+	top: 3%;
+	display: block;
+}
 
 #navigation-menu-container {
   top: 0;
@@ -264,9 +263,48 @@ input[type=button].closebtn {
   height: 30px;
 	padding: 0 0 2px 1px;
 	font-size: 1.2em;
-  z-index: 2;
+	margin: 0.5em 0 0 0;
+}
+
+input[type=button].help {
+	display: inline-block;
+	padding: 0.2em 0.5em;
+	float: right;
+	margin: 0.5em 0 0 0;
+}
+input[type=button].help:focus + div{
+	visibility: visible;
+}
+div.hidden-helper {
+	visibility: hidden;
+	position: absolute;
+	background-color: black;
+	width: 100%;
+}
+
+div.full-page {
+  position: absolute;
+  top:      0;
+  width:    90%;
+	height:   90%;
+  z-index:  5;
+	overflow: auto;
+	padding: 5%;
+}
+
+#landing-page {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+
+
+#landing-page>div {
+	margin: 0 5% 5% 5%;
 }
 
 #about-page {
-
 }
