@@ -1,7 +1,6 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models           :as models]
-   [weather-magic.transforms       :as transforms]
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [thi.ng.geom.gl.camera          :as cam]
@@ -39,9 +38,9 @@
 (defonce data-layer-atom (atom "temperature"))
 
 ;; User input from the time slider UI.
-(defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
+(defonce date-atom (atom {:left  {:year  {:play-mode false :play-mode-before-sliding false :value 2017 :min 1950 :max 2100}
                                   :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}
-                          :right {:year  {:play-mode false :play-mode-before-sliding false :value 1950 :min 1950 :max 2100}
+                          :right {:year  {:play-mode false :play-mode-before-sliding false :value 2017 :min 1950 :max 2100}
                                   :month {:play-mode false :play-mode-before-sliding false :value 1 :min 1 :max 12}}}))
 
 ;; The function currently animating the earth.
@@ -70,16 +69,18 @@
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-left  glc/static-draw)}
              :right {:sphere (gl/make-buffers-in-spec models/sphere gl-ctx-right glc/static-draw)
                      :plane  (gl/make-buffers-in-spec models/plane  gl-ctx-right glc/static-draw)}})
-(defonce current-model-key (atom :sphere))
 
 (defonce textures-left        (atom (textures/load-base-textures gl-ctx-left)))
 (defonce textures-right       (atom (textures/load-base-textures gl-ctx-right)))
 (defonce base-texture-left    (atom (:earth @textures-left)))
 (defonce base-texture-right   (atom (:earth @textures-right)))
 (defonce dynamic-texture-keys
-  (atom {:current (textures/load-data-for-current-viewport-and-return-key!
-                   textures-left textures-right gl-ctx-left gl-ctx-right
-                   @earth-orientation @camera-left @data-layer-atom)}))
+  (atom {:left {:current (textures/load-data-for-current-viewport-and-return-key!
+                          textures-left gl-ctx-left @earth-orientation
+                          @camera-left (:left @date-atom) @data-layer-atom)}
+         :right {:current (textures/load-data-for-current-viewport-and-return-key!
+                           textures-right gl-ctx-right @earth-orientation
+                           @camera-right (:right @date-atom) @data-layer-atom)}}))
 
 (def shaders-left  {:space         (sh/make-shader-from-spec gl-ctx-left  shaders/space-shader-spec)
                     :standard      (sh/make-shader-from-spec gl-ctx-left  shaders/standard-shader-spec)
@@ -95,11 +96,6 @@
 ;; Used for determining frame delta, the time between each frame.
 (defonce time-of-last-frame (volatile! 0))
 
-(defonce model-coords (atom {:upper-left (vec3 0 0 0) :upper-right (vec3 0 0 0)
-                             :lower-left (vec3 0 0 0) :lower-right (vec3 0 0 0)}))
-
-(defonce lat-lon-coords (atom {:from-lat 0 :to-lat 0 :from-lon 0 :to-lon 0}))
-
 (defonce pointer-zoom-info (atom {:delta-x 0 :delta-y 0 :total-steps 200 :current-step 0 :delta-zoom 0 :delta-z-angle 0}))
 
 (defonce year-update (atom {:left  {:year {:time-of-last-update 0}
@@ -113,3 +109,5 @@
 (defonce space-offset (atom (vec2 0 0)))
 
 (defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0 :panning false}))
+
+(defonce move-to-view-info (atom {:align false :delta-angle 0 :delta-z 0 :total-steps 200 :current-step 0}))

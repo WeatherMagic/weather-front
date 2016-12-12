@@ -5,6 +5,8 @@
    [thi.ng.geom.gl.webgl.constants :as glc]
    [weather-magic.transforms       :as transforms]))
 
+(enable-console-print!)
+
 (defn load-texture [gl-ctx path]
   "Loads a texture from path and places it in a map along with a
   volatile indicating whether or not the texture has been loaded
@@ -59,10 +61,10 @@
                     HTTP GET request in the form of a query string.
   :placement      - Positioning data to be associated with the loaded data.
 
-  Returs a map with {:key str :map texture-map} where :key holds how
+  Returns a map with {:key str :map texture-map} where :key holds how
   to find the newly loaded texture in texture-map."
   [texture-map gl-ctx {variable :variable request-params :request-params placement :placement
-                       :or {variable "precipitation"}}]
+                       :or {variable "temperature"}}]
   (let [request-map (merge {:year              2083
                             :month             12
                             :from-longitude    5
@@ -72,7 +74,9 @@
                             :climate-model     "ICHEC-EC-EARTH"
                             :exhaust-level     "rcp45"
                             :height-resolution 1024}
-                           request-params)
+                           (if (< (:year request-params) 2006)
+                             (assoc request-params :exhaust-level "historical")
+                             request-params))
         query-string (util/map->query-string request-map)
         url (str "http://thor.hfelo.se/api/" variable query-string)
         key (keyword query-string)
@@ -98,15 +102,13 @@
 (defn load-data-for-current-viewport-and-return-key!
   "AKA the tightly coupled monster function of doom with an argument
   list so large it eclipses the sun."
-  [textures-left-atom textures-right-atom
-   gl-ctx-left gl-ctx-right earth-orientation camera-left data-layer]
-  (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera-left)
+  [textures-atom gl-ctx earth-orientation camera current-time-data variable]
+  (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera)
         placement       (transforms/get-texture-position-map lat-lon-corners)]
-    (load-data-into-atom-and-return-key! textures-left-atom gl-ctx-left
-                                         {:request-params lat-lon-corners
-                                          :placement placement
-                                          :variable data-layer})
-    (load-data-into-atom-and-return-key! textures-right-atom gl-ctx-right
-                                         {:request-params lat-lon-corners
-                                          :placement placement
-                                          :variable data-layer})))
+    (load-data-into-atom-and-return-key!
+     textures-atom gl-ctx
+     {:request-params (merge lat-lon-corners
+                             {:year (:value (:year current-time-data))
+                              :month (:value (:month current-time-data))})
+      :placement placement
+      :variable variable})))

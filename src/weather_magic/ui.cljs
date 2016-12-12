@@ -57,8 +57,11 @@
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
-  [name id class func atom & args]
-  [:input {:type "button" :value name :id id :class class
+  [name class func atom & args]
+  [:input {:type "button"
+           :value name
+           :id (clojure.string/replace name " " "")
+           :class class
            :on-click #(apply func atom args)}])
 
 (defn play-pause-button
@@ -66,6 +69,15 @@
   [id func atom & args]
   [:input.play-pause {:type "button" :id id
                       :on-click #(apply func atom args)}])
+
+(defn close-button
+  "A close button"
+  [name class func atom & args]
+  [:input.closebtn {:type "button"
+                    :value name
+                    :id (clojure.string/replace name " " "")
+                    :class class
+                    :on-click #(apply func atom args)}])
 
 (defn slider [left-right-key year-month-key value min max]
   [:input {:type "range" :value value :min min :max max
@@ -102,9 +114,10 @@
   []
   [:div
    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
-    [button "Data-selection" "" "selection-button" swap! state/data-menu-visible hide-unhide]]
+    [button "Data-selection" "selection-button" swap! state/data-menu-visible hide-unhide]]
    [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
-    [:a {:href "#" :class "closebtn" :value "X" :on-click #(swap! state/data-menu-visible hide-unhide)}]
+    [:div {:id "closebtn" :class "data"}
+     [close-button "x" "side-menu-button" close-side-menu state/data-menu-visible]]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "upper-side-menu-button-group"}
       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
@@ -117,29 +130,32 @@
        [:option {:value "historical"} "Historical"]]]
      [:div {:id "right-side-menu-offset"}]
      [:div {:id "lower-side-menu-button-group"}
-      [button "Standard" "" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
-      [button "Temperature" "" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
-      [button "Precipitation" "" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
+      [button "Standard" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
+      [button "Temperature" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
+      [button "Precipitation" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
 
 (defn navigation-selection
-  "Buttons for choosing which data layer to display"
+  "Buttons for navigation"
   []
   [:div
    [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
-    [button "Navigation" "" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
+    [button "Navigation" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
    [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
-    [:a {:href "#" :class "closebtn" :value "X" :on-click #(close-side-menu state/navigation-menu-visible)}]
+    [:div {:id "closebtn" :class "nav"}
+     [close-button "x" "side-menu-button" close-side-menu state/navigation-menu-visible]]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "right-upper-side-menu-button-group"}
-      [button "Spin-earth" "" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
-      [button "About" "" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]
+      [button "Spin-earth" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
+      [button "About" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]
      [:div {:id "right-lower-side-menu-button-group"}
-      [button "Europe" "" "side-menu-button" set-static-view (vec3 45 80 0)]
-      [button "Africa" "" "side-menu-button" set-static-view (vec3 5 75 0)]
-      [button "South America" "" "side-menu-button" set-static-view (vec3 -20 150 0)]
-      [button "North America" "" "side-menu-button" set-static-view (vec3 35 190 0)]
-      [button "Oceania" "" "side-menu-button" set-static-view (vec3 -15 -40 0)]
-      [button "Asia" "" "side-menu-button" set-static-view (vec3 35 -15 0)]]]]])
+      [button "Africa" "side-menu-button" world/get-to-view-angles -0.9418886 0.0472268 0.3325892 true]
+      [button "Antarctica" "side-menu-button" world/get-to-view-angles 0.0 -1.0 0.0 false]
+      [button "Arctic" "side-menu-button" world/get-to-view-angles 0.0 1.0 0.0 false]
+      [button "Asia" "side-menu-button" world/get-to-view-angles 0.1583381 0.5093238 0.8458831 true]
+      [button "Europe" "side-menu-button" world/get-to-view-angles -0.6378739 0.7512540 0.1695120 true]
+      [button "North America" "side-menu-button" world/get-to-view-angles 0.1276255 0.7026068 -0.7000396 true]
+      [button "Oceania" "side-menu-button" world/get-to-view-angles 0.5729999 -0.2510875 0.7801449 true]
+      [button "South America" "side-menu-button" world/get-to-view-angles -0.4850580 -0.3197941 -0.8139106 true]]]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)
@@ -154,7 +170,7 @@
     [:h1 "Welcome to WeatherMagic!"]
     [:p "An interactive visualization of climate projections"]
     [:p "or How fucked art thou?"]]
-   [button "To map" "" "intro-button" go-from-landing-page]])
+   [button "To map" "intro-button" go-from-landing-page]])
 
 (defn about-page
   "What the user sees when she arrives at the page."

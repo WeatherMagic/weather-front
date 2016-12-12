@@ -237,8 +237,9 @@ input[type="button"]:active {
 #data-menu-container {
   height: 100%; /* 100% Full-height */
   width: 15%; /* 0 width - change this with JavaScript */
+  min-width: 140px;
   position: fixed; /* Stay in place */
-  z-index: 1; /* Stay on top */
+  z-index: 2; /* Stay on top */
   top: 0;
   left: 0;
   background-color: #111; /* Black*/
@@ -248,8 +249,9 @@ input[type="button"]:active {
 #navigation-menu-container {
   height: 100%; /* 100% Full-height */
   width: 15%; /* 0 width - change this with JavaScript */
+  min-width: 140px;
   position: fixed; /* Stay in place */
-  z-index: 3; /* Stay on top */
+  z-index: 2; /* Stay on top */
   top: 0;
   right: 0;
   background-color: #111; /* Black*/
@@ -338,10 +340,8 @@ input[type="button"]:active {
 
 .side-menu-button {
   float: left;
-  height: 10%;
+  height: 30px;
   width: 100%;
-  min-height: 30px;
-  max-height: 30px;
   left: 10%;
   right: 10%;
   margin-top: 5%;
@@ -363,24 +363,21 @@ input[type="button"]:active {
   box-shadow: 0 0 0.7em #fff;
 }
 
-#Temperature {
-  background-image: url('../img/raindrops.jpg');
-}
-
-.closebtn {
+#closebtn input[type="button"].closebtn {
   position: absolute;
-  background-color: #333;
-  color: white;
+  background-color: rgba(0, 0, 0, 1);
   width: 25px;
   height: 25px;
   z-index: 2;
-  top: 5%;
-  right: 5%;
-  font-size: 36px;
-  margin-left: 50px;
+  top: 2%;
+  font-size: 100%;
+  color:  white;
 }
 
-.closebtn:before {
-  transform: rotate(45deg);
-  content: 'x';
+.data input[type="button"].closebtn{
+  left: auto;
+}
+
+.nav input[type="button"].closebtn{
+  right:auto;
 }
