@@ -195,7 +195,7 @@
      [:li "Magnus Wedberg"]
      [:li "Maja Ilestrand"]]
     [:br]
-    [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " is created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called Thor, which delivers data from climate simulations done by SMHI and other weather institutes."]
+    [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " is created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called " [:a {:href "https://github.com/WeatherMagic/thor/"} "Thor"] ", which delivers data from climate simulations done by SMHI and other weather institutes."]
     [:h2 "Technologies"]
     [:p "These softwares are built using the following technologies. "]
     [:h3 "Weather-front"]
