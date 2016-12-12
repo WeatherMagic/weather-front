@@ -75,7 +75,7 @@
         (gl/draw-with-shader
          (-> (cam/apply (:sphere (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
-             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
+             (assoc-in [:uniforms :model] (set-model-matrix (* 5 (- t @state/time-of-last-frame))))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :eye] (:eye camera))
