@@ -107,15 +107,25 @@
      vec4 precipitationColor = vec4(0.0, 0.0, 0.0, 0.0);
      float textureAlpha = texture2D(data, (vUV - dataPos) / dataScale).a;
 
-     if(precipitation > 0.15) {
-       float precipitationClamped = clamp(precipitation, 0.05, 1.0);
+     if(precipitation > 0.38) {
+       float precipitationClamped = clamp(precipitation, 0.38, 0.63);
        precipitationColor = vec4(1.0,
-                               clamp(1.0 + (precipitationClamped - 1.0) / 0.95, 0.0, 1.0),
-                               0.0, 1.0);
+                               0.0,
+                               1.0 + (precipitationClamped - 0.63) / 0.25, 1.0);
+     } else if(precipitation > 0.21) {
+       precipitationColor = vec4(1.0,
+                               (0.38 - precipitation) / 0.17,
+                               0.0,
+                               1.0);
+     } else if(precipitation > 0.09) {
+       precipitationColor = vec4(1.0 + (precipitation - 0.21) / 0.12,
+                               1.0 + (32.0 / 255.0) * (precipitation - 0.21) / 0.12,
+                               (223.0 / 255.0) * (0.21 - precipitation) / 0.12,
+                               1.0);
      } else if(precipitation > 0.0) {
-       precipitationColor = vec4(clamp(1.0 + (precipitation - 0.05) / 0.05, 0.0, 1.0),
-                               clamp(1.0 + (precipitation - 0.05) / 0.05, 0.0, 1.0),
-                               clamp((0.05 - precipitation) / 0.05, 0.0, 1.0),
+       precipitationColor = vec4(0.0,
+                               (223.0 / 255.0) + (223.0 / 255.0) * (precipitation - 0.09) / 0.09,
+                               (0.09 - precipitation) / 0.09,
                                1.0);
      } else {
        textureAlpha = 0.0;
