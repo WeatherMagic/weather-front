@@ -53,28 +53,28 @@
        } else if (temperature < 0.5) {
          temperatureColor = vec4(1.0, 1.0, 1.0, 1.0);
        }
-     } else if(temperature > 0.7) {
-       temperature = clamp(temperature, 0.7, 0.8);
+     } else if(temperature > 0.72) {
+       temperature = clamp(temperature, 0.72, 0.86);
+       temperatureColor = vec4(clamp((0.86 - temperature) / 0.14, 0.0, 1.0),
+                               0,
+                               0.0, 1.0);
+     } else if(temperature > 0.58) {
        temperatureColor = vec4(1.0,
-                               clamp((0.8 - temperature) / 0.1, 0.0, 1.0),
+                               (223.0 / 255.0) * (0.72 - temperature) / 0.14,
                                0.0, 1.0);
-     } else if(temperature > 0.6) {
-       temperatureColor = vec4(clamp(1.0 + (temperature - 0.7) / 0.1, 0.0, 1.0),
-                               1.0,
-                               0.0, 1.0);
-     } else if(temperature > 0.55) {
+     } else if(temperature > 0.44) {
+       temperatureColor = vec4((temperature - 0.44) / 0.14,
+                               (223.0 / 255.0),
+                               (0.58 - temperature) / 0.14, 1.0);
+     } else if(temperature > 0.30){
        temperatureColor = vec4(0.0,
-                               1.0,
-                               clamp((0.6 - temperature) / 0.05, 0.0, 1.0), 1.0);
-     } else if(temperature > 0.45){
-       temperatureColor = vec4(0.0,
-                               clamp(1.0 + (temperature - 0.55) / 0.1, 0.0, 1.0),
-                               1.0, 1.0);
+                               (223.0 / 255.0) * (temperature - 0.30) / 0.14,
+                               (223.0 / 255.0) + (32.0 / 255.0) * (0.44 - temperature) / 0.14, 1.0);
      } else {
-       temperature = clamp(temperature, 0.2, 0.4);
-       temperatureColor = vec4((139.0/255.0) * clamp((0.4 - temperature) / 0.2 , 0.0, 1.0),
+       temperature = clamp(temperature, 0.16, 0.30);
+       temperatureColor = vec4((139.0/255.0) * (0.3 - temperature) / 0.14,
                                0.0,
-                               clamp(1.0 + (116.0/255.0) * (temperature - 0.4) / 0.2, 0.0, 1.0), 1.0);
+                               clamp(1.0 + (116.0/255.0) * (temperature - 0.4) / 0.14, 0.0, 1.0), 1.0);
      }
 
      vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam;
