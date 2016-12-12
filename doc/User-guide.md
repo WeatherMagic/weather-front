@@ -29,12 +29,12 @@ By choosing to have two earths side-by-side - WeatherMagic allows you to compare
 
 In order to choose what data to visualize, open the data panel by clicking the button "Data-selection" in the upper left corner of the screen. Here you can choose wether you wan't to see simulaiton values for temperature or precipitation - or just a plain earth to play around with. 
 
-Within this panel you can also tweak which climate model and at which ammount of green house gases (GHGs) that's in the air. Both rcp45 and rcp85 are high probability assumptions, meaning that you can see the difference man can make if we change our behaviour. For mor info on Climate models and future levels of GHGs, see **BLA**.
+Within this panel you can also tweak which climate model and at which ammount of green house gases (GHGs) that's in the air. Both rcp45 and rcp85 are high probability assumptions, meaning that you can see the difference man can make if we change our behaviour. For more info on Climate models and future levels of GHGs, see [Earth system CoG summary](https://github.com/WeatherMagic/thor/blob/master/doc/earthsystemcog_summary.md).
  
 ## Choosing which area to visualize - the Navigation panel
 
 ![Navigation panel](User-guide-res/navigation-panel.png)
 
-In the upper right corner of the application you find the button "Navigation". This button opens the Navigation panel. Here you find shortcuts for quickly switching the view to all continents. You can also choose to sping the earth, as well as an option to continusly spin the earth and the About button which tells you more about the applicaiton.
+In the upper right corner of the application you find the button "Navigation". This button opens the Navigation panel. Here you find shortcuts for quickly switching the view to all continents, as well as an option to continusly spin the earth and the About button which tells you more about the applicaiton.
 
 
