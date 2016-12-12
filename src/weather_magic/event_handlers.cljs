@@ -2,6 +2,7 @@
   (:require
    [weather-magic.state   :as state]
    [weather-magic.world   :as world]
+   [weather-magic.transforms   :as transforms]
    [weather-magic.util    :as util]
    [thi.ng.geom.gl.camera :as cam]
    [thi.ng.geom.rect      :as rect]
@@ -38,19 +39,6 @@
       (gl/set-viewport state/gl-ctx-left (:aspect @state/camera-left))
       (gl/set-viewport state/gl-ctx-right (:aspect @state/camera-right)))))
 
-(defn update-alignment-angle
-  "Updating how much the globe should be rotated around the z axis to align northpole"
-  [x-diff y-diff]
-  (let [camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
-        zoom-level (* (- camera-z-pos 1.1) (/ 4 5))
-        future-earth-orientation (-> M44
-                                     (g/rotate-z (* (Math/atan2 y-diff x-diff) -1))
-                                     (g/rotate-y (m/radians (* (* (Math/hypot y-diff x-diff) zoom-level) 0.1)))
-                                     (g/rotate-z (Math/atan2 y-diff x-diff))
-                                     (m/* @state/earth-orientation))
-        delta-angle (/ (util/north-pole-rotation-around-z future-earth-orientation) (:total-steps @state/pointer-zoom-info))]
-    (swap! state/pointer-zoom-info assoc :delta-z-angle delta-angle)))
-
 (defn update-pan
   "Updates the atom holding the rotation of the world"
   [rel-x rel-y]
@@ -63,8 +51,8 @@
                                         (m/* @state/earth-orientation)))))
 
 (defn align-handler []
-  (update-alignment-angle 0 0)
-  (swap! state/pointer-zoom-info assoc :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
+  (swap! state/pointer-zoom-info assoc :delta-z-angle (transforms/update-alignment-angle 0 0 (:eye @state/camera-left) (:total-steps @state/pointer-zoom-info) @state/earth-orientation)
+         :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
   (reset! state/earth-animation-fn world/align-animation!))
 
 (defn move-fn
@@ -105,8 +93,8 @@
         total-steps (:total-steps @state/pointer-zoom-info)
         camera-z-pos (aget (.-buf (:eye @state/camera-left)) 2)
         zoom-distance (* (* (- camera-z-pos 1.1) (/ 4 5)) -1)]
-    (update-alignment-angle x-diff y-diff)
     (swap! state/pointer-zoom-info assoc
+           :delta-z-angle (transforms/update-alignment-angle x-diff y-diff (:eye @state/camera-left) (:total-steps @state/pointer-zoom-info) @state/earth-orientation)
            :delta-x (/ x-diff total-steps)
            :delta-y (/ y-diff total-steps)
            :current-step 0
