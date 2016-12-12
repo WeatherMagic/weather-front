@@ -118,8 +118,10 @@
 (watchers/mount-rotation-data-reload-watch state/earth-orientation
                                            #(cache/trigger-data-load! true))
 
-(watchers/on-change-date-watch state/date-atom
-                               #(cache/trigger-data-load! true))
+(watchers/on-change-date-watch state/date-atom cache/trigger-data-load!)
+
+(watchers/mount-zoom-data-reload-watch state/camera-left
+                                       #(cache/trigger-data-load! true))
 
 ;; This is a hook for figwheel, add stuff you want run after you save your source.
 (defn on-js-reload [])
