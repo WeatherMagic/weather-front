@@ -31,6 +31,12 @@
                    (vreset! date-atom-last-request new-state)
                    (reload-fn :right true))))))
 
+(defn mount-climate-model-info-data-reload-watch
+  [climate-model-info reload-fn]
+  (add-watch climate-model-info :trigger-data-load-carbon
+             (fn [key reference old-state new-state]
+               (reload-fn))))
+
 (defn mount-zoom-data-reload-watch
   [camera reload-fn]
   (let [cam-last-request (volatile! @camera)]
@@ -52,3 +58,9 @@
                    (when (and (< zoom-level-old 0.06) (> zoom-level-new 0.06))
                      (vreset! cam-last-request new-state)
                      (reload-fn)))))))
+
+(defn mount-variable-data-reload-watch
+  [data-layer-atom reload-fn]
+  (add-watch data-layer-atom :trigger-data-load-variable
+             (fn [key reference old-state new-state]
+               (reload-fn))))

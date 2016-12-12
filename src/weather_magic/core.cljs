@@ -122,5 +122,11 @@
 (watchers/mount-zoom-data-reload-watch state/camera-left
                                        #(cache/trigger-data-load! true))
 
+(watchers/mount-climate-model-info-data-reload-watch state/climate-model-info
+                                                     #(cache/trigger-data-load! true))
+
+(watchers/mount-variable-data-reload-watch state/data-layer-atom
+                                           #(cache/trigger-data-load! true))
+
 ;; This is a hook for figwheel, add stuff you want run after you save your source.
 (defn on-js-reload [])
