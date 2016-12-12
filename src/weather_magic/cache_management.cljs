@@ -22,7 +22,8 @@
      (if-not (contains? texture-keys :next)
        (let [next-key (textures/load-data-for-current-viewport-and-return-key!
                        texture-atom gl-ctx @state/earth-orientation
-                       @state/camera-right time-data @state/data-layer-atom)]
+                       @state/camera-right time-data @state/data-layer-atom
+                       @state/climate-model-info)]
          (when-not (= (:current texture-keys) next-key)
            (swap! state/dynamic-texture-keys assoc-in [left-right-key :next] next-key)))
        (when queue-if-already-loading

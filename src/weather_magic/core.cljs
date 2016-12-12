@@ -75,7 +75,7 @@
         (gl/draw-with-shader
          (-> (cam/apply (:sphere (left-right-key state/models)) camera)
              (assoc :shader (@state/current-shader-key shaders))
-             (assoc-in [:uniforms :model] (set-model-matrix (- t @state/time-of-last-frame)))
+             (assoc-in [:uniforms :model] (set-model-matrix (* 5 (- t @state/time-of-last-frame))))
              (assoc-in [:uniforms :year]  time)
              (assoc-in [:uniforms :range] range)
              (assoc-in [:uniforms :eye] (:eye camera))
@@ -115,6 +115,17 @@
 (defonce hooked-up? (event-handlers/hook-up-events!))
 
 (watchers/mount-rotation-data-reload-watch state/earth-orientation
+                                           #(cache/trigger-data-load! true))
+
+(watchers/on-change-date-watch state/date-atom cache/trigger-data-load!)
+
+(watchers/mount-zoom-data-reload-watch state/camera-left
+                                       #(cache/trigger-data-load! true))
+
+(watchers/mount-climate-model-info-data-reload-watch state/climate-model-info
+                                                     #(cache/trigger-data-load! true))
+
+(watchers/mount-variable-data-reload-watch state/data-layer-atom
                                            #(cache/trigger-data-load! true))
 
 ;; This is a hook for figwheel, add stuff you want run after you save your source.
