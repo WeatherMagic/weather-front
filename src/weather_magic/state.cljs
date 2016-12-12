@@ -1,7 +1,6 @@
 (ns weather-magic.state
   (:require
    [weather-magic.models           :as models]
-   [weather-magic.transforms       :as transforms]
    [weather-magic.shaders          :as shaders]
    [weather-magic.textures         :as textures]
    [thi.ng.geom.gl.camera          :as cam]
@@ -91,6 +90,7 @@
                     :standard      (sh/make-shader-from-spec gl-ctx-right shaders/standard-shader-spec)
                     :temperature   (sh/make-shader-from-spec gl-ctx-right shaders/temperature-shader-spec)
                     :precipitation (sh/make-shader-from-spec gl-ctx-right shaders/precipitation-shader-spec)})
+
 (defonce current-shader-key (atom :standard))
 
 ;; Used for determining frame delta, the time between each frame.
@@ -110,4 +110,4 @@
 
 (defonce pan-speed (atom {:speed 0 :rel-x 0 :rel-y 0 :panning false}))
 
-(defonce current-model-key (atom :sphere))
+(defonce move-to-view-info (atom {:align false :delta-angle 0 :delta-z 0 :total-steps 200 :current-step 0}))
