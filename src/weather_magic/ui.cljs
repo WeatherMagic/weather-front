@@ -95,16 +95,20 @@
 
 (defn time-sliders []
   [:div {:id "time-slider-containers"}
-   [:div {:class "time-sliders-left"}
-    [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]
-    [slider-component :left :year]
-    [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]
-    [slider-component :left :month]]
-   [:div {:class "time-sliders-right"}
-    [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]
-    [slider-component :right :year]
-    [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]
-    [slider-component :right :month]]])
+   [:table {:class "time-sliders-left"}
+    [:tr
+     [:td [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]]
+     [:td [slider-component :left :year]]]
+    [:tr
+     [:td [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]]
+     [:td [slider-component :left :month]]]]
+   [:table {:class "time-sliders-right"}
+    [:tr
+     [:td [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]]
+     [:td [slider-component :right :year]]]
+    [:tr
+     [:td [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]]
+     [:td [slider-component :right :month]]]]])
 
 (defn map-ui-blur []
   "What hides the map UI."
@@ -183,43 +187,43 @@
     [button "Precipitation" "intro-button" go-from-landing-page "precipitation"]]])
 
 (defn about-page
-  "What the user sees when she arrives at the page."
   []
   [:div {:id "about-page" :class (str (name @state/about-page-visible) " full-page")}
-   [:div
-    [:h1 "WeatherMagic"]
-    [:p "A project built by the dedicated team consisting of:"]
-    [:ul
-     [:li "Alexander Poole"]
-     [:li "Christian Luckey"]
-     [:li "Hans-Filip Elo"]
-     [:li "Magnus Ivarsson"]
-     [:li "Magnus Wedberg"]
-     [:li "Maja Ilestrand"]]
-    [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " was created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called " [:a {:href "https://github.com/WeatherMagic/thor/"} "Thor"] ", which delivers data from climate simulations done by SMHI and other weather institutes."]
-    [:h2 "Technologies"]
-    [:p "These softwares are built using the following technologies. "]
-    [:h3 "Weather-front"]
-    [:ul
-     [:li "ClojureScript"]
-     [:li "Thi.ng Geom"]
-     [:li "Figwheel"]
-     [:li "WebGL"]]
-    [:h3 "Thor"]
-    [:ul
-     [:li "Python 3"]
-     [:li "Flask"]
-     [:li "Numpy+scipy"]
-     [:li "Memcached"]
-     [:li "nginx"]
-     [:li "uwsgi"]
-     [:li "Pillow"]
-     [:li "Climate data from NetCDF-files delivered by " [:a {:href "http://esgf.llnl.gov"} "ESGF"]]]
-    [:h2 "Special thanks to"]
-    [:ul
-     [:li "Ingemar Ragnemalm (LiU) - All makt åt Ingemar, vår befriare."]
-     [:li "Ola Leifler (LiU)"]
-     [:li "Gustav Strandberg (SMHI)"]]]])
+   [close-button "x" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]
+   [:h1 "WeatherMagic"]
+   [:p "A project built by the dedicated team consisting of:"]
+   [:ul
+    [:li "Alexander Poole"]
+    [:li "Christian Luckey"]
+    [:li "Hans-Filip Elo"]
+    [:li "Magnus Ivarsson"]
+    [:li "Magnus Wedberg"]
+    [:li "Maja Ilestrand"]]
+   [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " was created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called " [:a {:href "https://github.com/WeatherMagic/thor/"} "Thor"] ", which delivers data from climate simulations done by SMHI and other weather institutes."]
+   [:h2 "Technologies"]
+   [:p "These softwares are built using the following technologies. "]
+   [:h3 "Weather-front"]
+   [:ul
+    [:li "ClojureScript"]
+    [:li "Thi.ng Geom"]
+    [:li "Figwheel"]
+    [:li "WebGL"]]
+   [:h3 "Thor"]
+   [:ul
+    [:li "Python 3"]
+    [:li "Flask"]
+    [:li "Numpy+scipy"]
+    [:li "Memcached"]
+    [:li "nginx"]
+    [:li "uwsgi"]
+    [:li "Pillow"]
+    [:li "Climate data from NetCDF-files delivered by " [:a {:href "http://esgf.llnl.gov"} "ESGF"]]]
+   [:h2 "Special thanks to"]
+   [:ul
+    [:li "Ingemar Ragnemalm (LiU) - All makt åt Ingemar, vår befriare."]
+    [:li "Ola Leifler (LiU)"]
+    [:li "Gustav Strandberg (SMHI)"]]
+   [button "Stäng" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
