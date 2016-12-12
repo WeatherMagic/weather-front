@@ -13,7 +13,7 @@
                    (vreset! orientation-of-last-request new-state)
                    (reload-fn))))))
 
-(defn mount-carbon-dioxide-change-data-reload-watch
+(defn mount-climate-model-info-data-reload-watch
   [climate-model-info reload-fn]
   (let [climate-model-of-last-request (volatile! @climate-model-info)]
     (add-watch climate-model-info :trigger-data-load-carbon
