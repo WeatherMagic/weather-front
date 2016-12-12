@@ -16,6 +16,7 @@
         texture (buf/load-texture
                  gl-ctx {:callback
                          (fn [tex img]
+                           (.generateMipmap gl-ctx (:target tex))
                            (vreset! loaded true))
                          :error-callback
                          (fn [event]
@@ -25,7 +26,7 @@
                                     (aget (.-path event) 0)
                                     (.-target event))))
                          :src    path
-                         :filter [glc/linear glc/linear]
+                         :filter [glc/linear-mipmap-linear glc/linear]
                          :cors   ""
                          :format glc/rgba})]
     {:texture texture :loaded loaded :failed failed}))
