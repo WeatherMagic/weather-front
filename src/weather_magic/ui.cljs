@@ -121,9 +121,9 @@
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "upper-side-menu-button-group"}
       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
-       [:option {:value "ICHEC-EC-EARTH"} "Climate model 1"]
-       [:option {:value "CNRM-CERFACS-CNRM-CM5"} "Climate model 2"]
-       [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
+       [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
+       [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CERFACS-CNRM-CM5"]
+       [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
       [:div
        [:p "These are different climate prediction models in use by the different climate-institutes. These models takes a lot of different in-parametres, levels och green house gases is one among them, and then simulates climate over hundreds of years."]
        [:ul
@@ -131,8 +131,8 @@
         [:li "CNRM-CERFACS-CNRM-CM5 is a french model from CNRM"]
         [:li "IPSL-IPSL-CM5A-MR is a french climate model from the institude IPSL"]]]
       [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
-       [:option {:value "rcp45"} "Exhaust level 1"]
-       [:option {:value "rcp85"} "Exhaust level 2"]]]
+       [:option {:value "rcp45"} "rcp45"]
+       [:option {:value "rcp85"} "rcp85"]]]
      [:div
       [:p "These are different exhaust-levels of green house gases (GHGs) for which climate institutes predicts the future around. Both rcp45 and rcp85 are seen as likely cases, with rcp85 beeing a higher level of GHGs than rcp45. Try experimenting with these options and see hoe they affect the predicted climate of the earth. "]]
      [:div {:id "right-side-menu-offset"}]
