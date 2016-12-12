@@ -132,8 +132,7 @@
         [:li "IPSL-IPSL-CM5A-MR is a french climate model from the institude IPSL"]]]
       [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
        [:option {:value "rcp45"} "Exhaust level 1"]
-       [:option {:value "rcp85"} "Exhaust level 2"]
-       [:option {:value "historical"} "Historical"]]]
+       [:option {:value "rcp85"} "Exhaust level 2"]]]
      [:div
       [:p "These are different exhaust-levels of green house gases (GHGs) for which climate institutes predicts the future around. Both rcp45 and rcp85 are seen as likely cases, with rcp85 beeing a higher level of GHGs than rcp45. Try experimenting with these options and see hoe they affect the predicted climate of the earth. "]]
      [:div {:id "right-side-menu-offset"}]
