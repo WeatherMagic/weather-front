@@ -116,7 +116,7 @@
     (reset! state/earth-orientation (-> M44
                                         (g/rotate-z (* z-angle -1))
                                         (g/rotate-y delta-angle)
-                                        (g/rotate-z z-angle 1)
+                                        (g/rotate-z z-angle)
                                         (m/* @state/earth-orientation)))
     (swap! state/move-to-view-info assoc-in [:current-step] (inc current-step))
     (when (= current-step total-steps)
