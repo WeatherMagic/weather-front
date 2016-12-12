@@ -55,8 +55,8 @@
        }
      } else if(temperature > 0.72) {
        temperature = clamp(temperature, 0.72, 0.86);
-       temperatureColor = vec4((0.0 / 255.0) + ((255.0 - 0.0)/ 255.0) * clamp((0.86 - temperature) / 0.14, 0.0, 1.0),
-                               (0.0 / 255.0) + (0.0 / 255.0) * (temperature - 0.86) / 0.14,
+       temperatureColor = vec4(clamp((0.86 - temperature) / 0.14, 0.0, 1.0),
+                               0,
                                0.0, 1.0);
      } else if(temperature > 0.58) {
        temperatureColor = vec4(1.0,
