@@ -168,8 +168,9 @@
   [:div {:id "landing-page" :class @state/landing-page-visible}
    [:div
     [:h1 "Welcome to WeatherMagic!"]
-    [:p "An interactive visualization of climate projections"]
-    [:p "or How fucked art thou?"]]
+    [:p "An interactive visualization of climate projections."
+     "Here you can see the results of climate simulations from many institutes that are a part of the " [:a {:href "http://esgf.llnl.gov"} "ESGF"] "."]
+    [:p "This software is made by engineering students at Linköping University as a CDIO project. If you are interested in this software, please contact any of the " [:a {:href "https://github.com/orgs/WeatherMagic/people"} "authors"] "."]]
    [button "To map" "intro-button" go-from-landing-page]])
 
 (defn about-page
@@ -177,12 +178,37 @@
   []
   [:div {:id "landing-page" :class @state/about-page-visible}
    [:div
-    [:h1 "What makes mangel mangel"]
-    [:p "Mangel is the nickname of one of the group members"]
-    [:p "Mangel likes to watch documentaries"]
-    [:p "Mangel is the same person as Magnuzo"]
-    [:p "Mangel is love."]
-    [:p "Mangel is life"]]])
+    [:h1 "WeatherMagic"]
+    [:ul
+     [:li "Alexander Poole"]
+     [:li "Christian Luckey"]
+     [:li "Hans-Filip Elo"]
+     [:li "Magnus Ivarsson"]
+     [:li "Magnus Wedberg"]
+     [:li "Maja Ilestrand"]]
+    [:br]
+    [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " is created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called Thor, which delivers data from climate simulations done by SMHI and other weather institutes."]
+    [:h2 "Technologies"]
+    [:p "These softwares are built using the following technologies. "]
+    [:h3 "Weather-front"]
+    [:ul
+     [:li "ClojureScript"]
+     [:li "WebGL"]]
+    [:h3 "Thor"]
+    [:ul
+     [:li "Python 3"]
+     [:li "Flask"]
+     [:li "Numpy+scipy"]
+     [:li "Memcached"]
+     [:li "nginx"]
+     [:li "uwsgi"]
+     [:li "Pillow"]
+     [:li "Climate data from NetCDF-files delivered by " [:a {:href "http://esgf.llnl.gov"} "ESGF"]]]
+    [:h2 "Special thanks to"]
+    [:ul
+     [:li "Ingemar Ragnemalm (LiU) - All makt åt Ingemar, vår befriare."]
+     [:li "Ola Leifler (LiU)"]
+     [:li "Gustav Strandberg (SMHI)"]]]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
