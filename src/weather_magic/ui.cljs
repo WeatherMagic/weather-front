@@ -124,9 +124,17 @@
        [:option {:value "ICHEC-EC-EARTH"} "Climate model 1"]
        [:option {:value "CNRM-CERFACS-CNRM-CM5"} "Climate model 2"]
        [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
+      [:div
+       [:p "These are different climate prediction models in use by the different climate-institutes. These models takes a lot of different in-parametres, levels och green house gases is one among them, and then simulates climate over hundreds of years."]
+       [:ul
+        [:li "ICHEC-EC-EARTH is an Irish model from the weather institute ICHEC."]
+        [:li "CNRM-CERFACS-CNRM-CM5 is a french model from CNRM"]
+        [:li "IPSL-IPSL-CM5A-MR is a french climate model from the institude IPSL"]]]
       [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
        [:option {:value "rcp45"} "Exhaust level 1"]
        [:option {:value "rcp85"} "Exhaust level 2"]]]
+     [:div
+      [:p "These are different exhaust-levels of green house gases (GHGs) for which climate institutes predicts the future around. Both rcp45 and rcp85 are seen as likely cases, with rcp85 beeing a higher level of GHGs than rcp45. Try experimenting with these options and see hoe they affect the predicted climate of the earth. "]]
      [:div {:id "right-side-menu-offset"}]
      [:div {:id "lower-side-menu-button-group"}
       [button "Standard" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
@@ -167,8 +175,9 @@
   [:div {:id "landing-page" :class @state/landing-page-visible}
    [:div
     [:h1 "Welcome to WeatherMagic!"]
-    [:p "An interactive visualization of climate projections"]
-    [:p "or How fucked art thou?"]]
+    [:p "An interactive visualization of climate projections."
+     "Here you can see the results of climate simulations from many institutes that are a part of the " [:a {:href "http://esgf.llnl.gov"} "ESGF"] "."]
+    [:p "This software is made by engineering students at Linköping University as a CDIO project. If you are interested in this software, please contact any of the " [:a {:href "https://github.com/orgs/WeatherMagic/people"} "authors"] "."]]
    [button "To map" "intro-button" go-from-landing-page]])
 
 (defn about-page
@@ -176,12 +185,37 @@
   []
   [:div {:id "landing-page" :class @state/about-page-visible}
    [:div
-    [:h1 "What makes mangel mangel"]
-    [:p "Mangel is the nickname of one of the group members"]
-    [:p "Mangel likes to watch documentaries"]
-    [:p "Mangel is the same person as Magnuzo"]
-    [:p "Mangel is love."]
-    [:p "Mangel is life"]]])
+    [:h1 "WeatherMagic"]
+    [:ul
+     [:li "Alexander Poole"]
+     [:li "Christian Luckey"]
+     [:li "Hans-Filip Elo"]
+     [:li "Magnus Ivarsson"]
+     [:li "Magnus Wedberg"]
+     [:li "Maja Ilestrand"]]
+    [:br]
+    [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " is created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called " [:a {:href "https://github.com/WeatherMagic/thor/"} "Thor"] ", which delivers data from climate simulations done by SMHI and other weather institutes."]
+    [:h2 "Technologies"]
+    [:p "These softwares are built using the following technologies. "]
+    [:h3 "Weather-front"]
+    [:ul
+     [:li "ClojureScript"]
+     [:li "WebGL"]]
+    [:h3 "Thor"]
+    [:ul
+     [:li "Python 3"]
+     [:li "Flask"]
+     [:li "Numpy+scipy"]
+     [:li "Memcached"]
+     [:li "nginx"]
+     [:li "uwsgi"]
+     [:li "Pillow"]
+     [:li "Climate data from NetCDF-files delivered by " [:a {:href "http://esgf.llnl.gov"} "ESGF"]]]
+    [:h2 "Special thanks to"]
+    [:ul
+     [:li "Ingemar Ragnemalm (LiU) - All makt åt Ingemar, vår befriare."]
+     [:li "Ola Leifler (LiU)"]
+     [:li "Gustav Strandberg (SMHI)"]]]])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
