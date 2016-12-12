@@ -129,7 +129,7 @@
      [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
     [:input {:type "button" :value "?" :class "help"}]
     [:div {:class "hidden-helper"}
-     [:p "These are different climate prediction models produced by climate-institutes across the world. These models takes a lot of different in-parametres, levels och green house gases is one among them, and then simulates climate over the coming century."]
+     [:p "These are different climate prediction models produced by climate-institutes across the world. These models takes a lot of different in-parametres, levels of green house gases is one among them, and then simulates climate over the coming century."]
      [:ul
       [:li "ICHEC-EC-EARTH is an Irish model from the weather institute ICHEC."]
       [:li "CNRM-CERFACS-CNRM-CM5 is a french model from CNRM."]
