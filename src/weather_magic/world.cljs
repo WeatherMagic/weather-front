@@ -3,6 +3,7 @@
    [weather-magic.models   :as models]
    [weather-magic.state    :as state]
    [weather-magic.textures :as textures]
+   [weather-magic.transforms   :as transforms]
    [thi.ng.geom.gl.camera  :as cam]
    [thi.ng.geom.core       :as g]
    [thi.ng.geom.matrix     :as mat :refer [M44]]
@@ -105,6 +106,45 @@
     (when (= current-step total-steps)
       (reset! state/earth-animation-fn stop-spin!))
     (update-zoom-point-alignment delta-x delta-y delta-z-angle current-step)))
+
+(defn go-to-view!
+  [_]
+  (let [delta-angle (:delta-angle @state/move-to-view-info)
+        z-angle (:z-angle @state/move-to-view-info)
+        total-steps (:total-steps @state/move-to-view-info)
+        current-step (:current-step @state/move-to-view-info)]
+    (reset! state/earth-orientation (-> M44
+                                        (g/rotate-z (* z-angle -1))
+                                        (g/rotate-y delta-angle)
+                                        (g/rotate-z z-angle)
+                                        (m/* @state/earth-orientation)))
+    (swap! state/move-to-view-info assoc-in [:current-step] (inc current-step))
+    (when (= current-step total-steps)
+      (if (:align @state/move-to-view-info)
+        (do
+          (swap! state/pointer-zoom-info assoc :delta-z-angle (transforms/update-alignment-angle 0 0 (:eye @state/camera-left) (:total-steps @state/pointer-zoom-info) @state/earth-orientation)
+                 :delta-x 0 :delta-y 0 :current-step 0 :delta-zoom 0)
+          (reset! state/earth-animation-fn align-animation!))
+        (reset! state/earth-animation-fn stop-spin!)))))
+
+(defn get-to-view-angles
+  [model-x model-y model-z align-true-or-false]
+  (let [inverse-earth-orientation (m/invert @state/earth-orientation)
+        model-vector-x (+ (+ (* (.-m00 inverse-earth-orientation) model-x) (* (.-m01 inverse-earth-orientation) model-y)) (* (.-m02 inverse-earth-orientation) model-z))
+        model-vector-y (+ (+ (* (.-m10 inverse-earth-orientation) model-x) (* (.-m11 inverse-earth-orientation) model-y)) (* (.-m12 inverse-earth-orientation) model-z))
+        model-vector-z (+ (+ (* (.-m20 inverse-earth-orientation) model-x) (* (.-m21 inverse-earth-orientation) model-y)) (* (.-m22 inverse-earth-orientation) model-z))
+        model-vector (vec3 model-vector-x model-vector-y model-vector-z)
+        rotation-vec (m/cross model-vector (vec3 0 0 1))
+        rot-vec-x (aget (.-buf rotation-vec) 0)
+        rot-vec-y (aget (.-buf rotation-vec) 1)
+        z-angle (if (> rot-vec-x 0.0) (Math/acos rot-vec-y) (* (Math/acos rot-vec-y) -1))
+        rot-angle (Math/acos model-vector-z)]
+    (swap! state/move-to-view-info assoc
+           :align align-true-or-false
+           :delta-angle (/ rot-angle 200)
+           :z-angle z-angle
+           :current-step 0)
+    (reset! state/earth-animation-fn go-to-view!)))
 
 ;; THIS IS BAD AND I SHOULD FEEL BAD.
 (reset! state/earth-animation-fn spin-earth!)
