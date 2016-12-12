@@ -34,17 +34,16 @@
   (m/* M44 @state/earth-orientation))
 
 (defn update-year-month-info
-  [t left-right-key year-month-key time-factor]
+  [t left-right-key year-month-key]
   (let [min  (:min (year-month-key (left-right-key @state/date-atom)))
         range (- (:max (year-month-key (left-right-key @state/date-atom))) min)
         current-year (:value (year-month-key (left-right-key @state/date-atom)))
         last-year-update (:time-of-last-update (year-month-key (left-right-key @state/year-update)))
-        delta-year (int (- (* time-factor t) last-year-update))]
+        delta-year (int (- t last-year-update))]
     (when (> delta-year 0.5)
       (swap! state/date-atom assoc-in [left-right-key year-month-key :value]
              (+ min (rem (- (+ current-year delta-year) min) range)))
-      (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update]
-             (* time-factor t))
+      (swap! state/year-update assoc-in [left-right-key year-month-key :time-of-last-update] t)
       (cache/trigger-data-load! left-right-key false))))
 
 (defn draw-in-context
@@ -88,16 +87,16 @@
   (cache/rotate-in-next! :left state/textures-left)
   (cache/rotate-in-next! :right state/textures-right)
   (if (:play-mode (:year (:left @state/date-atom)))
-    (update-year-month-info t :left :year 1)
+    (update-year-month-info t :left :year)
     (swap! state/year-update assoc-in [:left :year :time-of-last-update] t))
   (if (:play-mode (:month (:left @state/date-atom)))
-    (update-year-month-info t :left :month 1)
+    (update-year-month-info t :left :month)
     (swap! state/year-update assoc-in [:left :month :time-of-last-update] t))
   (if (:play-mode (:year (:right @state/date-atom)))
-    (update-year-month-info t :right :year 1)
+    (update-year-month-info t :right :year)
     (swap! state/year-update assoc-in [:right :year :time-of-last-update] t))
   (if (:play-mode (:month (:right @state/date-atom)))
-    (update-year-month-info t :right :month 1)
+    (update-year-month-info t :right :month)
     (swap! state/year-update assoc-in [:right :month :time-of-last-update] t))
   (if (or (:play-mode (:month (:left @state/date-atom))) (:play-mode (:month (:right @state/date-atom))))
     (do (draw-in-context state/gl-ctx-left @state/camera-left @state/background-camera-left @state/base-texture-left @state/textures-left state/shaders-left :left :month t)
