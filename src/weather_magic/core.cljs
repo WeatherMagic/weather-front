@@ -56,7 +56,7 @@
         texture-info (:placement ((:current (left-right-key @state/dynamic-texture-keys)) textures))]
     ;; Begin rendering when we have a background-texture of the earth.
     (when (and @(:loaded base-texture) @(:loaded (:trump textures)))
-      (gl/bind (:texture (:space textures)) 0)
+      (gl/bind (:texture (:space textures)) 1)
       ;; Draw the background.
       (doto gl-ctx
         (gl/clear-color-and-depth-buffer 0 0 0 1 1)
@@ -66,11 +66,11 @@
              (assoc-in [:uniforms :model] (-> M44 (g/rotate-z PI) (g/scale 1.148) (g/translate (vec3 -5 -4 -1))))
              (assoc-in [:uniforms :uvLeftRightOffset] (if (= left-right-key :left) (* 0 1.0) (* 0.5 1.0)))
              (assoc-in [:uniforms :uvOffset]   @state/space-offset))))
-      (gl/bind (:texture base-texture) 0)
+      (gl/bind (:texture base-texture) 1)
       ;; If the data from thor has been loaded, use that instead of trump.
       (if @(:loaded ((:current (left-right-key @state/dynamic-texture-keys)) textures))
-        (gl/bind (:texture ((:current (left-right-key @state/dynamic-texture-keys)) textures)) 1)
-        (gl/bind (:texture (:trump textures)) 1))
+        (gl/bind (:texture ((:current (left-right-key @state/dynamic-texture-keys)) textures)) 2)
+        (gl/bind (:texture (:trump textures)) 2))
       ;; Do the actual drawing.
       (doto gl-ctx
         (gl/draw-with-shader

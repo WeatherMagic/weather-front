@@ -35,9 +35,10 @@
   (swap! state/about-page-visible (fn [] :hidden)))
 
 (defn go-from-landing-page
-  []
-  (swap! state/blur-visible (fn [] :hidden))
-  (swap! state/landing-page-visible (fn [] :hidden)))
+  [data-layer]
+  (reset! state/blur-visible :hidden)
+  (reset! state/landing-page-visible :hidden)
+  (reset! state/data-layer-atom data-layer))
 
 (defn update-climate-model-info
   [key input]
@@ -89,7 +90,7 @@
 (defn slider-component [left-right-key year-month-key]
   (let [data (year-month-key (left-right-key @state/date-atom))]
     [:div {:class "time-slider"}
-     [:span (clojure.string/capitalize (name year-month-key)) ": " (:value data)]
+     [:h5 (clojure.string/capitalize (name year-month-key)) ": " (:value data)]
      [slider left-right-key year-month-key (:value data) (:min data) (:max data)]]))
 
 (defn time-sliders []
@@ -115,22 +116,25 @@
   [:div
    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
     [button "Data-selection" "selection-button" swap! state/data-menu-visible hide-unhide]]
-   [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
-    [:div {:id "closebtn" :class "data"}
-     [close-button "x" "side-menu-button" close-side-menu state/data-menu-visible]]
+   [:div {:id "data-menu-container" :class (str (name (hide-unhide @state/data-menu-visible)) " sidebar")}
+    [close-button "x" "side-menu-button" close-side-menu state/data-menu-visible]
     [:div {:id "side-menu-button-group-container"}
      [:div {:id "upper-side-menu-button-group"}
+      [:h4 "Climate model"]
       [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
        [:option {:value "ICHEC-EC-EARTH"} "Climate model 1"]
        [:option {:value "CNRM-CERFACS-CNRM-CM5"} "Climate model 2"]
        [:option {:value "IPSL-IPSL-CM5A-MR"} "Climate model 3"]]
+
+      [:h4 "Exhaust level"]
       [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
        [:option {:value "rcp45"} "Exhaust level 1"]
        [:option {:value "rcp85"} "Exhaust level 2"]
        [:option {:value "historical"} "Historical"]]]
-     [:div {:id "right-side-menu-offset"}]
+
      [:div {:id "lower-side-menu-button-group"}
-      [button "Standard" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
+      [:h4 "Data type"]
+      [button "No data" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
       [button "Temperature" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
       [button "Precipitation" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
 
@@ -138,22 +142,19 @@
   "Buttons for navigation"
   []
   [:div
-   [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
-    [button "Navigation" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
-   [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
-    [:div {:id "closebtn" :class "nav"}
-     [close-button "x" "side-menu-button" close-side-menu state/navigation-menu-visible]]
-    [:div {:id "side-menu-button-group-container"}
-     [:div {:id "right-upper-side-menu-button-group"}
-      [button "Spin-earth" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
-      [button "About" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]
-     [:div {:id "right-lower-side-menu-button-group"}
-      [button "Europe" "side-menu-button" set-static-view (vec3 45 80 0)]
-      [button "Africa" "side-menu-button" set-static-view (vec3 5 75 0)]
-      [button "South America" "side-menu-button" set-static-view (vec3 -20 150 0)]
-      [button "North America" "side-menu-button" set-static-view (vec3 35 190 0)]
-      [button "Oceania" "side-menu-button" set-static-view (vec3 -15 -40 0)]
-      [button "Asia" "side-menu-button" set-static-view (vec3 35 -15 0)]]]]])
+   [button "Navigation" "selection-button" swap! state/navigation-menu-visible hide-unhide]
+   [:div {:id "navigation-menu-container" :class (str (name (hide-unhide @state/navigation-menu-visible)) " sidebar")}
+    [close-button "x" "side-menu-button" close-side-menu state/navigation-menu-visible]
+    [:h4 "Location"]
+    [button "Europe" "side-menu-button" set-static-view (vec3 45 80 0)]
+    [button "Africa" "side-menu-button" set-static-view (vec3 5 75 0)]
+    [button "South America" "side-menu-button" set-static-view (vec3 -20 150 0)]
+    [button "North America" "side-menu-button" set-static-view (vec3 35 190 0)]
+    [button "Oceania" "side-menu-button" set-static-view (vec3 -15 -40 0)]
+    [button "Asia" "side-menu-button" set-static-view (vec3 35 -15 0)]
+    [:h4 "Other"]
+    [button "Spin the earth" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
+    [button "About this site" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)
@@ -168,12 +169,15 @@
     [:h1 "Welcome to WeatherMagic!"]
     [:p "An interactive visualization of climate projections"]
     [:p "or How fucked art thou?"]]
-   [button "To map" "intro-button" go-from-landing-page]])
+   [:div
+    [:h2 "What do you want to see?"]
+    [button "Temperature"   "intro-button" go-from-landing-page "temperature"]
+    [button "Precipitation" "intro-button" go-from-landing-page "precipitation"]]])
 
 (defn about-page
   "What the user sees when she arrives at the page."
   []
-  [:div {:id "landing-page" :class @state/about-page-visible}
+  [:div {:id "about-page" :class @state/about-page-visible}
    [:div
     [:h1 "What makes mangel mangel"]
     [:p "Mangel is the nickname of one of the group members"]

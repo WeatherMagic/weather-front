@@ -149,11 +149,11 @@
               :view       :mat4
               :proj       :mat4
               :normalMat  [:mat4 (gl/auto-normal-matrix :model :view)]
-              :base       [:sampler2D 0] ; Specify which texture unit
-              :data       [:sampler2D 1] ; the uniform is bound to.
-              :lightDir   [:vec3 [1 0 1]]
+              :base       [:sampler2D 1] ; Specify which texture unit
+              :data       [:sampler2D 2] ; the uniform is bound to.
+              :lightDir   [:vec3 [0.5 0.1 1]]
               :lightCol   [:vec3 [1 1 1]]
-              :ambientCol [:vec3 [0 0 0.1]]
+              :ambientCol [:vec3 [0 0 0]]
               :year       :float
               :range      :float
               :eye        :vec3
@@ -176,7 +176,7 @@
               :view               :mat4
               :proj               :mat4
               :normalMat          [:mat4 (gl/auto-normal-matrix :model :view)]
-              :starsTex           [:sampler2D 0] ; Specify which texture unit
+              :starsTex           [:sampler2D 1]
               :uvLeftRightOffset  :float
               :uvOffset           :vec2}
 
