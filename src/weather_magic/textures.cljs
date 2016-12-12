@@ -102,13 +102,15 @@
 (defn load-data-for-current-viewport-and-return-key!
   "AKA the tightly coupled monster function of doom with an argument
   list so large it eclipses the sun."
-  [textures-atom gl-ctx earth-orientation camera current-time-data variable]
+  [textures-atom gl-ctx earth-orientation camera current-time-data
+   variable climate-model-info]
   (let [lat-lon-corners (transforms/get-lat-lon-map earth-orientation camera)
         placement       (transforms/get-texture-position-map lat-lon-corners)]
     (load-data-into-atom-and-return-key!
      textures-atom gl-ctx
      {:request-params (merge lat-lon-corners
                              {:year (:value (:year current-time-data))
-                              :month (:value (:month current-time-data))})
+                              :month (:value (:month current-time-data))}
+                             climate-model-info)
       :placement placement
       :variable variable})))

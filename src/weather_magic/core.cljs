@@ -118,5 +118,8 @@
 (watchers/mount-rotation-data-reload-watch state/earth-orientation
                                            #(cache/trigger-data-load! true))
 
+(watchers/mount-carbon-dioxide-change-data-reload-watch state/climate-model-info
+                                                        #(cache/trigger-data-load! true))
+
 ;; This is a hook for figwheel, add stuff you want run after you save your source.
 (defn on-js-reload [])
