@@ -12,6 +12,7 @@
 (defn trigger-data-load!
   "Get climate data for the area currently in view on the screen."
   ([queue-if-already-loading]
+   (println "triggered")
    (trigger-data-load! :left queue-if-already-loading)
    (trigger-data-load! :right queue-if-already-loading))
   ([left-right-key queue-if-already-loading]

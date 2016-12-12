@@ -79,7 +79,7 @@
                              request-params))
         query-string (util/map->query-string request-map)
         url (str "http://thor.hfelo.se/api/" variable query-string)
-        key (keyword query-string)
+        key (keyword (str variable "/" query-string))
         texture-map (load-texture-if-needed texture-map gl-ctx url :key-fn (fn [_] key))]
     {:key key
      :map (assoc-in texture-map [key :placement] placement)}))

@@ -15,7 +15,12 @@
 
 (defn mount-climate-model-info-data-reload-watch
   [climate-model-info reload-fn]
-  (let [climate-model-of-last-request (volatile! @climate-model-info)]
-    (add-watch climate-model-info :trigger-data-load-carbon
-               (fn [key reference old-state new-state]
-                 (reload-fn)))))
+  (add-watch climate-model-info :trigger-data-load-carbon
+             (fn [key reference old-state new-state]
+               (reload-fn))))
+
+(defn mount-variable-data-reload-watch
+  [data-layer-atom reload-fn]
+  (add-watch data-layer-atom :trigger-data-load-variable
+             (fn [key reference old-state new-state]
+               (reload-fn))))
