@@ -4,7 +4,7 @@ This document helps getting to know the GUI of WeatherMagic, Weather-Front, bett
 
 ## Landing page
 
-The first thing you'll see when you open up the application is the landing page. This page describes what kind of site you've reached. Press the button "To map" in order to get to the main view of the application. 
+The first thing you'll see when you open up the application is the landing page. This page describes what kind of site you've reached. Press any of the buttons "Temperature" or "Precipitation" in order to get to the main view of the application with data mapped onto the globes. 
 
 ## First look
 
