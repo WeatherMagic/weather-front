@@ -297,7 +297,6 @@ div.full-page {
 	overflow: auto;
 	padding: 5%;
 }
-
 #landing-page {
 	flex: 1 1 auto;
 	display: flex;
@@ -305,12 +304,6 @@ div.full-page {
 	justify-content: center;
 	flex-direction: column;
 }
-
-
-
 #landing-page>div {
 	margin: 0 5% 5% 5%;
-}
-
-#about-page {
 }
