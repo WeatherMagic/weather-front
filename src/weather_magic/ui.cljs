@@ -34,11 +34,6 @@
   (swap! state/blur-visible (fn [] :hidden))
   (swap! state/about-page-visible (fn [] :hidden)))
 
-(defn go-from-landing-page
-  []
-  (swap! state/blur-visible (fn [] :hidden))
-  (swap! state/landing-page-visible (fn [] :hidden)))
-
 (defn update-climate-model-info
   [key input]
   (swap! state/climate-model-info assoc-in [key] input))
@@ -54,6 +49,12 @@
   [shader data-layer]
   (reset! state/current-shader-key shader)
   (reset! state/data-layer-atom data-layer))
+
+(defn go-from-landing-page
+  [data-layer]
+  (reset! state/blur-visible :hidden)
+  (reset! state/landing-page-visible :hidden)
+  (update-shader-and-data-layer (keyword data-layer) data-layer))
 
 (defn button
   "Creates a button with a given HTML id which when clicked does func on atom with args."
@@ -89,21 +90,25 @@
 (defn slider-component [left-right-key year-month-key]
   (let [data (year-month-key (left-right-key @state/date-atom))]
     [:div {:class "time-slider"}
-     [:span (clojure.string/capitalize (name year-month-key)) ": " (:value data)]
+     [:h5 (clojure.string/capitalize (name year-month-key)) ": " (:value data)]
      [slider left-right-key year-month-key (:value data) (:min data) (:max data)]]))
 
 (defn time-sliders []
   [:div {:id "time-slider-containers"}
-   [:div {:class "time-sliders-left"}
-    [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]
-    [slider-component :left :year]
-    [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]
-    [slider-component :left :month]]
-   [:div {:class "time-sliders-right"}
-    [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]
-    [slider-component :right :year]
-    [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]
-    [slider-component :right :month]]])
+   [:table {:class "time-sliders-left"}
+    [:tr
+     [:td [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]]
+     [:td [slider-component :left :year]]]
+    [:tr
+     [:td [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]]
+     [:td [slider-component :left :month]]]]
+   [:table {:class "time-sliders-right"}
+    [:tr
+     [:td [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]]
+     [:td [slider-component :right :year]]]
+    [:tr
+     [:td [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]]
+     [:td [slider-component :right :month]]]]])
 
 (defn map-ui-blur []
   "What hides the map UI."
@@ -115,54 +120,52 @@
   [:div
    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
     [button "Data-selection" "selection-button" swap! state/data-menu-visible hide-unhide]]
-   [:div {:id "data-menu-container" :class (hide-unhide @state/data-menu-visible)}
-    [:div {:id "closebtn" :class "data"}
-     [close-button "x" "side-menu-button" close-side-menu state/data-menu-visible]]
-    [:div {:id "side-menu-button-group-container"}
-     [:div {:id "upper-side-menu-button-group"}
-      [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
-       [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
-       [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CERFACS-CNRM-CM5"]
-       [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
-      [:div
-       [:p "These are different climate prediction models in use by the different climate-institutes. These models takes a lot of different in-parametres, levels och green house gases is one among them, and then simulates climate over hundreds of years."]
-       [:ul
-        [:li "ICHEC-EC-EARTH is an Irish model from the weather institute ICHEC."]
-        [:li "CNRM-CERFACS-CNRM-CM5 is a french model from CNRM"]
-        [:li "IPSL-IPSL-CM5A-MR is a french climate model from the institude IPSL"]]]
-      [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
-       [:option {:value "rcp45"} "rcp45"]
-       [:option {:value "rcp85"} "rcp85"]]]
-     [:div
-      [:p "These are different exhaust-levels of green house gases (GHGs) for which climate institutes predicts the future around. Both rcp45 and rcp85 are seen as likely cases, with rcp85 beeing a higher level of GHGs than rcp45. Try experimenting with these options and see hoe they affect the predicted climate of the earth. "]]
-     [:div {:id "right-side-menu-offset"}]
-     [:div {:id "lower-side-menu-button-group"}
-      [button "Standard" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
-      [button "Temperature" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
-      [button "Precipitation" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]]]])
+   [:div {:id "data-menu-container" :class (str (name (hide-unhide @state/data-menu-visible)) " sidebar")}
+    [close-button "x" "side-menu-button" close-side-menu state/data-menu-visible]
+    [:h4 "Climate model"]
+    [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
+     [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
+     [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CNRM-CM5"]
+     [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
+    [:input {:type "button" :value "?" :class "help"}]
+    [:div {:class "hidden-helper"}
+     [:p "These are different climate prediction models produced by climate-institutes across the world. These models takes a lot of different in-parametres, levels of green house gases is one among them, and then simulates climate over the coming century."]
+     [:ul
+      [:li "ICHEC-EC-EARTH is an Irish model from the weather institute ICHEC."]
+      [:li "CNRM-CERFACS-CNRM-CM5 is a french model from CNRM."]
+      [:li "IPSL-IPSL-CM5A-MR is a french climate model from the institude IPSL."]]]
+    [:h4 "Exhaust level"]
+    [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
+     [:option {:value "rcp45"} "RCP 4.5"]
+     [:option {:value "rcp85"} "RCP 8.5"]]
+    [:input {:type "button" :value "?" :class "help"}]
+    [:div {:class "hidden-helper"}
+     [:p "These are different exhaust-levels of green house gases (GHGs) for which climate institutes predicts the future around. Both RCP4.5 and RCP8.5 are seen as likely cases, with RCP8.5 beeing a higher level of GHGs than RCP4.5. Try experimenting with these options and see how they affect the predicted climate of the earth. "]
+     [:p "You can read more about these prediction models on " [:a {:href "https://en.wikipedia.org/wiki/Representative_Concentration_Pathways"} "Wikipedia"]]]
+    [:h4 "Data type"]
+    [button "No data" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
+    [button "Temperature" "side-menu-button" update-shader-and-data-layer :temperature "temperature"]
+    [button "Precipitation" "side-menu-button" update-shader-and-data-layer :precipitation "precipitation"]]])
 
 (defn navigation-selection
   "Buttons for navigation"
   []
   [:div
-   [:div {:id "nav-selection-container" :class (hide-unhide @state/blur-visible)}
-    [button "Navigation" "selection-button" swap! state/navigation-menu-visible hide-unhide]]
-   [:div {:id "navigation-menu-container" :class (hide-unhide @state/navigation-menu-visible)}
-    [:div {:id "closebtn" :class "nav"}
-     [close-button "x" "side-menu-button" close-side-menu state/navigation-menu-visible]]
-    [:div {:id "side-menu-button-group-container"}
-     [:div {:id "right-upper-side-menu-button-group"}
-      [button "Spin-earth" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
-      [button "About" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]
-     [:div {:id "right-lower-side-menu-button-group"}
-      [button "Africa" "side-menu-button" world/get-to-view-angles -0.9418886 0.0472268 0.3325892 true]
-      [button "Antarctica" "side-menu-button" world/get-to-view-angles 0.0 -1.0 0.0 false]
-      [button "Arctic" "side-menu-button" world/get-to-view-angles 0.0 1.0 0.0 false]
-      [button "Asia" "side-menu-button" world/get-to-view-angles 0.1583381 0.5093238 0.8458831 true]
-      [button "Europe" "side-menu-button" world/get-to-view-angles -0.6378739 0.7512540 0.1695120 true]
-      [button "North America" "side-menu-button" world/get-to-view-angles 0.1276255 0.7026068 -0.7000396 true]
-      [button "Oceania" "side-menu-button" world/get-to-view-angles 0.5729999 -0.2510875 0.7801449 true]
-      [button "South America" "side-menu-button" world/get-to-view-angles -0.4850580 -0.3197941 -0.8139106 true]]]]])
+   [button "Navigation" "selection-button" swap! state/navigation-menu-visible hide-unhide]
+   [:div {:id "navigation-menu-container" :class (str (name (hide-unhide @state/navigation-menu-visible)) " sidebar")}
+    [close-button "x" "side-menu-button" close-side-menu state/navigation-menu-visible]
+    [:h4 "Location"]
+    [button "Africa" "side-menu-button" world/get-to-view-angles -0.9418886 0.0472268 0.3325892 true]
+    [button "Antarctica" "side-menu-button" world/get-to-view-angles 0.0 -1.0 0.0 false]
+    [button "Arctic" "side-menu-button" world/get-to-view-angles 0.0 1.0 0.0 false]
+    [button "Asia" "side-menu-button" world/get-to-view-angles 0.1583381 0.5093238 0.8458831 true]
+    [button "Europe" "side-menu-button" world/get-to-view-angles -0.6378739 0.7512540 0.1695120 true]
+    [button "North America" "side-menu-button" world/get-to-view-angles 0.1276255 0.7026068 -0.7000396 true]
+    [button "Oceania" "side-menu-button" world/get-to-view-angles 0.5729999 -0.2510875 0.7801449 true]
+    [button "South America" "side-menu-button" world/get-to-view-angles -0.4850580 -0.3197941 -0.8139106 true]
+    [:h4 "Other"]
+    [button "Spin-earth" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
+    [button "About" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)
@@ -172,50 +175,58 @@
 (defn landing-page
   "What the user sees when she arrives at the page."
   []
-  [:div {:id "landing-page" :class @state/landing-page-visible}
+  [:div {:id "landing-page" :class (str (name @state/landing-page-visible) " full-page")}
    [:div
     [:h1 "Welcome to WeatherMagic!"]
     [:p "An interactive visualization of climate projections."
      "Here you can see the results of climate simulations from many institutes that are a part of the " [:a {:href "http://esgf.llnl.gov"} "ESGF"] "."]
     [:p "This software is made by engineering students at Linköping University as a CDIO project. If you are interested in this software, please contact any of the " [:a {:href "https://github.com/orgs/WeatherMagic/people"} "authors"] "."]]
-   [button "To map" "intro-button" go-from-landing-page]])
+   [:div
+    [:h2 "What do you want to see?"]
+    [button "Temperature"   "intro-button" go-from-landing-page "temperature"]
+    [button "Precipitation" "intro-button" go-from-landing-page "precipitation"]]])
 
 (defn about-page
-  "What the user sees when she arrives at the page."
   []
-  [:div {:id "landing-page" :class @state/about-page-visible}
-   [:div
-    [:h1 "WeatherMagic"]
-    [:ul
-     [:li "Alexander Poole"]
-     [:li "Christian Luckey"]
-     [:li "Hans-Filip Elo"]
-     [:li "Magnus Ivarsson"]
-     [:li "Magnus Wedberg"]
-     [:li "Maja Ilestrand"]]
-    [:br]
-    [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " is created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called " [:a {:href "https://github.com/WeatherMagic/thor/"} "Thor"] ", which delivers data from climate simulations done by SMHI and other weather institutes."]
-    [:h2 "Technologies"]
-    [:p "These softwares are built using the following technologies. "]
-    [:h3 "Weather-front"]
-    [:ul
-     [:li "ClojureScript"]
-     [:li "WebGL"]]
-    [:h3 "Thor"]
-    [:ul
-     [:li "Python 3"]
-     [:li "Flask"]
-     [:li "Numpy+scipy"]
-     [:li "Memcached"]
-     [:li "nginx"]
-     [:li "uwsgi"]
-     [:li "Pillow"]
-     [:li "Climate data from NetCDF-files delivered by " [:a {:href "http://esgf.llnl.gov"} "ESGF"]]]
-    [:h2 "Special thanks to"]
-    [:ul
-     [:li "Ingemar Ragnemalm (LiU) - All makt åt Ingemar, vår befriare."]
-     [:li "Ola Leifler (LiU)"]
-     [:li "Gustav Strandberg (SMHI)"]]]])
+  [:div {:id "about-page" :class (str (name @state/about-page-visible) " full-page")}
+   [close-button "x" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]
+   [:h1 "WeatherMagic"]
+   [:p "A project built by the dedicated team consisting of:"]
+   [:ul
+    [:li "Alexander Poole"]
+    [:li "Christian Luckey"]
+    [:li "Hans-Filip Elo"]
+    [:li "Magnus Ivarsson"]
+    [:li "Magnus Wedberg"]
+    [:li "Maja Ilestrand"]]
+   [:p [:a {:href "https://github.com/WeatherMagic"} "WeatherMagic"] " was created by last year engineering students as a " [:a {:href "https://www.lith.liu.se/presentation/namnder/kb/protokoll-och-studentinformation/kb-protokoll/mars-2016/1.678546/KB_160316.pdf"} "CDIO"] " project at Linköping University. This software is created during a technical project with a goal of giving students, and others, a higher understanding of climate modelling as well as climate change. The project has delivered this front-end, called " [:a {:href "https://github.com/WeatherMagic/weather-front"} "Weather-Front"] " as well as a back-end software, called " [:a {:href "https://github.com/WeatherMagic/thor/"} "Thor"] ", which delivers data from climate simulations done by SMHI and other weather institutes."]
+   [:h2 "Technologies"]
+   [:p "These softwares are built using the following technologies. "]
+   [:h3 "Weather-front"]
+   [:ul
+    [:li "ClojureScript"]
+    [:li "Thi.ng Geom"]
+    [:li "Figwheel"]
+    [:li "WebGL"]]
+   [:h3 "Thor"]
+   [:ul
+    [:li "Python 3"]
+    [:li "Flask"]
+    [:li "Numpy+scipy"]
+    [:li "Memcached"]
+    [:li "nginx"]
+    [:li "uwsgi"]
+    [:li "Pillow"]
+    [:li "Climate data from NetCDF-files delivered by " [:a {:href "http://esgf.llnl.gov"} "ESGF"]]]
+   [:h2 "Special thanks to"]
+   [:ul
+    [:li "Ingemar Ragnemalm (LiU) - All makt åt Ingemar, vår befriare."]
+    [:li "Ola Leifler (LiU)"]
+    [:li "Gustav Strandberg (SMHI)"]]
+   [button "Stäng" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]])
+
+(defn scale-gradient []
+  [:div {:class "gradient" :id (str @state/data-layer-atom "-gradient")}])
 
 (defn map-ui
   "The UI displayed while the user interacts with the map."
@@ -227,7 +238,8 @@
    [landing-page]
    [about-page]
    [time-sliders]
-   [map-ui-blur]])
+   [map-ui-blur]
+   [scale-gradient]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."
