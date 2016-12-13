@@ -225,6 +225,9 @@
     [:li "Gustav Strandberg (SMHI)"]]
    [button "Stäng" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]])
 
+(defn scale-gradient []
+  [:div {:class (str @state/data-layer-atom "-gradient gradient")}])
+   
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
@@ -235,7 +238,8 @@
    [landing-page]
    [about-page]
    [time-sliders]
-   [map-ui-blur]])
+   [map-ui-blur]
+   [scale-gradient]])
 
 (defn mount-ui!
   "Place the user interface into the DOM."

@@ -307,3 +307,13 @@ div.full-page {
 #landing-page>div {
 	margin: 0 5% 5% 5%;
 }
+
+div.gradient {
+    width: 5vw;
+    height: 28.4vw;
+    position: absolute;
+    left: 0;
+    top: 100px;
+    background-image: url("../img/temp-colorbar.png");
+    background-size: 100%;
+}
