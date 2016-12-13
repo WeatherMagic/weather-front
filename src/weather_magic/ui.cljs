@@ -226,8 +226,8 @@
    [button "Stäng" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]])
 
 (defn scale-gradient []
-  [:div {:class (str @state/data-layer-atom "-gradient gradient")}])
-   
+  [:div {:class "gradient" :id (str @state/data-layer-atom "-gradient")}])
+
 (defn map-ui
   "The UI displayed while the user interacts with the map."
   []
