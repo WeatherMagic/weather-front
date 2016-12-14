@@ -223,7 +223,7 @@
     [:li "Ingemar Ragnemalm (LiU) - All makt åt Ingemar, vår befriare."]
     [:li "Ola Leifler (LiU)"]
     [:li "Gustav Strandberg (SMHI)"]]
-   [button "Stäng" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]])
+   [button "Close" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]])
 
 (defn scale-gradient []
   [:div {:class "gradient" :id (str @state/data-layer-atom "-gradient")}])
