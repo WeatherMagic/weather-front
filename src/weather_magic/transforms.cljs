@@ -75,27 +75,10 @@
   "Get the lat and lon on the format from lat/lon to lat/lon."
   [earth-orientation camera]
   ;; Truncate all numbers into whole integers.
-  (let [center-model-coords (get-center-model-coords earth-orientation)
-        center-lat-lon-coords (model-coords-to-lat-lon center-model-coords)
-        lat-coords (* (Math/round (/ (:lat center-lat-lon-coords) 10)) 10)
-        lon-coords (* (Math/round (/ (:lon center-lat-lon-coords) 10)) 10)
-        camera-z-pos (aget (.-buf (:eye camera)) 2)
-        zoom-level (/ (- camera-z-pos 1.1) 3.0)
-        zoom-rect  (if (< zoom-level 0.06) 19 44)
-        from-lat (if (> zoom-level 0.16) -90 (max (- lat-coords zoom-rect) -90))
-        to-lat (if (> zoom-level 0.16) 90 (min (+ lat-coords zoom-rect) 90))
-        from-lon (if (> zoom-level 0.16) -180
-                     (if (< (Math/abs lat-coords) 30)
-                       (max (- lon-coords  (* zoom-rect 1.3)) -180)
-                       (if (< (Math/abs lat-coords) 49)
-                         (max (- lon-coords  (* zoom-rect 2)) -180)
-                         -180)))
-        to-lon (if (> zoom-level 0.16) 180
-                   (if (< (Math/abs lat-coords) 30)
-                     (min (+ lon-coords  (* zoom-rect 1.3)) 180)
-                     (if (< (Math/abs lat-coords) 49)
-                       (min (+ lon-coords  (* zoom-rect 2)) 180)
-                       180)))]
+  (let [from-lat -90
+        to-lat 90
+        from-lon -180
+        to-lon 180]
     {:from-latitude from-lat
      :to-latitude to-lat
      :from-longitude from-lon
