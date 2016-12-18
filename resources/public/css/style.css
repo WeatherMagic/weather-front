@@ -137,6 +137,7 @@ input[type=range] {
 	cursor: -moz-grab;
 	cursor: -webkit-grab;
 	cursor: grab;
+	background-color: black;
 }
 #canvases:active {
 	cursor: -moz-grab;
