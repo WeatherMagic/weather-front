@@ -96,19 +96,21 @@
 (defn time-sliders []
   [:div {:id "time-slider-containers"}
    [:table {:class "time-sliders-left"}
-    [:tr
-     [:td [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]]
-     [:td [slider-component :left :year]]]
-    [:tr
-     [:td [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]]
-     [:td [slider-component :left :month]]]]
+    [:tbody
+     [:tr
+      [:td [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]]
+      [:td [slider-component :left :year]]]
+     [:tr
+      [:td [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]]
+      [:td [slider-component :left :month]]]]]
    [:table {:class "time-sliders-right"}
-    [:tr
-     [:td [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]]
-     [:td [slider-component :right :year]]]
-    [:tr
-     [:td [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]]
-     [:td [slider-component :right :month]]]]])
+    [:tbody
+     [:tr
+      [:td [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]]
+      [:td [slider-component :right :year]]]
+     [:tr
+      [:td [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]]
+      [:td [slider-component :right :month]]]]]])
 
 (defn map-ui-blur []
   "What hides the map UI."
