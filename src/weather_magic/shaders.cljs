@@ -72,9 +72,9 @@
                                (223.0 / 255.0) + (32.0 / 255.0) * (0.44 - temperature) / 0.14, 1.0);
      } else {
        temperature = clamp(temperature, 0.16, 0.30);
-       temperatureColor = vec4((139.0/255.0) * (0.3 - temperature) / 0.14,
+       temperatureColor = vec4((0.3 - temperature) / 0.14,
                                0.0,
-                               clamp(1.0 + (116.0/255.0) * (temperature - 0.4) / 0.14, 0.0, 1.0), 1.0);
+                               clamp(1.0 + (116.0/255.0) * (temperature - 0.3) / 0.14, 0.0, 1.0), 1.0);
      }
 
      vec4 baseColor = vec4(ambientCol, 1.0) + baseTexture * vec4(lightCol, 1.0) * lam;
