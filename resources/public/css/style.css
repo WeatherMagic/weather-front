@@ -117,6 +117,14 @@ input[type=range] {
 .hidden {
 	visibility: hidden;
 }
+#data-menu-container.hidden{
+	visibility: visible;
+	transform: translateX(-100%);
+}
+#navigation-menu-container.hidden{
+	visibility: visible;
+	transform: translateX(100%);
+}
 
 #blur{
 	background-color: rgba(0, 0, 0, 0.8);
@@ -137,6 +145,7 @@ input[type=range] {
 	cursor: -moz-grab;
 	cursor: -webkit-grab;
 	cursor: grab;
+	background-color: black;
 }
 #canvases:active {
 	cursor: -moz-grab;
@@ -238,8 +247,9 @@ input[type=button].selection-button {
 	background-color: #111;
 	height:           100%;
 	padding:          3%;
-	z-index:          2;
 	position:         absolute;
+	transition:       0.5s;
+	z-index:          2;
 }
 
 #data-menu-container {
