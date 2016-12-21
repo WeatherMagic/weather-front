@@ -35,6 +35,6 @@ Within this panel you can also tweak which climate model and at which ammount of
 
 ![Navigation panel](User-guide-res/navigation-panel.png)
 
-In the upper right corner of the application you find the button "Navigation". This button opens the Navigation panel. Here you find shortcuts for quickly switching the view to all continents, as well as an option to continusly spin the earth and the About button which tells you more about the applicaiton.
+In the upper right corner of the application you find the button "Navigation". This button opens the Navigation panel. Here you find shortcuts for quickly switching the view to all continents, as well as an option to continuously spin the earth and the About button which tells you more about the application.
 
 
