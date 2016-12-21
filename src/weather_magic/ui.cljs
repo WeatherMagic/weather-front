@@ -124,23 +124,23 @@
     [close-button "x" "side-menu-button" close-side-menu state/data-menu-visible]
     [:h4 "Climate model"]
     [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
-     [:option {:value "ICHEC-EC-EARTH"} "ICHEC-EC-EARTH"]
-     [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CNRM-CM5"]
-     [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-IPSL-CM5A-MR"]]
+     [:option {:value "ICHEC-EC-EARTH"} "EC-EARTH"]
+     [:option {:value "CNRM-CERFACS-CNRM-CM5"} "CNRM-CM5"]
+     [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-CM5A"]]
     [:input {:type "button" :value "?" :class "help"}]
     [:div {:class "hidden-helper"}
-     [:p "These are different climate prediction models produced by climate-institutes across the world. These models takes a lot of different in-parametres, levels of green house gases is one among them, and then simulates climate over the coming century."]
+     [:p "Climate prediction models are produced by climate-institutes across the world. Greenhoiuse gas exhaust is an in parameter to climate prediction models."]
      [:ul
-      [:li "ICHEC-EC-EARTH is an Irish model from the weather institute ICHEC."]
-      [:li "CNRM-CERFACS-CNRM-CM5 is a french model from CNRM."]
-      [:li "IPSL-IPSL-CM5A-MR is a french climate model from the institude IPSL."]]]
-    [:h4 "Exhaust level"]
+      [:li "EC-EARTH is an European model from various weather institutes."]
+      [:li "CNRM-CM5 is a French climate model from the weather institute CNRM."]
+      [:li "IPSL-CM5A is a French climate model from the weather institute IPSL."]]]
+    [:h4 "Emissions scenarios"]
     [:select {:class "side-menu-button" :name "Exhaust-level" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:exhaust-level] (.-target.value event)))}
      [:option {:value "rcp45"} "RCP 4.5"]
      [:option {:value "rcp85"} "RCP 8.5"]]
     [:input {:type "button" :value "?" :class "help"}]
     [:div {:class "hidden-helper"}
-     [:p "These are different exhaust-levels of green house gases (GHGs) for which climate institutes predicts the future around. Both RCP4.5 and RCP8.5 are seen as likely cases, with RCP8.5 beeing a higher level of GHGs than RCP4.5. Try experimenting with these options and see how they affect the predicted climate of the earth. "]
+     [:p "Emissions scenarios for green house gases (GHGs) are used to predict exhaust levels in the future. RCP 4.5 predicts that emission will rise untill 2040 and then decline. RCP 8.5 predicts that emission will continue to rise through out the 21th century. Try experimenting with these options and see how they affect the predicted climate of the earth. "]
      [:p "You can read more about these prediction models on " [:a {:href "https://en.wikipedia.org/wiki/Representative_Concentration_Pathways"} "Wikipedia"]]]
     [:h4 "Data type"]
     [button "No data" "side-menu-button" update-shader-and-data-layer :standard "temperature"]
