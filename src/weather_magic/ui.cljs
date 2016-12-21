@@ -129,7 +129,7 @@
      [:option {:value "IPSL-IPSL-CM5A-MR"} "IPSL-CM5A"]]
     [:input {:type "button" :value "?" :class "help"}]
     [:div {:class "hidden-helper"}
-     [:p "Climate prediction models are produced by climate-institutes across the world. Greenhoiuse gas exhaust is an in parameter to climate prediction models."]
+     [:p "Climate prediction models are produced by climate-institutes across the world. Green house gas exhaust is one of many in parameter to climate prediction models."]
      [:ul
       [:li "EC-EARTH is an European model from various weather institutes."]
       [:li "CNRM-CM5 is a French climate model from the weather institute CNRM."]
