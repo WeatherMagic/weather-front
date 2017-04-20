@@ -100,8 +100,9 @@
                    :source-paths ["src" "dev"]
                    :plugins [[cider/cider-nrepl "0.14.0"] ; For CIDER
                              [lein-cljfmt "0.5.6"]        ; Checks formatting.
-                             [lein-kibit "0.1.2"]]        ; Checks if code is ideomatic.
+                             [lein-kibit "0.1.2"]         ; Checks if code is ideomatic.
+                             [lein-githooks "0.1.0"]]     ; Manages git hooks.
+                   :githooks {:pre-commit ["lein do kibit, cljfmt check"]}
                    }}
   :repl-options{:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
-
 )
