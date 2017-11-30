@@ -109,8 +109,8 @@ input[type=range] {
 
 .time-slider {
 	cursor: default;
-	float:  right;
-	width:  100%;
+	float:  left;
+	width:  97%;
 }
 
 

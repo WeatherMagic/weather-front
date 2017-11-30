@@ -24,15 +24,9 @@
   (hidden-or-not {:hidden :visible :visible :hidden}))
 
 (defn toggle-about-page
-  [atom1 atom2]
-  (swap! atom1 hide-unhide)
-  (swap! atom2 hide-unhide))
-
-(defn close-side-menu
-  [side-menu]
-  (swap! side-menu hide-unhide)
-  (swap! state/blur-visible (fn [] :hidden))
-  (swap! state/about-page-visible (fn [] :hidden)))
+  []
+  (swap! state/about-page-visible hide-unhide)
+  (swap! state/blur-visible       hide-unhide))
 
 (defn update-climate-model-info
   [key input]
@@ -96,19 +90,21 @@
 (defn time-sliders []
   [:div {:id "time-slider-containers"}
    [:table {:class "time-sliders-left"}
-    [:tr
-     [:td [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]]
-     [:td [slider-component :left :year]]]
-    [:tr
-     [:td [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]]
-     [:td [slider-component :left :month]]]]
+    [:tbody
+     [:tr
+      [:td [play-pause-button "LeftYear" toggle-play-stop state/date-atom :left :year :month]]
+      [:td [slider-component :left :year]]]
+     [:tr
+      [:td [play-pause-button "LeftMonth" toggle-play-stop state/date-atom :left :month :year]]
+      [:td [slider-component :left :month]]]]]
    [:table {:class "time-sliders-right"}
-    [:tr
-     [:td [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]]
-     [:td [slider-component :right :year]]]
-    [:tr
-     [:td [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]]
-     [:td [slider-component :right :month]]]]])
+    [:tbody
+     [:tr
+      [:td [play-pause-button "RightYear" toggle-play-stop state/date-atom :right :year :month]]
+      [:td [slider-component :right :year]]]
+     [:tr
+      [:td [play-pause-button "RightMonth" toggle-play-stop state/date-atom :right :month :year]]
+      [:td [slider-component :right :month]]]]]])
 
 (defn map-ui-blur []
   "What hides the map UI."
@@ -121,7 +117,7 @@
    [:div {:id "data-selection-container" :class (hide-unhide @state/blur-visible)}
     [button "Data-selection" "selection-button" swap! state/data-menu-visible hide-unhide]]
    [:div {:id "data-menu-container" :class (str (name (hide-unhide @state/data-menu-visible)) " sidebar")}
-    [close-button "x" "side-menu-button" close-side-menu state/data-menu-visible]
+    [close-button "x" "side-menu-button" #(swap! state/data-menu-visible hide-unhide)]
     [:h4 "Climate model"]
     [:select {:class "side-menu-button" :name "Climate Model" :on-change (fn [event] (swap! state/climate-model-info assoc-in [:climate-model] (.-target.value event)))}
      [:option {:value "ICHEC-EC-EARTH"} "EC-EARTH"]
@@ -153,7 +149,7 @@
   [:div
    [button "Navigation" "selection-button" swap! state/navigation-menu-visible hide-unhide]
    [:div {:id "navigation-menu-container" :class (str (name (hide-unhide @state/navigation-menu-visible)) " sidebar")}
-    [close-button "x" "side-menu-button" close-side-menu state/navigation-menu-visible]
+    [close-button "x" "side-menu-button" #(swap! state/navigation-menu-visible hide-unhide)]
     [:h4 "Location"]
     [button "Africa" "side-menu-button" world/get-to-view-angles -0.9418886 0.0472268 0.3325892 true]
     [button "Antarctica" "side-menu-button" world/get-to-view-angles 0.0 -1.0 0.0 false]
@@ -165,7 +161,7 @@
     [button "South America" "side-menu-button" world/get-to-view-angles -0.4850580 -0.3197941 -0.8139106 true]
     [:h4 "Other"]
     [button "Spin-earth" "side-menu-button" reset! state/earth-animation-fn world/spin-earth!]
-    [button "About" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]]])
+    [button "About" "side-menu-button" toggle-about-page]]])
 
 (defn compass []
   [:input {:type "button" :id "Compass" :class (hide-unhide @state/blur-visible)
@@ -189,7 +185,7 @@
 (defn about-page
   []
   [:div {:id "about-page" :class (str (name @state/about-page-visible) " full-page")}
-   [close-button "x" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]
+   [close-button "x" "side-menu-button" toggle-about-page]
    [:h1 "WeatherMagic"]
    [:p "A project built by the dedicated team consisting of:"]
    [:ul
@@ -218,12 +214,14 @@
     [:li "uwsgi"]
     [:li "Pillow"]
     [:li "Climate data from NetCDF-files delivered by " [:a {:href "http://esgf.llnl.gov"} "ESGF"]]]
-   [:h2 "Special thanks to"]
+   [:h3 "Special thanks to"]
    [:ul
     [:li "Ingemar Ragnemalm (LiU) - All makt åt Ingemar, vår befriare."]
     [:li "Ola Leifler (LiU)"]
     [:li "Gustav Strandberg (SMHI)"]]
-   [button "Close" "side-menu-button" toggle-about-page state/about-page-visible state/blur-visible]])
+   [:br]
+   [button "Close" "side-menu-button" toggle-about-page]
+   [:br]])
 
 (defn scale-gradient []
   [:div {:class "gradient" :id (str @state/data-layer-atom "-gradient")}])
