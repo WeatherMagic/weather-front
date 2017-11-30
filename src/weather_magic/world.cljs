@@ -147,4 +147,4 @@
     (reset! state/earth-animation-fn go-to-view!)))
 
 ;; THIS IS BAD AND I SHOULD FEEL BAD.
-(reset! state/earth-animation-fn spin-earth!)
+(defonce init-animation-fn (reset! state/earth-animation-fn spin-earth!))
